@@ -7,11 +7,10 @@ phases:
       - apt-get update
       - apt-get install unzip -y
       - unzip ngrok-stable-linux-amd64.zip
-      - ./ngrok authtoken $ngrok_token
   build:
     run-as: jovyan
     commands:
       - echo "**** Starting build"
-      - ./ngrok http 8888 &
+      - ./ngrok http --log stdout 8888 &
       # run-as: jovyan <- command is working so for now use --allow-root
       - jupyter notebook --allow-root
