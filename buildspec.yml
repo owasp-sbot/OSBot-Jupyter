@@ -3,6 +3,10 @@ phases:
   build:
     commands:
       - echo "**** Starting build"
+      - wget -q https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+      - apt-get update
+      - apt-get install unzip -y
+      - unzip ngrok-stable-linux-amd64.zip
       - echo "**** Checking Jupyter setup"
       - jupyter -h
 #      - cd tests ; pytest -v -s -W ignore::DeprecationWarning
