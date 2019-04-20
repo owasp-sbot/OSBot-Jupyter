@@ -1,13 +1,15 @@
 version: 0.1
 phases:
-  build:
+  install:
     commands:
-      - echo "**** Starting build"
+      - echo "**** Starting install"
       - wget -q https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
       - apt-get update
       - apt-get install unzip -y
       - unzip ngrok-stable-linux-amd64.zip
-      - echo "**** Checking Jupyter setup"
+  build:
+    run-as: 1000
+    commands:
+      - echo "**** Starting build"
       - ./ngrok http 8888 &
       - jupyter notebook --allow-root
-#      - cd tests ; pytest -v -s -W ignore::DeprecationWarning
