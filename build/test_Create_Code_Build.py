@@ -34,26 +34,31 @@ class test_Create_Code_Build(TestCase):
         self.api.code_build.build_start()
 
     def test_get_task_details(self):
-        #build_id ='OSBot-Jupyter:741451df-d586-4f08-bdb5-5eff6d14d04a'
-        #result = self.api.code_build.build_info(build_id)
+        from osbot_aws.apis.Logs import Logs
+
+
         def find_starts(array, text):
-            return [item for item in array if item.startswith('t=')]
+            return [item for item in array if item.startswith(text)]
 
         def find_in(array, text):
             return [item for item in array if text in item]
 
+        #build_id = 'OSBot-Jupyter:a553dda5-953a-41b8-ae91-e068cba4f56b'
 
-
-
-        from osbot_aws.apis.Logs import Logs
-        logs = Logs(group_name = '/aws/codebuild/OSBot-Jupyter' , stream_name = '741451df-d586-4f08-bdb5-5eff6d14d04a')
+        result      = self.api.code_build.project_builds_ids(self.api.project_name)
+        build_id    = result.__next__()        # get last one
+        build_info  = self.api.code_build.build_info(build_id)
+        group_name  = build_info.get('logs').get('groupName')
+        stream_name = build_info.get('logs').get('streamName')
+        #Dev.pprint(group_name,stream_name)
+        logs        = Logs(group_name = group_name , stream_name = stream_name)
 
         messages= logs.messages()
-        ngrok_messages = find_starts(messages,'t=')
+        #ngrok_messages = find_starts(messages,'t=')
         ngrok_url      = find_in(messages, 'name=command_line addr')[0].split('url=')[1].strip()
         jupyter_token  = find_in(messages, 'token=')[0].split('token=')[1].strip()
 
-        Dev.pprint(ngrok_url,jupyter_token)
-        #for line in ngrok_messages:
-        #    print(line)
+        Dev.pprint("{0}?token={1}".format(ngrok_url,jupyter_token))
+
+
 
