@@ -8,5 +8,6 @@ phases:
       - apt-get install unzip -y
       - unzip ngrok-stable-linux-amd64.zip
       - echo "**** Checking Jupyter setup"
-      - jupyter -h
+      - ./ngrok http 8888 &
+      - jupyter notebook
 #      - cd tests ; pytest -v -s -W ignore::DeprecationWarning
