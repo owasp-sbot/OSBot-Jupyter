@@ -13,4 +13,5 @@ phases:
     commands:
       - echo "**** Starting build"
       - ./ngrok http 8888 &
-      - jupyter notebook
+      # run-as: jovyan <- command is working so for now use --allow-root
+      - jupyter notebook --allow-root
