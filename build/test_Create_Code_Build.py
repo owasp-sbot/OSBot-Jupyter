@@ -2,6 +2,7 @@ from time                                import sleep
 from unittest                            import TestCase
 from osbot_aws.apis.IAM                  import IAM
 from osbot_aws.helpers.Create_Code_Build import Create_Code_Build
+from pbx_gs_python_utils.utils.Dev import Dev
 
 
 class test_Create_Code_Build(TestCase):
@@ -31,3 +32,28 @@ class test_Create_Code_Build(TestCase):
         #sleep(15)                                                        # to give time for AWS to sync up internally
         self.create_project_with_container__jupyter()
         self.api.code_build.build_start()
+
+    def test_get_task_details(self):
+        #build_id ='OSBot-Jupyter:741451df-d586-4f08-bdb5-5eff6d14d04a'
+        #result = self.api.code_build.build_info(build_id)
+        def find_starts(array, text):
+            return [item for item in array if item.startswith('t=')]
+
+        def find_in(array, text):
+            return [item for item in array if text in item]
+
+
+
+
+        from osbot_aws.apis.Logs import Logs
+        logs = Logs(group_name = '/aws/codebuild/OSBot-Jupyter' , stream_name = '741451df-d586-4f08-bdb5-5eff6d14d04a')
+
+        messages= logs.messages()
+        ngrok_messages = find_starts(messages,'t=')
+        ngrok_url      = find_in(messages, 'name=command_line addr')[0].split('url=')[1].strip()
+        jupyter_token  = find_in(messages, 'token=')[0].split('token=')[1].strip()
+
+        Dev.pprint(ngrok_url,jupyter_token)
+        #for line in ngrok_messages:
+        #    print(line)
+
