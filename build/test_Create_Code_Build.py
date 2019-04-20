@@ -11,23 +11,23 @@ class test_Create_Code_Build(TestCase):
         self.account_id      = IAM().account_id()
         self.api             = Create_Code_Build(account_id=self.account_id, project_name=self.project_name)
 
-    def test_create(self):
-        policies = self.api.policies__with_ecr_and_3_secrets()
-        self.api.create_role_and_policies(policies)
-        sleep(15)                                                        # to give time for AWS to sync up internally
-        self.api.create_project_with_container__jupyter()
-        self.api.code_build.build_start()
-
-
     def create_project_with_container__jupyter(self):
         kvargs = {
-            'name'        : self.project_name,
+            'name'        : self.api.project_name,
             'source'      : { 'type'                   : 'GITHUB',
-                           'location'                  : self.project_repo                 },
+                           'location'                  : self.api.project_repo                 },
             'artifacts'   : {'type'                    : 'NO_ARTIFACTS'                    },
             'environment' : {'type'                    : 'LINUX_CONTAINER'                  ,
                             'image'                    : 'jupyter/base-notebook'            ,
                             'computeType'              : 'BUILD_GENERAL1_LARGE'            },
-            'serviceRole' : self.service_role
+            'serviceRole' : self.api.service_role
         }
         return self.api.code_build.codebuild.create_project(**kvargs)
+
+
+    def test_create_code_build_and_trigger_first_build(self):
+        #policies = self.api.policies__with_ecr_and_3_secrets()
+        #self.api.create_role_and_policies(policies)
+        #sleep(15)                                                        # to give time for AWS to sync up internally
+        self.create_project_with_container__jupyter()
+        self.api.code_build.build_start()
