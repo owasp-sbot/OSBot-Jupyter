@@ -10,5 +10,5 @@ RUN     unzip ngrok-stable-linux-amd64.zip
 ADD     start-notebook.sh .
 RUN     chmod +x start-notebook.sh
 USER    $NB_UID
-CMD     echo "user is $NB_UID"
-#CMD     ./start-notebook.sh
+
+CMD     ./start-notebook.sh

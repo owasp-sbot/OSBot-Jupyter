@@ -8,8 +8,8 @@ phases:
       - apt-get install unzip -y
       - unzip ngrok-stable-linux-amd64.zip
   build:
-    run-as: 1000
+    run-as: jovyan
     commands:
       - echo "**** Starting build"
       - ./ngrok http 8888 &
-      - jupyter notebook --allow-root
+      - jupyter notebook
