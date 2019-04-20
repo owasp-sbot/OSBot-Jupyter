@@ -9,5 +9,5 @@ phases:
       - unzip ngrok-stable-linux-amd64.zip
       - echo "**** Checking Jupyter setup"
       - ./ngrok http 8888 &
-      - jupyter notebook
+      - jupyter notebook --allow-root
 #      - cd tests ; pytest -v -s -W ignore::DeprecationWarning

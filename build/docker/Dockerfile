@@ -9,6 +9,6 @@ RUN     unzip ngrok-stable-linux-amd64.zip
 #RUN     jupyter -h
 ADD     start-notebook.sh .
 RUN     chmod +x start-notebook.sh
-USER $NB_UID
-#CMD     ls -la
-CMD     ./start-notebook.sh
+USER    $NB_UID
+CMD     echo "user is $NB_UID"
+#CMD     ./start-notebook.sh
