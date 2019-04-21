@@ -7,6 +7,9 @@ phases:
       - apt-get update
       - apt-get install unzip -y
       - unzip ngrok-stable-linux-amd64.zip
+      - pip install qgrid
+      - jupyter nbextension enable --py --sys-prefix qgrid
+      - jupyter nbextension enable --py --sys-prefix widgetsnbextension
       - set
   build:
 #    run-as: jovyan
