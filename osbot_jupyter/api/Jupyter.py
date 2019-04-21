@@ -7,7 +7,7 @@ from osbot_browser.browser.API_Browser import API_Browser
 
 class Jupyter:
 
-    def __init__(self, pwd_token):
+    def __init__(self, pwd_token=None):
         self.browser        = API_Browser(headless=False)
         self.server         = {'schema':'http', 'ip':  '127.0.0.1' , 'port' : 8888 }
         self.pwd_token      = pwd_token
