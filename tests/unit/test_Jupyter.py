@@ -1,9 +1,8 @@
 from unittest import TestCase
 
-from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Files import Files
 
-from osbot_browser.jupyter.Jupyter import Jupyter
+from osbot_jupyter.Jupyter import Jupyter
 
 
 class test_Jupyter(TestCase):

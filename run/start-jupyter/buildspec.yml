@@ -1,0 +1,17 @@
+version: 0.1
+phases:
+  install:
+    commands:
+      - echo "**** Starting install"
+      - wget -q https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+      - apt-get update
+      - apt-get install unzip -y
+      - unzip ngrok-stable-linux-amd64.zip
+      - set
+  build:
+    run-as: jovyan
+    commands:
+      - echo "**** Starting build"
+      - ./ngrok http --log stdout 8888 &
+      # run-as: jovyan <- command is working so for now use --allow-root
+      - jupyter notebook --allow-root
