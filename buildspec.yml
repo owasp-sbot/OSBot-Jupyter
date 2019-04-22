@@ -7,14 +7,15 @@ phases:
       - apt-get update
       - apt-get install unzip -y
       - unzip ngrok-stable-linux-amd64.zip
-      - pip install qgrid pandas_datareader
-      - jupyter nbextension enable --py --sys-prefix qgrid
-      - jupyter nbextension enable --py --sys-prefix widgetsnbextension
+      #- pip install qgrid pandas_datareader
+      #- jupyter nbextension enable --py --sys-prefix qgrid
+      #- jupyter nbextension enable --py --sys-prefix widgetsnbextension
       #- set
+      - pip install jupyterlab
   build:
 #    run-as: jovyan
     commands:
-      - echo "**** Starting build"
+      - echo "**** Starting build (i.e. run workflow)"
       - ./ngrok http --log stdout 8888 &
 #      # run-as: jovyan <- command is working so for now use --allow-root
       - jupyter notebook --allow-root
