@@ -20,5 +20,5 @@ phases:
       #- pwd
       #- ls -la /
       #- ls -la /home/jovyan
-      - /home/jovyan/ngrok http --log stdout 8888 &s
+      - /home/jovyan/ngrok http --log stdout 8888 &
       - jupyter notebook --allow-root
