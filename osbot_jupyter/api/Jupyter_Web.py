@@ -1,3 +1,5 @@
+import base64
+
 from osbot_aws.apis.Lambda import load_dependency
 
 class Jupyter_Web:
@@ -9,6 +11,45 @@ class Jupyter_Web:
         self.tmp_screenshot = '/tmp/jupyter_screenshot.png'
         self._url           = None
         self._browser       = None  # API_Browser(headless=headless)
+
+    def cell_execute_python(self,python_code):
+        self.cell_selected_set_text(python_code)
+        self.cell_selected_code_execute()
+        #encoded_text = base64.b64encode(python_code.strip().encode()).decode()
+        #js_script = "{0}(JSON.parse(atob('{1}')))".format(name, encoded_text)
+        #js_code = """cell = Jupyter.notebook.get_selected_cell();
+        #             cell.set_text(atob('{0}')) ; cell.execute() ;""".format(encoded_text)
+        #self.browser().sync__js_execute(js_code)
+
+    def cell_selected_get_text(self):
+        js_code = """Jupyter.notebook.get_selected_cell().get_text()"""
+        return self.browser().sync__js_execute(js_code)
+
+    def cell_selected_set_text(self,text):
+        encoded_text = base64.b64encode(text.strip().encode()).decode()
+        js_code = """cell = Jupyter.notebook.get_selected_cell();
+                     cell.set_text(atob('{0}'));""".format(encoded_text)
+        self.browser().sync__js_execute(js_code)
+        return self
+
+    def cell_selected_js_invoke(self,js_code):
+        js_code = """cell = Jupyter.notebook.get_selected_cell();
+                     {0};""".format(js_code)
+        self.browser().sync__js_execute(js_code)
+
+    def cell_selected_code_execute(self): self.cell_selected_js_invoke("cell.execute()")
+
+    def cell_append_new(self):
+        js_code = """Jupyter.notebook.insert_cell_below();
+                     Jupyter.notebook.select_next(true);
+                     Jupyter.notebook.focus_cell();"""
+        self.browser().sync__js_execute(js_code)
+
+    # def cell_selected_to_markdown(self):
+# Jupyter.notebook.cells_to_markdown() // change in ui the current cell to markdown
+# Jupyter.notebook.cells_to_code() // change in ui the current cell to markdown
+# Jupyter.notebook.delete_cell()
+# Jupyter.notebook.get_cells()
 
     def browser(self):
         if self._browser is None:

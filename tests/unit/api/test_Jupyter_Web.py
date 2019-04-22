@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Files import Files
+from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
@@ -10,10 +11,10 @@ from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 class test_Jupyter(TestCase):
 
     def setUp(self):
-        self.headless   = True
+        self.headless   = False
         self.image_name = 'jupyter/datascience-notebook:9b06df75e445'
         self.docker_jp  = Docker_Jupyter(self.image_name)
-        self.token  = self.docker_jp.token()
+        self.token      = self.docker_jp.token()
         self.jp         = Jupyter_Web(token=self.token, headless=self.headless)
         self.result     = None
 
@@ -24,6 +25,21 @@ class test_Jupyter(TestCase):
     def test__init__(self):
         assert type(self.jp).__name__ == 'Jupyter'
         assert self.jp.server == {'schema': 'http', 'ip': '127.0.0.1' , 'port' : 8888}
+
+    def test_cell_append_new(self):
+        self.jp.cell_append_new()
+
+    def test_cell_execute_python(self):
+        python_code = """
+a = 40+2
+print(str(a) + "_double_" + 'single')
+a"""
+        self.jp.cell_execute_python(python_code)
+
+    def test_cell_selected_get_text(self):
+        text = Misc.random_string_and_numbers()
+        self.jp.cell_selected_set_text(text)
+        assert self.jp.cell_selected_get_text() == text
 
     def test_current_page(self):
         self.result = self.jp.current_page()
