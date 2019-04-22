@@ -1,11 +1,11 @@
 from osbot_aws.apis.Lambda import load_dependency
 
-class Jupyter:
+class Jupyter_Web:
 
-    def __init__(self, pwd_token=None,headless=True):
+    def __init__(self, token=None,headless=True):
         self.headless       = headless
         self.server         = {'schema':'http', 'ip':  '127.0.0.1' , 'port' : 8888 }
-        self.pwd_token      = pwd_token
+        self.token      = token
         self.tmp_screenshot = '/tmp/jupyter_screenshot.png'
         self._url           = None
         self._browser       = None  # API_Browser(headless=headless)
@@ -26,7 +26,7 @@ class Jupyter:
         return self.browser().sync__url()
 
     def login(self):
-        return self.open('?token={0}'.format(self.pwd_token))
+        return self.open('?token={0}'.format(self.token))
 
     def logout(self):
         return self.open('logout')
@@ -66,5 +66,5 @@ class Jupyter:
         self.browser().sync__js_execute("$('div.input').hide()")
         return self
 
-    def set_url  (self, value): self._url       = value; return self
-    def set_token(self, value): self.pwd_token  = value; return self
+    def set_url  (self, value): self._url   = value; return self
+    def set_token(self, value): self.token  = value; return self

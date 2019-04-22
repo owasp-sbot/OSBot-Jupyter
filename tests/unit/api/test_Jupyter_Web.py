@@ -1,19 +1,32 @@
 from unittest import TestCase
 
+from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Files import Files
 
-from osbot_jupyter.api.Jupyter import Jupyter
+from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
+from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 
 
 class test_Jupyter(TestCase):
 
     def setUp(self):
-        self.pwd_token = '...'
-        self.jp   = Jupyter(pwd_token=self.pwd_token)
+        self.headless   = True
+        self.image_name = 'jupyter/datascience-notebook:9b06df75e445'
+        self.docker_jp  = Docker_Jupyter(self.image_name)
+        self.token  = self.docker_jp.token()
+        self.jp         = Jupyter_Web(token=self.token, headless=self.headless)
+        self.result     = None
+
+    def tearDown(self):
+        if self.result is not None:
+            Dev.pprint(self.result)
 
     def test__init__(self):
         assert type(self.jp).__name__ == 'Jupyter'
         assert self.jp.server == {'schema': 'http', 'ip': '127.0.0.1' , 'port' : 8888}
+
+    def test_current_page(self):
+        self.result = self.jp.current_page()
 
     def test_login(self):
         self.jp.logout()                                                            # log out user
@@ -37,12 +50,13 @@ class test_Jupyter(TestCase):
 
     def test_screenshot(self):
         #target  = 'work/with-slider'
-        target = 'work/test-notebook'
+        target = 'work/test-1'
         (
-            self.jp.open_notebook(target)
-                    .ui_hide_input_boxes()
-                    .browser_width(1200)
-                    .screenshot()
+            self.jp.login()
+                   .open_notebook(target)
+                   .ui_hide_input_boxes()
+                   #.browser_width(1200)
+                   .screenshot()
         )
         assert Files.exists(self.jp.tmp_screenshot)
 
