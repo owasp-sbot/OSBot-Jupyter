@@ -40,11 +40,11 @@ class CodeBuild_Jupyter_Helper:
 
     def stop_all_active(self):
         available_builds = CodeBuild_Jupyter_Helper().get_active_builds()
-        #return available_builds
+        stopped = []
         for build_id in available_builds.keys():
             self.code_build.codebuild.stop_build(id=build_id).get('build')
-
-        #return build_ids
+            stopped.append(build_id)
+        return stopped
 
 
 

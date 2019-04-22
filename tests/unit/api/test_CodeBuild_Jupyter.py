@@ -27,15 +27,15 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
 
     def test_stop_all_active(self):
         result = CodeBuild_Jupyter_Helper().stop_all_active()
-        Dev.pprint(result)
+        Dev.pprint("stopped builds {0}".format(result))
 
 
 class test_CodeBuild_Jupyter(TestCase):
     def setUp(self):
         self.result = None
-        self.build_id = 'OSBot-Jupyter:745d2a4e-fdf5-4119-8b56-21b55fe9bbb5'
-        self.build_id = CodeBuild_Jupyter_Helper().start_build_and_wait_for_jupyter_load().build_id
-        print(self.build_id)
+        self.build_id = 'OSBot-Jupyter:2c1a091d-fd6f-4ddd-a32a-9d7834968fe6'
+        #self.build_id = CodeBuild_Jupyter_Helper().start_build_and_wait_for_jupyter_load().build_id
+        #print(self.build_id)
         self.api      = CodeBuild_Jupyter(build_id = self.build_id)
 
 
