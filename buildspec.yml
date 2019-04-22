@@ -17,9 +17,8 @@ phases:
 #      # run-as: jovyan <- command is working so for now use --allow-root
     commands:
       - echo "**** Starting build (i.e. run workflow)"
-      - pwd
-      - ls -la /
-      - ls -la /home/jovyan
-      #- ./ngrok http --log stdout 8888 &
-
-      #- jupyter notebook --allow-root
+      #- pwd
+      #- ls -la /
+      #- ls -la /home/jovyan
+      - /home/jovyan/ngrok http --log stdout 8888 &s
+      - jupyter notebook --allow-root
