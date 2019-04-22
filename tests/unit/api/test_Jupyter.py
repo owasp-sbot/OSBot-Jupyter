@@ -8,7 +8,7 @@ from osbot_jupyter.api.Jupyter import Jupyter
 class test_Jupyter(TestCase):
 
     def setUp(self):
-        self.pwd_token = '0a849b6edb98721f0cab1dc7ac5234fe655e018d009d98b8'
+        self.pwd_token = '...'
         self.jp   = Jupyter(pwd_token=self.pwd_token)
 
     def test__init__(self):

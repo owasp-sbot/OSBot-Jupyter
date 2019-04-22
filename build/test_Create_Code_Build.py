@@ -12,25 +12,39 @@ class test_Create_Code_Build(TestCase):
         self.account_id      = IAM().account_id()
         self.api             = Create_Code_Build(account_id=self.account_id, project_name=self.project_name)
 
-    def create_project_with_container__jupyter(self):
+    # def create_project_with_container__jupyter(self):
+    #     kvargs = {
+    #         'name'        : self.api.project_name,
+    #         'source'      : { 'type'                   : 'GITHUB',
+    #                        'location'                  : self.api.project_repo                 },
+    #         'artifacts'   : {'type'                    : 'NO_ARTIFACTS'                    },
+    #         'environment' : {'type'                    : 'LINUX_CONTAINER'                  ,
+    #                         'image'                    : 'jupyter/base-notebook'            ,
+    #                         'computeType'              : 'BUILD_GENERAL1_LARGE'            },
+    #         'serviceRole' : self.api.service_role
+    #     }
+    #     return self.api.code_build.codebuild.create_project(**kvargs)
+
+    def create_project_with_container__osbot_jupyter(self):
         kvargs = {
             'name'        : self.api.project_name,
             'source'      : { 'type'                   : 'GITHUB',
                            'location'                  : self.api.project_repo                 },
             'artifacts'   : {'type'                    : 'NO_ARTIFACTS'                    },
             'environment' : {'type'                    : 'LINUX_CONTAINER'                  ,
-                            'image'                    : 'jupyter/base-notebook'            ,
-                            'computeType'              : 'BUILD_GENERAL1_LARGE'            },
+                            'image'                    : '{0}.dkr.ecr.eu-west-2.amazonaws.com/osbot-jupyter:latest'.format(self.account_id)     ,
+                            'computeType'              : 'BUILD_GENERAL1_LARGE'            ,
+                            'imagePullCredentialsType' : 'SERVICE_ROLE'                    },
             'serviceRole' : self.api.service_role
         }
         return self.api.code_build.codebuild.create_project(**kvargs)
-
 
     def test_create_code_build_and_trigger_first_build(self):
         #policies = self.api.policies__with_ecr_and_3_secrets()
         #self.api.create_role_and_policies(policies)
         #sleep(15)                                                        # to give time for AWS to sync up internally
-        self.create_project_with_container__jupyter()
+        #self.api.code_build.project_delete()
+        self.create_project_with_container__osbot_jupyter()
         self.api.code_build.build_start()
 
     def test_get_task_details(self):
