@@ -18,8 +18,8 @@ phases:
     commands:
       - echo "**** Starting build (i.e. run workflow)"
       - pwd
-      - ls -la
-      - ls -la ..
+      - ls -la /
+      - ls -la /home/jovyan
       #- ./ngrok http --log stdout 8888 &
 
       #- jupyter notebook --allow-root
