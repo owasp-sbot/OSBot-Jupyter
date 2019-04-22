@@ -14,8 +14,12 @@ phases:
       #- pip install jupyterlab
   build:
 #    run-as: jovyan
+#      # run-as: jovyan <- command is working so for now use --allow-root
     commands:
       - echo "**** Starting build (i.e. run workflow)"
-      - ./ngrok http --log stdout 8888 &
-#      # run-as: jovyan <- command is working so for now use --allow-root
-      - jupyter notebook --allow-root
+      - pwd
+      - ls -la
+      - ls -la ..
+      #- ./ngrok http --log stdout 8888 &
+
+      #- jupyter notebook --allow-root
