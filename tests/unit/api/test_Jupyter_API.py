@@ -25,8 +25,8 @@ class test_Jupyter_API(TestCase):
         if self.result is not None:
             Dev.pprint(self.result)
 
-    def test_api(self):
-        assert self.api.api().get('version') == '5.7.2'
+    def test_version(self):
+        assert self.api.version().get('version') == '5.7.2'
 
     # this is not working
     # def test_create(self):

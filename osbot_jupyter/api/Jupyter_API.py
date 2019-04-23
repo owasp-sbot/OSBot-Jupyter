@@ -8,9 +8,6 @@ class Jupyter_API:
         self.server =  server
         self.token  = token
 
-    def api(self):
-        return self.http_get('api')
-
     # this is not working
     # def create(self,target):
     #     data = {'ext': 'txt', 'type': 'Text File'}
@@ -26,7 +23,8 @@ class Jupyter_API:
         url = self.url(path)
         headers = {'Authorization': 'Token {0}'.format(self.token)}
         response = requests.get(url,headers=headers)
-        return response.json()
+        if response.status_code != 404:
+            return response.json()
 
     def http_post(self, path,data):
         url = self.url(path)
@@ -34,7 +32,8 @@ class Jupyter_API:
                 'Authorization': 'Token {0}'.format(self.token),
                 'Content-Type' :  'application/json' }
         response = requests.post(url,data=json.dumps(data), headers=headers)
-        return response.json()
+        if response.status_code != 404:
+            return response.json()
 
     def kernels(self):
         items = {}
@@ -67,6 +66,8 @@ class Jupyter_API:
     def status(self):
         return self.http_get('api/status')
 
+    def version(self):
+        return self.http_get('api')
     # experimental
 
     def kernel_code_execute(self,code_to_execute):

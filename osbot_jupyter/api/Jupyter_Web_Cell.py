@@ -8,9 +8,13 @@ class Jupyter_Web_Cell(Jupyter_Web):
     def __init__(self, token=None, headless=True):
         super().__init__(token=token,headless=headless)
 
-    def execute_python(self,python_code):
-        self.new().text(python_code)
+    def execute_python(self,python_code, new_cell=True, delete_after=False):
+        if new_cell:
+            self.new();
+        self.text(python_code)
         self.execute()
+        if delete_after:
+            self.delete()
 
     def js_invoke(self,js_code):
         return self.browser().sync__js_execute(js_code)

@@ -39,13 +39,13 @@ class test_Jupyter(TestCase):
         assert self.jp.current_page() == 'http://127.0.0.1:8888/tree'               # confirm now on tree page
 
     def test_open_notebook(self):
-        notebook_path = 'work/test-notebook'
+        notebook_path = 'work/test-1'
         self.jp.open_notebook(notebook_path)
         assert self.jp.current_page() == 'http://127.0.0.1:8888/nbconvert/html/{0}.ipynb?download=false'.format(notebook_path)
 
     def test_open_notebook_edit(self):
-        self.jp.open_notebook_edit('work/test-notebook')
-        assert self.jp.current_page() == 'http://127.0.0.1:8888/notebooks/work/test-notebook.ipynb'
+        self.jp.open_notebook_edit('work/test-1')
+        assert self.jp.current_page() == 'http://127.0.0.1:8888/notebooks/work/test-1.ipynb'
 
     def test_open_tree(self):
         assert self.jp.open_tree().current_page() == 'http://127.0.0.1:8888/tree'
