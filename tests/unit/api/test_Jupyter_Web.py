@@ -26,20 +26,6 @@ class test_Jupyter(TestCase):
         assert type(self.jp).__name__ == 'Jupyter'
         assert self.jp.server == {'schema': 'http', 'ip': '127.0.0.1' , 'port' : 8888}
 
-    def test_cell_append_new(self):
-        self.jp.cell_append_new()
-
-    def test_cell_execute_python(self):
-        python_code = """
-a = 40+2
-print(str(a) + "_double_" + 'single')
-a"""
-        self.jp.cell_execute_python(python_code)
-
-    def test_cell_selected_get_text(self):
-        text = Misc.random_string_and_numbers()
-        self.jp.cell_selected_set_text(text)
-        assert self.jp.cell_selected_get_text() == text
 
     def test_current_page(self):
         self.result = self.jp.current_page()
