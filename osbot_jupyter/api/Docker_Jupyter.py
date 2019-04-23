@@ -20,6 +20,7 @@ class Docker_Jupyter(Docker):
     def __init__(self,image_name):
         self.docker      = Docker()
         self.image_name  = image_name
+        self._server     = 'http://localhost:8888'
         self._container  = None
 
     def container(self):
@@ -56,6 +57,9 @@ class Docker_Jupyter(Docker):
         except:
             return None
 
+    def server(self):
+        return self._server
+    
     def url(self):
-        return "http://localhost:8888?token={0}".format(self.token())
+        return "{0}?token={0}".format(self.server(),self.token())
 

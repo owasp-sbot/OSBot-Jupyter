@@ -14,7 +14,6 @@ class Jupyter_Web:
 
     def browser(self):
         if self._browser is None:
-            load_dependency('syncer')
             from osbot_browser.browser.Browser_Lamdba_Helper import Browser_Lamdba_Helper
             browser_helper  = Browser_Lamdba_Helper(headless=self.headless).setup()
             self._browser    = browser_helper.api_browser

@@ -6,19 +6,14 @@ from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
+from osbot_jupyter.helpers.Test_Server import Test_Server
 
 
 class test_Jupyter_Web_Cell(TestCase):
 
     def setUp(self):
         self.headless = False
-        #self.image_name = 'jupyter/datascience-notebook:9b06df75e445'
-        #self.docker_jp  = Docker_Jupyter(self.image_name)
-        #self.token      = self.docker_jp.token()
-        data             = Json.load_json('/tmp/active_jupyter_server.yml')
-        self.token       = data.get('token')
-        self.url         = data.get('server')
-        self.cell        = Jupyter_Web_Cell(token=self.token, url=self.url, headless=self.headless)
+        self.cell        = Test_Server('docker').jupyter_cell()
         self.result      = None
 
     def tearDown(self):
@@ -57,3 +52,9 @@ a"""
 
     def test_to_code(self):
         self.cell.new().to_markdown().to_code().text('"an title 123"').execute()#.wait(1).delete()
+
+
+    # misc use cases
+
+    def test_login(self):
+        self.cell.login()
