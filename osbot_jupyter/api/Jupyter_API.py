@@ -4,7 +4,7 @@ import requests
 
 
 class Jupyter_API:
-    def __init__(self,server, token):
+    def __init__(self,server=None, token=None):
         self.server =  server
         self.token  = token
 

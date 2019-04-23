@@ -4,7 +4,11 @@ from osbot_aws.apis.CodeBuild import CodeBuild
 from osbot_aws.apis.IAM import IAM
 from osbot_aws.apis.Logs import Logs
 from osbot_aws.helpers.Create_Code_Build import Create_Code_Build
+from pbx_gs_python_utils.utils.Files import Files
+from pbx_gs_python_utils.utils.Json import Json
 from pbx_gs_python_utils.utils.Local_Cache import use_local_cache_if_available
+from pbx_gs_python_utils.utils.Misc import Misc
+
 
 class CodeBuild_Jupyter_Helper:
     def __init__(self):
@@ -12,7 +16,11 @@ class CodeBuild_Jupyter_Helper:
         self.code_build   = CodeBuild(project_name=self.project_name,role_name=None)
         self.max_builds   = 10
 
-    def get_active_builds(self):
+    def get_active_build_id(self):
+        builds = self.get_active_builds(stop_when_match=True)
+        return Misc.array_pop(list(set(builds)))
+
+    def get_active_builds(self, stop_when_match=False):
         build_ids   = list(self.code_build.project_builds_ids(self.project_name))[0:self.max_builds]
         build_infos = self.code_build.codebuild.batch_get_builds(ids=build_ids).get('builds')
         builds = {}
@@ -20,6 +28,8 @@ class CodeBuild_Jupyter_Helper:
             build_id = build_info.get('id')
             if build_info.get('currentPhase') != 'COMPLETED':
                 builds[build_id] = CodeBuild_Jupyter(build_id=build_id, build_info=build_info)
+                if stop_when_match:
+                    return builds
         return builds
 
     def start_build(self):
@@ -45,6 +55,15 @@ class CodeBuild_Jupyter_Helper:
             self.code_build.codebuild.stop_build(id=build_id).get('build')
             stopped.append(build_id)
         return stopped
+
+    def save_active_server_details(self, file):
+        build_id     = self.get_active_build_id()
+        server,token = CodeBuild_Jupyter(build_id).get_server_details_from_logs()
+        config = { 'build_id': build_id,
+                   'server'  : server  ,
+                   'token'   : token   }
+        Json.save_json(file, config)
+        return config
 
 
 
@@ -93,4 +112,3 @@ class CodeBuild_Jupyter:
         ngrok_url, jupyter_token = self.get_server_details_from_logs()
         if ngrok_url:
             return "{0}?token={1}".format(ngrok_url,jupyter_token)
-

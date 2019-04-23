@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Files import Files
+from pbx_gs_python_utils.utils.Json import Json
 from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
@@ -12,11 +13,14 @@ class test_Jupyter(TestCase):
 
     def setUp(self):
         self.headless   = False
-        self.image_name = 'jupyter/datascience-notebook:9b06df75e445'
-        self.docker_jp  = Docker_Jupyter(self.image_name)
-        self.token      = self.docker_jp.token()
-        self.jp         = Jupyter_Web(token=self.token, headless=self.headless)
-        self.result     = None
+        #self.image_name = 'jupyter/datascience-notebook:9b06df75e445'
+        #self.docker_jp  = Docker_Jupyter(self.image_name)
+        #self.token      = self.docker_jp.token()
+        data             = Json.load_json('/tmp/active_jupyter_server.yml')
+        self.token       = data.get('token')
+        self.server      = data.get('server')
+        self.jp          = Jupyter_Web(token=self.token, server=self.server, headless=self.headless)
+        self.result      = None
 
     def tearDown(self):
         if self.result is not None:
@@ -32,20 +36,20 @@ class test_Jupyter(TestCase):
 
     def test_login(self):
         self.jp.logout()                                                            # log out user
-        assert self.jp.current_page() == 'http://127.0.0.1:8888/logout'             # confirm we are in logout page
+        assert self.jp.current_page() == '{0}/logout'.format(self.url)              # confirm we are in logout page
         self.jp.open_tree()                                                         # try to open tree page
-        assert self.jp.current_page() == 'http://127.0.0.1:8888/login?next=%2Ftree' # confirm redirect to login
+        assert self.jp.current_page() == '{0}/login?next=%2Ftree'.format(self.url)  # confirm redirect to login
         self.jp.login()                                                             # log in user
-        assert self.jp.current_page() == 'http://127.0.0.1:8888/tree'               # confirm now on tree page
+        assert self.jp.current_page() == '{0}/tree'.format(self.url)                # confirm now on tree page
 
     def test_open_notebook(self):
         notebook_path = 'work/test-1'
         self.jp.open_notebook(notebook_path)
-        assert self.jp.current_page() == 'http://127.0.0.1:8888/nbconvert/html/{0}.ipynb?download=false'.format(notebook_path)
+        assert self.jp.current_page() == '{0}/nbconvert/html/{1}.ipynb?download=false'.format(self.url,notebook_path)
 
     def test_open_notebook_edit(self):
         self.jp.open_notebook_edit('work/test-1')
-        assert self.jp.current_page() == 'http://127.0.0.1:8888/notebooks/work/test-1.ipynb'
+        assert self.jp.current_page() == '{0}/notebooks/work/test-1.ipynb'.format(self.url)
 
     def test_open_tree(self):
         assert self.jp.open_tree().current_page() == 'http://127.0.0.1:8888/tree'

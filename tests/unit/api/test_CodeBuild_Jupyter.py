@@ -9,6 +9,13 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
         self.api    = CodeBuild_Jupyter_Helper()
         self.result = None
 
+    def tearDown(self):
+        if self.result:
+            Dev.pprint(self.result)
+
+    def test_get_active_build_id(self):
+        self.result = self.api.get_active_build_id()
+
     def test_get_active_builds(self):
         builds = self.api.get_active_builds()
         print()
@@ -29,19 +36,27 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
         result = CodeBuild_Jupyter_Helper().stop_all_active()
         Dev.pprint("stopped builds {0}".format(result))
 
+    def test_save_active_server_details(self):
+        tmp_file    = '/tmp/active_jupyter_server.yml'
+        self.result = self.api.save_active_server_details(tmp_file)
 
 class test_CodeBuild_Jupyter(TestCase):
     def setUp(self):
         self.result = None
-        self.build_id = 'OSBot-Jupyter:2c1a091d-fd6f-4ddd-a32a-9d7834968fe6'
-        #self.build_id = CodeBuild_Jupyter_Helper().start_build_and_wait_for_jupyter_load().build_id
-        #print(self.build_id)
+        self.build_id = 'OSBot-Jupyter:f8119f0f-6cf9-468c-a193-f11846c4cc1d'
         self.api      = CodeBuild_Jupyter(build_id = self.build_id)
 
 
     def tearDown(self):
         if self.result:
             Dev.pprint(self.result)
+
+    def test_start_new_build(self):
+        self.build_id = CodeBuild_Jupyter_Helper().start_build_and_wait_for_jupyter_load().build_id
+        print(self.build_id)
+        self.api = CodeBuild_Jupyter(build_id=self.build_id)
+        self.result = self.api.url()
+
 
     def test_build_info(self):
         self.result = self.api.build_info()

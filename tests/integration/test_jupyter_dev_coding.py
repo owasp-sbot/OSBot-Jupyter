@@ -1,9 +1,12 @@
 from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
+from pbx_gs_python_utils.utils.Json import Json
 
+from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API import Jupyter_API
+from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
 from osbot_jupyter.api.Jypyter_API_Actions import Jupyter_API_Actions
 
@@ -12,11 +15,14 @@ class test_jupyter_dev_coding(TestCase):
 
     def setUp(self):
         self.headless       = False
-        self.server         = 'http://localhost:8888'
-        self.image_name     = 'jupyter/datascience-notebook:9b06df75e445'
+        #self.server         = 'http://localhost:8888'
+        #self.image_name     = 'jupyter/datascience-notebook:9b06df75e445'
         self.notebook_name  = 'work/test-1.ipynb'
-        self.docker_jp      = Docker_Jupyter(self.image_name)
-        self.token          = self.docker_jp.token()
+       # self.docker_jp      = Docker_Jupyter(self.image_name)
+       # self.token          = self.docker_jp.token()
+        data                = Json.load_json('/tmp/active_jupyter_server.yml')
+        self.token          = data.get('token')
+        self.server         = data.get('server')
         self.jp_api         = Jupyter_API_Actions(server=self.server, token=self.token)
         self.jp_web         = Jupyter_Web_Cell(token=self.token, headless=self.headless)
         self.jp_cell        = Jupyter_Web_Cell(token=self.token, headless=self.headless)
@@ -27,6 +33,8 @@ class test_jupyter_dev_coding(TestCase):
     def tearDown(self):
         if self.result is not None:
             Dev.pprint(self.result)
+
+
 
     def test_open_dev_notebook(self):
         if self.jp_api.notebook_exists(self.notebook_path) is False:
@@ -67,3 +75,20 @@ $( document ).ready(code_toggle);
 """
 
         self.jp_cell.execute_python(code, new_cell=True)
+
+class test_start_code_build_environment(TestCase):
+
+    def test_create(self):
+        headless = False
+        file     = '/tmp/active_jupyter_server.yml'
+        api      = CodeBuild_Jupyter_Helper()
+        #result   = api.start_build_and_wait_for_jupyter_load()
+        #build_id = api.get_active_build_id()
+        config   = api.save_active_server_details(file)
+        #Dev.pprint(result.build_status())
+        #Dev.pprint(build_id)
+        Dev.pprint(config)
+        jp_web = Jupyter_Web(token=config.get('token'), server=config.get('server'), headless=headless)
+        jp_web.login()
+        jp_api = Jupyter_API(token=config.get('token'), server=config.get('server'), headless=headless)
+

@@ -5,8 +5,9 @@ from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 
 
 class Jupyter_Web_Cell(Jupyter_Web):
-    def __init__(self, token=None, headless=True):
-        super().__init__(token=token,headless=headless)
+
+    def __init__(self, token=None, server=None, headless=True):
+        super().__init__(token=token, server=server, headless=headless)
 
     def execute_python(self,python_code, new_cell=True, delete_after=False):
         if new_cell:
