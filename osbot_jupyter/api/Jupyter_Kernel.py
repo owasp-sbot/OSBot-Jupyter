@@ -1,4 +1,10 @@
-from osbot_jupyter.api.Jupyter_API import Jupyter_API
+import json
+import uuid
+import datetime
+
+from pbx_gs_python_utils.utils.Dev import Dev
+from websocket                      import create_connection
+from osbot_jupyter.api.Jupyter_API  import Jupyter_API
 
 
 class Jupyter_Kernel(Jupyter_API):
@@ -7,9 +13,128 @@ class Jupyter_Kernel(Jupyter_API):
         self.kernel_id = kernel_id
         super().__init__(server,token)
 
-    def list(self):
-        return self.http_get('kernels')
+    def delete(self):
+        if self.exists() is False: return False
+        self.http_delete('kernels/{0}'.format(self.kernel_id))
+        return self.exists() is False
+
+    def delete_all(self):
+        deleted = []
+        for kernel_id in self.kernels():
+            self.kernel_id = kernel_id
+            self.delete()
+            deleted.append(kernel_id)
+        self.kernel_id = None
+        return
+
+    def exists(self):
+        return self.info() is not None
+
+    def info(self):
+        return self.http_get('kernels/{0}'.format(self.kernel_id))
+
+    def kernels(self):
         items = {}
-        for session in self.http_get('kernels'):
-            items[session.get('id')] = session
+        for kernel in self.http_get('kernels'):
+            items[kernel.get('id')] = kernel
         return items
+
+    def kernels_ids(self):
+        return list(set(self.kernels()))
+
+    def new(self):
+        path = 'kernels'
+        data = {}
+        info = self.http_post(path, data)
+        self.kernel_id = info.get('id')
+        return self
+
+    def set_kernel_id(self,value):
+        self.kernel_id = value
+        return self
+
+
+    def execute_get_connection(self,ip, port):
+        headers = {'Authorization': 'Token {0}'.format(self.token)}
+        url     = "ws://{0}:{1}/api/kernels/{2}/channels".format(ip, port,self.kernel_id)
+        return create_connection(url, header=headers)
+
+    def execute_request(self, code):
+        msg_type = 'execute_request';
+        content = {'code': code, 'silent': False}
+
+        hdr = {'msg_id'  : uuid.uuid1().hex                     ,
+               'username': 'test'                               ,
+               'session' : uuid.uuid1().hex                     ,
+               'data'    : datetime.datetime.now().isoformat()  ,
+               'msg_type': msg_type                             ,
+               'version' : '5.0' }
+        msg = {'header'  : hdr, 'parent_header': hdr            ,
+               'metadata': {}                                   ,
+               'content' : content                              }
+        return json.dumps(msg)
+
+
+    def execute(self, code):
+        ip      = 'localhost'
+        port    = 8888
+        ws      = self.execute_get_connection(ip, port)
+        payload = self.execute_request(code)
+        result  = { 'output': None }
+
+        ws.send(payload)
+        while True:                                 # I don't like 'while True' but it seems to be the only option
+            response = json.loads(ws.recv())
+            content  = response.get("content")
+            msg_type = response.get("msg_type")
+            #Dev.pprint(response)
+            if msg_type == 'execute_input' :
+                result['input'] = content.get('code')
+
+            if msg_type == 'execute_result':
+                result['output'] = content.get('data').get('text/plain')
+
+            if msg_type == 'error':
+                result['error' ] = content
+
+            if msg_type == "execute_reply" :
+                result['status'] = content.get('status')
+                break
+        ws.close()
+
+        return result
+
+    # def execute(self,code_to_execute):
+    #
+    #     kernel_id = list(set(self.kernels())).pop()
+    #     headers   = {'Authorization': 'Token {0}'.format(self.token)}
+    #     url       = "ws://localhost:8888/api/kernels/{0}/channels".format(self.kernel_id)
+    #     ws        = create_connection(url, header=headers)
+    #
+    #     def send_execute_request(code):
+    #         msg_type = 'execute_request';
+    #         content = {'code': code, 'silent': False}
+    #
+    #
+    #         hdr = {'msg_id': uuid.uuid1().hex,
+    #                'username': 'test',
+    #                'session': uuid.uuid1().hex,
+    #                'data': datetime.datetime.now().isoformat(),
+    #                'msg_type': msg_type,
+    #                'version': '5.0'}
+    #         msg = {'header': hdr, 'parent_header': hdr,
+    #                'metadata': {},
+    #                'content': content}
+    #         return msg
+    #
+    #     ws.send(json.dumps(send_execute_request(code_to_execute)))
+    #     messages = []
+    #     msg_type = ''
+    #     while msg_type != "execute_reply":
+    #         rsp         = json.loads(ws.recv())
+    #         content     = rsp.get("content")
+    #         msg_type    = rsp.get("msg_type")
+    #         messages.append({'msg_type': msg_type, 'content': content})
+    #     ws.close()
+    #
+    #     return messages
