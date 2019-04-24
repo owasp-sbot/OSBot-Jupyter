@@ -2,6 +2,8 @@ from pbx_gs_python_utils.utils.Json import Json
 
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API import Jupyter_API
+from osbot_jupyter.api.Jupyter_Kernel import Jupyter_Kernel
+from osbot_jupyter.api.Jupyter_Session import Jupyter_Session
 from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
 
@@ -27,11 +29,9 @@ class Test_Server:
         self.server          = self.docker_jupyter.server()
         return self
 
-    def jupyter_cell(self):
-        return Jupyter_Web_Cell(server=self.server, token=self.token,headless=self.headless)
 
-    def jupyter_web(self):
-        return Jupyter_Web(server=self.server, token=self.token,headless=self.headless)
-
-    def jupyter_api(self):
-        return Jupyter_API(server=self.server, token=self.token)
+    def jupyter_api     (self): return Jupyter_API      (server=self.server, token=self.token                       )
+    def jupyter_cell    (self): return Jupyter_Web_Cell (server=self.server, token=self.token,headless=self.headless)
+    def jupyter_kernel  (self): return Jupyter_Kernel   (server=self.server, token=self.token                       )
+    def jupyter_session (self): return Jupyter_Session  (server=self.server, token=self.token                       )
+    def jupyter_web     (self): return Jupyter_Web      (server=self.server, token=self.token,headless=self.headless)

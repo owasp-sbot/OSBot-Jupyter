@@ -8,17 +8,14 @@ from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API import Jupyter_API
+from osbot_jupyter.helpers.Test_Server import Test_Server
 
 
 class test_Jupyter_API(TestCase):
 
     def setUp(self):
-        self.server         = 'http://localhost:8888'
-        self.image_name     = 'jupyter/datascience-notebook:9b06df75e445'
         self.notebook_name  = 'work/test-1.ipynb'
-        self.docker_jp      = Docker_Jupyter(self.image_name)
-        self.token          = self.docker_jp.token()
-        self.api            = Jupyter_API(server=self.server, token=self.token)
+        self.api            = Test_Server().docker().jupyter_api()
         self.result         = None
 
     def tearDown(self):
@@ -41,7 +38,6 @@ class test_Jupyter_API(TestCase):
     def test_kernel_execute(self):
         self.result = self.api.kernel_code_execute('40+2')
 
-
     def test_kernels(self):
         self.result = self.api.kernels()
 
@@ -53,9 +49,6 @@ class test_Jupyter_API(TestCase):
 
     def test_notebook_codes_source(self):
         self.result = self.api.notebook_codes_source(self.notebook_name)
-
-    def test_sessions(self):
-        self.result = self.api.sessions()
 
 
     def test_url(self):
