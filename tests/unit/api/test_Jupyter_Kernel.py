@@ -106,6 +106,6 @@ class test_Jupyter_Kernel(TestCase):
 # html = requests.get('https://www.google.com/aaaa').status_code
 # html
 # """
-        #messages = self.jp_kernel.execute(code)                    
+        #messages = self.jp_kernel.execute(code)
 
 
