@@ -77,35 +77,6 @@ class Jupyter_API:
     def notebook_exists(self,path):
         return self.contents(path) is not None
 
-    def session(self,session_id):
-        return self.http_get('sessions/{0}'.format(session_id))
-
-    def session_get(self, notebook_path):
-        path = 'sessions'
-        data = { 'path': notebook_path  ,
-                 'type': 'python3' }
-        return self.http_post(path, data)
-
-    def session_delete(self,session_id):
-        if self.session_exists(session_id) is False: return False
-        self.http_delete('sessions/{0}'.format(session_id))
-        return self.session_exists(session_id) is False
-
-    def session_delete_all(self):
-        for session_id in self.sessions_ids():
-            self.session_delete(session_id)
-        return self
-
-    def session_exists(self, session_id):
-        return self.session(session_id) is not None
-
-    def session_rename(self, session_id, name):
-        path = 'sessions/{0}'.format(session_id)
-        data = { 'id': session_id, 'name': name}
-
-        return self.http_patch(path, data)
-        pass
-
     def status(self):
         return self.http_get('api/status')
 
