@@ -65,6 +65,6 @@ class Widgets:
         display(button)
 
         def on_button_clicked(b):
-            print("Button clicked. in another cell")
+            print("Button clicked.... in another cell ")
 
         button.on_click(on_button_clicked)

@@ -2,3 +2,5 @@
 .pytest_cache
 __pycache__
 notebooks/.local
+notebooks/.ipython
+notebooks/work/.ipynb_checkpoints

@@ -7,16 +7,19 @@ from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
+from osbot_jupyter.helpers.Test_Server import Test_Server
 
 
 class test_Jupyter(TestCase):
 
     def setUp(self):
         self.headless   = False
-        data             = Json.load_json('/tmp/active_jupyter_server.yml')
-        self.token       = data.get('token')
-        self.server      = data.get('server')
-        self.jp          = Jupyter_Web(token=self.token, server=self.server, headless=self.headless)
+        #data             = Json.load_json('/tmp/active_jupyter_server.yml')
+        #self.token       = data.get('token')
+        #self.server      = data.get('server')
+        #self.jp          = Jupyter_Web(token=self.token, server=self.server, headless=self.headless)
+        self.jp          = Test_Server(self.headless).docker().jupyter_web()
+        self.server      = self.jp.server
         self.result      = None
 
     def tearDown(self):

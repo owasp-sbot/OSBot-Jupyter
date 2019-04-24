@@ -13,7 +13,7 @@ class test_Jupyter_Web_Cell(TestCase):
 
     def setUp(self):
         self.headless = False
-        self.cell        = Test_Server('docker').jupyter_cell()
+        self.cell        = Test_Server().docker().jupyter_cell()
         self.result      = None
 
     def tearDown(self):

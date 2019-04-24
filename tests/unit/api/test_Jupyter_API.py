@@ -54,10 +54,18 @@ class test_Jupyter_API(TestCase):
     def test_notebook_codes_source(self):
         self.result = self.api.notebook_codes_source(self.notebook_name)
 
+    def test_sessions(self):
+        self.result = self.api.sessions()
+
 
     def test_url(self):
-        assert self.api.url('aaa') == 'http://localhost:8888/aaa'
-        assert self.api.url('/aa') == 'http://localhost:8888/aa'
-        assert self.api.url('a/a') == 'http://localhost:8888/a/a'
-        assert self.api.url(     ) == 'http://localhost:8888/'
-        assert self.api.url(None ) == 'http://localhost:8888/'
+        assert self.api.url('aaa') == 'http://localhost:8888/api/aaa'
+        assert self.api.url('/aa') == 'http://localhost:8888/api/aa'
+        assert self.api.url('a/a') == 'http://localhost:8888/api/a/a'
+        assert self.api.url(     ) == 'http://localhost:8888/api/'
+        assert self.api.url(None ) == 'http://localhost:8888/api/'
+
+        assert self.api.url('/api'    ) == 'http://localhost:8888/api/api'
+        assert self.api.url('/api/'   ) == 'http://localhost:8888/api/'
+        assert self.api.url('/api/aaa') == 'http://localhost:8888/api/aaa'
+        assert self.api.url('/apiaaa' ) == 'http://localhost:8888/api/apiaaa'

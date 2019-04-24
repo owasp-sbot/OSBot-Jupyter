@@ -6,10 +6,10 @@ class Jupyter_Web:
 
     def __init__(self, token=None,server=None, headless=True):
         self.headless       = headless
-        self.server         = {'schema':'http', 'ip':  '127.0.0.1' , 'port' : 8888 }
+        #self.server         = {'schema':'http', 'ip':  '127.0.0.1' , 'port' : 8888 }
         self.token          = token
         self.tmp_screenshot = '/tmp/jupyter_screenshot.png'
-        self._server        = server
+        self.server         = server
         self._browser       = None  # API_Browser(headless=headless)
 
     def browser(self):
@@ -55,13 +55,13 @@ class Jupyter_Web:
 
 
     def resolve_url(self,path=None):
-        if self._server is None:
-            self._server = "{0}://{1}:{2}".format(self.server.get('schema'), self.server.get('ip'), self.server.get('port'))
+        #if self._server is None:
+        #    self._server = "{0}://{1}:{2}".format(self.server.get('schema'), self.server.get('ip'), self.server.get('port'))
 
         if   path is None or len(path) == 0: path = '/'
         elif path[0] != '/'                : path = '/' + path
 
-        return "{0}{1}".format(self._server, path)
+        return "{0}{1}".format(self.server, path)
 
     def ui_hide_input_boxes(self):
         self.browser().sync__js_execute("$('div.input').hide()")

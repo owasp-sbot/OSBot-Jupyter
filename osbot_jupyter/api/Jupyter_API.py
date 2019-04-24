@@ -61,6 +61,8 @@ class Jupyter_API:
         if   path is None or len(path) == 0: path = '/'
         elif path[0] != '/'                : path = '/' + path
 
+        if path.startswith('/api/') is False: path = '/api{0}'.format(path)
+
         return "{0}{1}".format(self.server,path)
 
     def status(self):
@@ -70,7 +72,11 @@ class Jupyter_API:
         return self.http_get('api')
     # experimental
 
+    def sessions(self):
+        return self.http_get('sessions')
+
     def kernel_code_execute(self,code_to_execute):
+
         from websocket import create_connection
         import uuid
         import datetime
