@@ -1,5 +1,6 @@
 from pbx_gs_python_utils.utils.Json import Json
 
+from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter_Helper, CodeBuild_Jupyter
 from osbot_jupyter.api.Docker_Jupyter   import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API      import Jupyter_API
 from osbot_jupyter.api.Jupyter_Kernel   import Jupyter_Kernel
@@ -23,11 +24,26 @@ class Test_Server:
         self.headless        = headless
 
     def docker(self):
-        self.image_name      = 'jupyter/datascience-notebook:9b06df75e445'
+        #self.image_name      = 'jupyter/datascience-notebook:9b06df75e445'
+        self.image_name      = '244560807427.dkr.ecr.eu-west-2.amazonaws.com/osbot-jupyter:latest'
         self.docker_jupyter  = Docker_Jupyter(self.image_name)
         self.token           = self.docker_jupyter.token()
         self.server          = self.docker_jupyter.server()
         return self
+
+    def codebuild(self):
+        code_build_helper = CodeBuild_Jupyter_Helper()
+        build_id          = code_build_helper.get_active_build_id()
+        if build_id is None:
+            code_build_helper.start_build_and_wait_for_jupyter_load()
+            build_id = code_build_helper.get_active_build_id()
+        code_build   = CodeBuild_Jupyter(build_id)
+        server, token = code_build.get_server_details_from_logs()
+
+        self.server = server
+        self.token  = token
+        return self
+
 
 
     def jupyter_api     (self): return Jupyter_API      (server=self.server, token=self.token                       )

@@ -14,11 +14,7 @@ class test_Jupyter(TestCase):
 
     def setUp(self):
         self.headless   = False
-        #data             = Json.load_json('/tmp/active_jupyter_server.yml')
-        #self.token       = data.get('token')
-        #self.server      = data.get('server')
-        #self.jp          = Jupyter_Web(token=self.token, server=self.server, headless=self.headless)
-        self.jp          = Test_Server(self.headless).docker().jupyter_web()
+        self.jp          = Test_Server(self.headless).codebuild().jupyter_web()
         self.server      = self.jp.server
         self.result      = None
 
