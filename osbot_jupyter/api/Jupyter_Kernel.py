@@ -57,7 +57,10 @@ class Jupyter_Kernel(Jupyter_API):
     def execute_get_connection(self,ip, port):
         headers = {'Authorization': 'Token {0}'.format(self.token)}
         url     = "ws://{0}:{1}/api/kernels/{2}/channels".format(ip, port,self.kernel_id)
-        return create_connection(url, header=headers)
+
+        #import ssl
+        #sslopt = {"cert_reqs": ssl.CERT_NONE}
+        return create_connection(url, header=headers)#,sslopt=sslopt)
 
     def execute_request(self, code):
         msg_type = 'execute_request';

@@ -81,7 +81,7 @@ class test_Jupyter_Kernel(TestCase):
         assert ws.connected == True
         assert ws.status    == 101
         assert ws.headers.get('connection') == 'Upgrade'
-        assert ws.headers.get('server'    ) == 'TornadoServer/5.1.1'
+        assert ws.headers.get('server'    ) == 'TornadoServer/6.0.2'
         assert ws.headers.get('upgrade'   ) == 'websocket'
         ws.close()
 
@@ -97,7 +97,7 @@ class test_Jupyter_Kernel(TestCase):
         assert '{"output": "42", "input": "40+2", "status": "ok"}' in list(set(result))
         assert '{"output": null, "input": "40+2", "status": "ok"}' in list(set(result))
         return
-        assert self.jp_kernel.execute("40+2") == {'input': '40+2', 'output': '42', 'status': 'ok'}
+        #assert self.jp_kernel.execute("40+2") == {'input': '40+2', 'output': '42', 'status': 'ok'}
 
         #code = "a = 42; a"
         #code = "a = {'answer': 42}; from time import sleep; sleep(1); 'aaa'.encode()"
