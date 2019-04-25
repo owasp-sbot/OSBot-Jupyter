@@ -1,10 +1,11 @@
 import json
 
 import ipywidgets as widgets
-from IPython.display import display, HTML
+import pandas     as pd
 
-from IPython.display import display_html
-from osbot_aws.apis.Lambda import Lambda
+from IPython.display            import display_html
+from osbot_gsuite.apis.GSheets  import GSheets
+from osbot_aws.apis.Lambda      import Lambda
 
 out = widgets.Output()
 
@@ -29,6 +30,12 @@ def jira_links(start, direction, depth):
     payload = {"params": ['links', start, direction, depth, view]}
     result = lambda_graph.invoke(payload)
     return json.loads(result.get('text'))
+
+# pandas
+
+def data_frame(data, columns):
+    return pd.DataFrame(data,columns=columns)
+
 # Multiple graph views
 def graph(graph_name):
     print('creating plantuml graph for: {0}'.format(graph_name))
@@ -41,8 +48,6 @@ def mindmap(graph_name):
     payload = {"params": ['go_js', graph_name, 'mindmap']}
     png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
     show_png(png_data)
-
-
 
 def viva_graph(graph_name):
     print('creating viva graph for: {0}'.format(graph_name))
@@ -60,17 +65,30 @@ def show_png(png_data):
     html = '<img style="border:1px solid black" align="left" src="data:image/png;base64,{}"/>'.format(png_data)
     display_html(html, raw=True)
 
-# experiments
+def search(query,columns=None):
+    params = {'params': ['search'] + query.split(' ')}
+    results = Lambda("gs.elk_to_slack").invoke(params) #{'params': ['search', 'people', 'd*']})
+    return data_frame(results,columns)
 
-from contextlib import contextmanager
-import sys, os
 
-@contextmanager
-def suppress_stdout():
-    with open(os.devnull, "w") as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
+def sheet_data(file_id, sheet_name,columns=None):
+    gsuite_secret_id = 'gsuite_gsbot_user'
+    gsheets = GSheets(gsuite_secret_id)
+    # gsheets.sheets_metadata(file_id)
+    values = gsheets.get_values_as_objects(file_id, sheet_name)
+    return data_frame(values, columns)
+
+# # experiments
+#
+# from contextlib import contextmanager
+# import sys, os
+#
+# @contextmanager
+# def suppress_stdout():
+#     with open(os.devnull, "w") as devnull:
+#         old_stdout = sys.stdout
+#         sys.stdout = devnull
+#         try:
+#             yield
+#         finally:
+#             sys.stdout = old_stdout
