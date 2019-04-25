@@ -28,7 +28,6 @@ def screenshot(url):
     print('taking screenshot of: {0}'.format(url))
     payload = {"params": ['screenshot',url]}
     png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
-    print(png_data)
     show_png(png_data)
 
 def show_png(png_data):
