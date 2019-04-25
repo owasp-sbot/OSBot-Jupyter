@@ -9,3 +9,4 @@ notebooks/.cache
 .viminfo
 notebooks/.aws
 dev-notebook.py.ipynb
+notebooks/work/examples/.ipynb_checkpoints
