@@ -8,3 +8,4 @@ notebooks/.jupyter
 notebooks/.cache
 .viminfo
 notebooks/.aws
+dev-notebook.py.ipynb

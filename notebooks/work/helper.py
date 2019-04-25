@@ -15,14 +15,24 @@ def hello(name):
     #display(out)
     return "Hi {0}, how are you felling today?".format(name)
 
+def issue(key):
+    from osbot_jira.api.API_Issues import API_Issues
+    return API_Issues().issue(key)
+
+def graph_show(graph_name):
+    from osbot_jira.api.graph.Lambda_Graph import Lambda_Graph
+    png_data = Lambda_Graph().get_graph_png___by_name(graph_name).get('png_base64')
+    show_png(png_data)
 
 def screenshot(url):
+    print('taking screenshot of: {0}'.format(url))
     payload = {"params": ['screenshot',url]}
     png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
+    print(png_data)
     show_png(png_data)
 
 def show_png(png_data):
-    html = '<img style="margin:0" align="left" src="data:image/png;base64,{}"/>'.format(png_data)
+    html = '<img style="border:1px solid black" align="left" src="data:image/png;base64,{}"/>'.format(png_data)
     display_html(html, raw=True)
 
 # experiments

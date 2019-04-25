@@ -21,7 +21,7 @@ class test_jupyter_helper(TestCase):
         code = textwrap.dedent("""
                                     %load_ext autoreload
                                     %autoreload 
-                                    %autocall 2                                    
+                                    #%autocall 2                                    
                                     !pip install ipywidgets
                                     from helper import *
                                """)
@@ -32,4 +32,10 @@ class test_jupyter_helper(TestCase):
         self.cell.execute_top('hello("steve")')
 
     def test_img(self):
-        self.cell.execute_top('screenshot("https:/www.google.com")')
+        self.cell.execute_top('screenshot("https://www.google.com/asd")')
+
+    def test_issue(self):
+        self.cell.execute_top('issue("RISK-12")')
+
+    def test_graph_show(self):
+        self.cell.execute_top('graph_show("graph_NXW")')
