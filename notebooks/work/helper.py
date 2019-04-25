@@ -19,9 +19,23 @@ def issue(key):
     from osbot_jira.api.API_Issues import API_Issues
     return API_Issues().issue(key)
 
-def graph_show(graph_name):
+
+# Multiple graph views
+def graph(graph_name):
     from osbot_jira.api.graph.Lambda_Graph import Lambda_Graph
     png_data = Lambda_Graph().get_graph_png___by_name(graph_name).get('png_base64')
+    show_png(png_data)
+
+def mindmap(graph_name):
+    payload = {"params": ['go_js', graph_name, 'mindmap']}
+    png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
+    show_png(png_data)
+
+
+
+def viva_graph(graph_name):
+    payload = {"params": ['viva_graph', graph_name, 'default']}
+    png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
     show_png(png_data)
 
 def screenshot(url):
