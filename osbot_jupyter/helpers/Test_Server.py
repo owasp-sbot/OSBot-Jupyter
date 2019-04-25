@@ -44,10 +44,11 @@ class Test_Server:
         self.token  = token
         return self
 
-
-
     def jupyter_api     (self): return Jupyter_API      (server=self.server, token=self.token                       )
     def jupyter_cell    (self): return Jupyter_Web_Cell (server=self.server, token=self.token,headless=self.headless)
     def jupyter_kernel  (self): return Jupyter_Kernel   (server=self.server, token=self.token                       )
     def jupyter_session (self): return Jupyter_Session  (server=self.server, token=self.token                       )
     def jupyter_web     (self): return Jupyter_Web      (server=self.server, token=self.token,headless=self.headless)
+
+    def url(self):
+        return "{0}?token={1}".format(self.server, self.token)

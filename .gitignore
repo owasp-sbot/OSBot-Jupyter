@@ -6,3 +6,5 @@ notebooks/.ipython
 notebooks/work/.ipynb_checkpoints
 notebooks/.jupyter
 notebooks/.cache
+.viminfo
+notebooks/.aws

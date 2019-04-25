@@ -17,9 +17,21 @@ class Jupyter_Web_Cell(Jupyter_Web):
         if delete_after:
             self.delete()
 
+    def execute_top(self, code):
+        return ( self.new_top ()
+                     .text    (code)
+                     .execute ())
+
     def js_invoke(self,js_code):
         return self.browser().sync__js_execute(js_code)
 
+    def new_top(self):
+        js_code = """Jupyter.notebook.select(0)
+                     Jupyter.notebook.insert_cell_above();
+                     Jupyter.notebook.select(0);
+                     Jupyter.notebook.focus_cell();"""
+        self.browser().sync__js_execute(js_code)
+        return self
     def new(self):
         js_code = """Jupyter.notebook.insert_cell_below();
                      Jupyter.notebook.select_next(true);
@@ -43,6 +55,7 @@ class Jupyter_Web_Cell(Jupyter_Web):
         sleep(seconds)
         return self
 
+    def clear       (self       ): self.js_invoke("Jupyter.notebook.get_cells().forEach(function (cell) { Jupyter.notebook.delete_cell(cell.id) }) "); return self
     def delete      (self       ): self.js_invoke("Jupyter.notebook.delete_cell()"             ); return self
     def execute     (self       ): self.js_invoke("Jupyter.notebook.execute_cell()"            ); return self
     def select      (self,index ): self.js_invoke("Jupyter.notebook.select({0})".format(index )); return self
