@@ -1,3 +1,5 @@
+import json
+
 import ipywidgets as widgets
 from IPython.display import display, HTML
 
@@ -20,13 +22,22 @@ def issue(key):
     return API_Issues().issue(key)
 
 
+def jira_links(start, direction, depth):
+    view = None
+    lambda_graph = Lambda('pbx_gs_python_utils.lambdas.gs.elastic_jira')
+
+    payload = {"params": ['links', start, direction, depth, view]}
+    result = lambda_graph.invoke(payload)
+    return json.loads(result.get('text'))
 # Multiple graph views
 def graph(graph_name):
+    print('creating plantuml graph for: {0}'.format(graph_name))
     from osbot_jira.api.graph.Lambda_Graph import Lambda_Graph
     png_data = Lambda_Graph().get_graph_png___by_name(graph_name).get('png_base64')
     show_png(png_data)
 
 def mindmap(graph_name):
+    print('creating mindmap graph for: {0}'.format(graph_name))
     payload = {"params": ['go_js', graph_name, 'mindmap']}
     png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
     show_png(png_data)
@@ -34,6 +45,7 @@ def mindmap(graph_name):
 
 
 def viva_graph(graph_name):
+    print('creating viva graph for: {0}'.format(graph_name))
     payload = {"params": ['viva_graph', graph_name, 'default']}
     png_data = Lambda('osbot_browser.lambdas.lambda_browser').invoke(payload)
     show_png(png_data)
