@@ -39,7 +39,7 @@ def data_frame(data, columns):
 
 # Multiple graph views
 def graph(graph_name):
-    print('creating plaqgridntuml graph for: {0}'.format(graph_name))
+    print('creating plantuml graph for: {0}'.format(graph_name))
     from osbot_jira.api.graph.Lambda_Graph import Lambda_Graph
     png_data = Lambda_Graph().get_graph_png___by_name(graph_name).get('png_base64')
     show_png(png_data)
