@@ -14,7 +14,7 @@ class test_Jupyter(TestCase):
 
     def setUp(self):
         self.headless   = False
-        self.jp          = Test_Server(self.headless).codebuild().jupyter_web()
+        self.jp          = Test_Server(self.headless).docker().jupyter_web()
         self.server      = self.jp.server
         self.result      = None
 
