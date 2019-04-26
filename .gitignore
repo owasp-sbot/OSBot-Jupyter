@@ -1,11 +1,11 @@
 .idea
 .pytest_cache
 __pycache__
-notebooks/.local
-notebooks/.ipython
-notebooks/work/.ipynb_checkpoints
-notebooks/.jupyter
-notebooks/.cache
+.local
+.ipython
+.ipynb_checkpoints
+.jupyter
+.cache
 .viminfo
-notebooks/.aws
+.aws
 dev-notebook.py.ipynb
