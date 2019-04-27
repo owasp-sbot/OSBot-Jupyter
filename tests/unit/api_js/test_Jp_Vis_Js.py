@@ -8,8 +8,9 @@ class test_Jp_Vis_Js(TestCase):
     def setUp(self):
         self.vis_js = Jp_Vis_Js()
         self.jp_cell = Test_Server().docker().jupyter_cell()
+        self.jp_cell.clear().input_hide()
         self.jp_cell.new_top()
-        #self.jp_cell.clear().input_hide()
+
 
     def test__init__(self):         # %load_ext autoreload
 
@@ -18,7 +19,8 @@ class test_Jp_Vis_Js(TestCase):
                     import sys; sys.path.append('..')
                     from osbot_jupyter.api_js.Jp_Vis_Js import Jp_Vis_Js
                     jp_vis = Jp_Vis_Js()
-                    jp_vis.test
+                    #jp_vis.js_invoke('element.text(vis)')
+                    jp_vis.test_vis()
                """
         self.result = self.jp_cell.execute(code)
 
