@@ -9,6 +9,10 @@ class Jupyter_Web_Cell(Jupyter_Web):
     def __init__(self, token=None, server=None, headless=True):
         super().__init__(token=token, server=server, headless=headless)
 
+    def execute_html(self, html_code, new_cell=True, delete_after=False):
+        python_code = "%%HTML \n{0}".format(html_code)
+        return self.execute_python(python_code=python_code,new_cell=new_cell,delete_after=delete_after)
+
     def execute_python(self,python_code, new_cell=True, delete_after=False):
         if new_cell:
             self.new();
@@ -16,6 +20,7 @@ class Jupyter_Web_Cell(Jupyter_Web):
         self.execute()
         if delete_after:
             self.delete()
+        return self
 
     def execute_top(self, code):
         return ( self.new_top ()
@@ -62,7 +67,15 @@ class Jupyter_Web_Cell(Jupyter_Web):
     def to_markdown (self       ): self.js_invoke("Jupyter.notebook.cells_to_markdown()"       ); return self
     def to_code     (self       ): self.js_invoke("Jupyter.notebook.cells_to_code()"           ); return self
 
+    def input_hide  (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().input.hide()"                ); return self
+    def input_show  (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().input.show()"                ); return self
 
+    def output_hide (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.hide()"  ); return self
+    def output_show (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.show()"  ); return self
+    def output_clear(self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().clear_output()"              ); return self
+
+    def output_html(self):
+        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.outputs[0].data['text/html']")
 
     # def cell_selected_to_markdown(self):
 # Jupyter.notebook.cells_to_markdown() // change in ui the current cell to markdown

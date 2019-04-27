@@ -1,12 +1,8 @@
 from unittest import TestCase
 
-from pbx_gs_python_utils.utils.Dev import Dev
-from pbx_gs_python_utils.utils.Json import Json
-from pbx_gs_python_utils.utils.Misc import Misc
-
-from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
-from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
-from osbot_jupyter.helpers.Test_Server import Test_Server
+from pbx_gs_python_utils.utils.Dev      import Dev
+from pbx_gs_python_utils.utils.Misc     import Misc
+from osbot_jupyter.helpers.Test_Server  import Test_Server
 
 
 class test_Jupyter_Web_Cell(TestCase):
@@ -15,6 +11,7 @@ class test_Jupyter_Web_Cell(TestCase):
         self.headless = False
         self.cell        = Test_Server().docker().jupyter_cell()
         self.result      = None
+        self.cell.clear().text('Unit Test execution will go below')
 
     def tearDown(self):
         if self.result is not None:
@@ -27,6 +24,16 @@ class test_Jupyter_Web_Cell(TestCase):
         text  = 'new text'
         assert self.cell.new().text(text).text() == text
 
+    def test_execute_html(self):
+        html = "<h1>{0}</h1>".format(Misc.random_string_and_numbers())
+
+
+        (
+            self.cell.execute_html(html).wait(0.1)
+                     #.output_hide()     .wait(0.2)
+                     #.output_show()
+        )
+        assert self.cell.output_html().strip() == html
 
     def test_execute_python(self):
         python_code = """
@@ -45,6 +52,9 @@ a"""
         self.cell.select(1)
         self.cell.select(2)
         self.cell.select(3)
+
+    def test_input_hide__input_show(self):
+        self.cell.input_hide().wait(0.01).input_show()
 
     def test_to_markdown(self):
         Dev.pprint(self.token)
