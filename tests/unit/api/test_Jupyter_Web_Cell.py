@@ -26,21 +26,32 @@ class test_Jupyter_Web_Cell(TestCase):
 
     def test_execute_html(self):
         html = "<h1>{0}</h1>".format(Misc.random_string_and_numbers())
-
-
         (
             self.cell.execute_html(html).wait(0.1)
-                     #.output_hide()     .wait(0.2)
-                     #.output_show()
+                     .output_hide()     .wait(0.2)
+                     .output_show()
         )
         assert self.cell.output_html().strip() == html
 
+    def test_execute_javascript(self):
+        js_code = "element.text(40+2)"
+        self.cell.execute_javascript(js_code).wait(0.1)
+        assert self.cell.output().strip() == '42'
+
+    def test_execute_javascript_with_libs(self):
+        libs = [{ 'lib_name': 'jquery', 'url':'https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'},
+                { 'lib_name': 'vis'   , 'url':'https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js'    }]
+        js_code = "element.text(vis + jquery)"
+        self.cell.execute_javascript_with_libs(libs,js_code).wait(0.3)
+        assert self.cell.output() == '[object Object]function(e,t){return new w.fn.init(e,t)}'
+
     def test_execute_python(self):
         python_code = """
-a = 40+2
-print(str(a) + "_double_" + 'single')
-a"""
-        self.cell.execute_python(python_code)
+                        a = 40+2
+                        print(str(a) + "_double_" + 'single')
+                        a"""
+
+        self.cell.execute(python_code)
 
     def test_text(self):
         text = Misc.random_string_and_numbers()
@@ -62,9 +73,3 @@ a"""
 
     def test_to_code(self):
         self.cell.new().to_markdown().to_code().text('"an title 123"').execute()#.wait(1).delete()
-
-
-    # misc use cases
-
-    def test_login(self):
-        self.cell.login()

@@ -26,16 +26,17 @@ class test_jupyter_helper(TestCase):
                                     from helper import *
                                """)
 
-        self.cell.execute_top(code)
+        self.cell.execute(code)
 
     def test_hello(self):
-        self.cell.execute_top('hello("steve")')
+        self.cell.execute('%autoreload\n'
+                          'hello("steve")')
 
     def test_img(self):
-        self.cell.execute_top('screenshot("https://www.google.com/asd")')
+        self.cell.execute('screenshot("https://www.google.com/asd")')
 
     def test_issue(self):
-        self.cell.execute_top('issue("RISK-12")')
+        self.cell.execute('issue("RISK-12")')
 
     def test_graph_show(self):
-        self.cell.execute_top('graph_show("graph_NXW")')
+        self.cell.execute('graph("graph_NXW")')
