@@ -20,3 +20,13 @@ class test_GSBot_Execution(TestCase):
         (text,attachments) = self.gsbot.invoke(message)
         Dev.pprint(text,attachments)
 
+    def test_invoke_jira__version(self):
+        message = 'jira version'
+        text = self.gsbot.invoke(message)
+        Dev.pprint(text)
+
+    def test_invoke_jira__links(self):
+        message = 'jira links RISK-12 all 1'
+        text = self.gsbot.invoke(message)
+        Dev.pprint(text)
+
