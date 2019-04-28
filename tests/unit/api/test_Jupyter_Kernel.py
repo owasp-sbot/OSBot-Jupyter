@@ -71,7 +71,10 @@ class test_Jupyter_Kernel(TestCase):
     def test_kernels_ids(self):
         assert len(self.jp_kernel.kernels_ids()) > 0
 
-        #self.result = self.jp_kernel.kernels()
+    def test_kernels_specs(self):
+        self.result = self.jp_kernel.kernels_specs()
+
+
 
     def test_execute_get_connection(self):
         ip   = 'localhost'

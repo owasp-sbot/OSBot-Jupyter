@@ -1,4 +1,5 @@
 import json
+import textwrap
 import uuid
 import datetime
 
@@ -42,6 +43,9 @@ class Jupyter_Kernel(Jupyter_API):
     def kernels_ids(self):
         return list(set(self.kernels()))
 
+    def kernels_specs(self):
+        return self.http_get('kernelspecs').get('kernelspecs')
+
     def new(self,name=None):
         path = 'kernels'
         data = { "name": name}
@@ -79,14 +83,16 @@ class Jupyter_Kernel(Jupyter_API):
 
 
     def execute(self, code):
+        code    = textwrap.dedent(code)
         ip      = 'localhost'
         port    = 8888
         ws      = self.execute_get_connection(ip, port)
         payload = self.execute_request(code)
         result  = {
                     'output'        : None ,
-                    'stream'        : []   ,
                     'display_data'  : []   ,
+                    'error'         : []   ,
+                    'stream'        : []   ,
                     'stdout'        : []   ,
                     'unhandled'     : []
                   }
@@ -97,6 +103,8 @@ class Jupyter_Kernel(Jupyter_API):
             response = json.loads(ws.recv())
             content  = response.get("content")
             msg_type = response.get("msg_type")
+
+            #Dev.pprint(response)
 
             if msg_type == 'execute_input' :
                 result['input'] = content.get('code')
@@ -114,10 +122,12 @@ class Jupyter_Kernel(Jupyter_API):
                 result['display_data'].append(content)
 
             elif msg_type == 'error':
-                result['error' ] = content
+                result['error' ].append(content)
 
             elif msg_type == "execute_reply" :
                 result['status'] = content.get('status')
+                if result['status'] == 'error':
+                    result['error'].append(content)
                 break
             elif msg_type == 'status':
                 pass                        # don't capture these
@@ -135,7 +145,7 @@ class Jupyter_Kernel(Jupyter_API):
                 return self
         return None
 
-    def first_or_new(self, name):
+    def first_or_new(self, name='python3'):
         first = self.first_with_name(name)
         if first:
             return first

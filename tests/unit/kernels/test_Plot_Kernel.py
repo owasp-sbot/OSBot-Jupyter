@@ -41,7 +41,17 @@ class test_Plot_Kernel(TestCase):
                             'stream'        : [],
                             'unhandled'     : []}
 
-        #self.result
-        #self.result = self.kernels.kernels()
+    def test_kernel_spec(self):
+        spec = self.kernel.kernels_specs().get(self.kernel_name.lower())
 
+        assert spec == { 'name': 'plotter',
+                         'resources': {},
+                         'spec': { 'argv'         : [ 'python','-m',
+                                                      'osbot_jupyter.kernels.PlotKernel',
+                                                      '-f','{connection_file}'],
+                                  'display_name'  : 'Plotter',
+                                  'env'           : {},
+                                  'interrupt_mode': 'signal',
+                                  'language'      : 'python',
+                                  'metadata'      : {}}}
 
