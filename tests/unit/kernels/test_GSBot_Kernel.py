@@ -30,8 +30,6 @@ class test_GSBot_Kernel_Install(TestCase):
         assert self.kernel_install.exists() is True
 
     def test_uninstall(self):
-        #error_message = self.kernel_install.uninstall()
-        #print(self.kernel_install.jupyter_kernel.decode_error(error_message))
         if self.kernel_install.exists():
             assert self.kernel_install.uninstall().get('status') == 'ok'
             assert self.kernel_install.exists() is False
@@ -54,6 +52,6 @@ class test_GSBot_Kernel(TestCase):
         self.result = self.jp_gsbot.info()
 
     def test___execute_on_kernel(self):
-        text = 'Hello'
+        text = 'hello'
         Dev.pprint(self.jp_gsbot.execute(text).get('stdout'))
         #assert self.jp_echo.execute(text).get('stdout') == [text]

@@ -7,10 +7,11 @@ class GSBot_Execution:
         self._lambda = Lambda('osbot.lambdas.osbot')
 
     def invoke(self,command):
-        payload = {'team_id': 'T7F3AUXGV',
-                   'event': {'type': 'message',
+        payload = {'event': {'type': 'message',
                              'text': command,
-                             'channel': 'GDL2EC3EE',
-                             'user': 'U7ESE1XS7'}}
+                             'user': 'jovyan'}}
 
-        return self._lambda.invoke(payload)
+        result = self._lambda.invoke(payload)
+        text = result.get('text')
+        attachments = result.get('attachments')
+        return text,attachments

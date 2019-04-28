@@ -9,6 +9,7 @@ from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Files import Files
 
 from osbot_jupyter.api.Kernel_Install import Kernel_Install
+from osbot_jupyter.helpers.GSBot_Execution import GSBot_Execution
 
 
 class GSBot_Kernel_Install:
@@ -25,13 +26,22 @@ class GSBot_Kernel(Kernel):
 
     implementation = 'GSBot'
     implementation_version = '0.1'
-    banner = "GSBot (kernel)"
+    banner = "OSBot (kernel)"
+    language_info = {
+        'name': 'OSBot',
+        'version': 0.1,
+        'mimetype': 'text/x-python',
+        'codemirror_mode': {'name': 'ipython'},
+        'nbconvert_exporter': 'python',
+        'file_extension': '.osbot'
+    }
 
 
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False):
         if not silent:
-            stream_content = {'name': 'stdout', 'text': '..gsbot response : ' + code}
+            text, attachments = GSBot_Execution().invoke(code)
+            stream_content = {'name': 'stdout', 'text': text}
             self.send_response(self.iopub_socket, 'stream', stream_content)
         sleep(0.2)
         return {'status': 'ok',

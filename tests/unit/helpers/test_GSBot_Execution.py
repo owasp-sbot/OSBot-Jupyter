@@ -16,6 +16,7 @@ class test_GSBot_Execution(TestCase):
             Dev.pprint(self.result)
 
     def test_invoke(self):
-        message = 'hello...'
-        Dev.pprint(self.gsbot.invoke(message))
+        message = 'help'
+        (text,attachments) = self.gsbot.invoke(message)
+        Dev.pprint(text,attachments)
 
