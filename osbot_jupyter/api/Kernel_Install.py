@@ -52,6 +52,8 @@ class Kernel_Install:
         return self.jupyter_kernel.execute(self.install_code)
 
     def uninstall(self):
-        return self.jupyter_kernel.execute(self.uninstall_code)
+        if self.exists():
+            return self.jupyter_kernel.execute(self.uninstall_code)
+        return None
 
 

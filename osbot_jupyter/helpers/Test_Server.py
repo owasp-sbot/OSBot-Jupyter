@@ -11,17 +11,13 @@ from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
 
 class Test_Server:
     def __init__(self, headless=True):
-        # if mode =='docker':
-        #
-        # else:
-        #     data = Json.load_json('/tmp/active_jupyter_server.yml')
-        #     self.token = data.get('token')
-        #     self.server = data.get('server')
-        self.image_name      = None
-        self.docker_jupyter  = None
-        self.token           = None
-        self.server          = None
-        self.headless        = headless
+        self.image_name        = None
+        self.docker_jupyter    = None
+        self.token             = None
+        self.server            = None
+        self.code_build_helper = None
+        self.headless          = headless
+
 
     def docker(self):
         #self.image_name      = 'jupyter/datascience-notebook:9b06df75e445'
@@ -32,17 +28,18 @@ class Test_Server:
         return self
 
     def codebuild(self):
-        code_build_helper = CodeBuild_Jupyter_Helper()
-        build_id          = code_build_helper.get_active_build_id()
+        self.code_build_helper = CodeBuild_Jupyter_Helper()
+        build_id          = self.code_build_helper.get_active_build_id()
         if build_id is None:
-            code_build_helper.start_build_and_wait_for_jupyter_load()
-            build_id = code_build_helper.get_active_build_id()
+            self.code_build_helper.start_build_and_wait_for_jupyter_load()
+            build_id = self.code_build_helper.get_active_build_id()
         code_build   = CodeBuild_Jupyter(build_id)
         server, token = code_build.get_server_details_from_logs()
 
         self.server = server
         self.token  = token
         return self
+
 
     def jupyter_api     (self): return Jupyter_API      (server=self.server, token=self.token                       )
     def jupyter_cell    (self): return Jupyter_Web_Cell (server=self.server, token=self.token,headless=self.headless)

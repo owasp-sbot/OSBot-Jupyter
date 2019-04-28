@@ -49,7 +49,7 @@ class Docker_Jupyter(Docker):
 
     def token(self):
         def find_in(array, text):
-            return [item for item in array if text in item]
+            return [item for item in reversed(array) if text in item]
         try:
             messages = self.logs().split('\n')
             jupyter_token  = find_in(messages, 'token=')[0].split('token=')[1].strip()
@@ -61,5 +61,5 @@ class Docker_Jupyter(Docker):
         return self._server
     
     def url(self):
-        return "{0}?token={0}".format(self.server(),self.token())
+        return "{0}?token={1}".format(self.server(),self.token())
 

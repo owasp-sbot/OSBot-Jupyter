@@ -26,7 +26,7 @@ class test_Docker_Jupyter(TestCase):
 
     def setUp(self):
         self.image_name = 'local/jupyter:latest'
-        self.image_name = 'jupyter/datascience-notebook:9b06df75e445'
+        self.image_name = '244560807427.dkr.ecr.eu-west-2.amazonaws.com/osbot-jupyter:latest'
         self.docker_jp  = Docker_Jupyter(self.image_name)
         self.result     = None
 

@@ -153,6 +153,17 @@ class Jupyter_Kernel(Jupyter_API):
             return first
         return self.new(name)
 
+    @staticmethod
+    def decode_error(data):
+        if data and data.get('error'):
+            import re
+            lines = []
+            ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+            for trackback in data.get('error')[0].get('traceback'):
+                lines.append(ansi_escape.sub('', trackback))
+
+            return '\n'.join(lines)
+        return None
 
     # def execute(self,code_to_execute):
     #
