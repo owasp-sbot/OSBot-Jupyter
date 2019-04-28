@@ -40,7 +40,7 @@ class Echo_Kernel(Kernel):
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False):
         if not silent:
-            stream_content = {'name': 'stdout', 'text': '...' + code}
+            stream_content = {'name': 'stdout', 'text': '[you said]:' + code}
             self.send_response(self.iopub_socket, 'stream', stream_content)
         sleep(0.2)
         return {'status': 'ok',

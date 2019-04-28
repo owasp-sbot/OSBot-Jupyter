@@ -1,3 +1,4 @@
+import json
 from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
@@ -84,3 +85,47 @@ class test_Echo_Kernel(TestCase):
                                                                 '-f','{connection_file}'],
                                           'display_name'    : 'Echo',
                                           'language'        : 'text'}
+
+
+class test_Echo_Kernel_in_CodeBuild(TestCase):
+    def setUp(self):
+        self.headless       = False
+        self.test_server    = Test_Server(self.headless).codebuild()
+        #self.jupyter_api    = self.test_server.jupyter_api()
+        self.jupyter_web    = self.test_server.jupyter_web()
+        self.jupyter_cell   = self.test_server.jupyter_cell()
+        #self.jupyter_kernel = self.test_server.jupyter_kernel().first_or_new()
+        self.result         = None
+
+    def tearDown(self):
+        if self.result is not None:
+            Dev.pprint(self.result)
+
+
+    def test_available_kernels(self):
+        code =  """
+                    from jupyter_client.kernelspec import KernelSpecManager
+                    KernelSpecManager().get_all_specs()
+                """
+        print(self.jupyter_cell.execute(code)       \
+                                .wait(0.3).output())
+
+
+    def test_install(self):
+        code =  """
+                    from osbot_jupyter.kernels.Echo_Kernel import Echo_Kernel, Echo_Kernel_Install
+                    from osbot_jupyter.api.Kernel_Install import Kernel_Install_Inside_Jupyter
+                    kernel_install = Echo_Kernel_Install()
+                    kernel_name    = kernel_install.kernel_name
+                    kernel_class   = kernel_install.kernel_class
+                    kernel_spec    = kernel_install.kernel_spec
+                    kernel_spec
+                    
+                    kernel_install = Kernel_Install_Inside_Jupyter(kernel_class,kernel_name, kernel_spec)
+                    kernel_install.install()
+                """
+        print(self.jupyter_cell.execute(code) \
+              .wait(0.3).output())
+
+    #def test_close_codebuild(self):
+    #    Test_Server()

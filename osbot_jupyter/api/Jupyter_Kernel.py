@@ -84,10 +84,10 @@ class Jupyter_Kernel(Jupyter_API):
         return json.dumps(msg)
 
 
-    def execute(self, code):
+    def execute(self, code, ip = 'localhost', port=8888):
         code    = textwrap.dedent(code)
-        ip      = 'localhost'
-        port    = 8888
+        #ip      = 'localhost'
+        #port    = 8888
         ws      = self.execute_get_connection(ip, port)
         payload = self.execute_request(code)
         result  = {
