@@ -88,10 +88,13 @@ class test_Jupyter_Kernel(TestCase):
         assert ws.headers.get('upgrade'   ) == 'websocket'
         ws.close()
 
+    def test_execute(self):
+        self.result = self.jp_kernel.execute("40+2")
+
 
     # the `execute` is not as reliable as I would expected it to be
     # this tests proves that there are times when the execution result is missed
-    def test_execute(self):
+    def test_execute__many(self):
         result = {}
         for i in range(1,10):
             response = json.dumps(self.jp_kernel.execute("40+2"))

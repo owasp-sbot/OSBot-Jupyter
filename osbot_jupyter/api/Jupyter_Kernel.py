@@ -75,8 +75,10 @@ class Jupyter_Kernel(Jupyter_API):
                'session' : uuid.uuid1().hex                     ,
                'data'    : datetime.datetime.now().isoformat()  ,
                'msg_type': msg_type                             ,
-               'version' : '5.0' }
+               'version' : '5.0'
+               }
         msg = {'header'  : hdr, 'parent_header': hdr            ,
+               'channel' : 'shell'                              ,
                'metadata': {}                                   ,
                'content' : content                              }
         return json.dumps(msg)

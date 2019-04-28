@@ -4,15 +4,18 @@ from pbx_gs_python_utils.utils.Dev import Dev
 
 from osbot_jupyter.api.Kernel_Install import Kernel_Install
 from osbot_jupyter.helpers.Test_Server import Test_Server
-from osbot_jupyter.kernels.Echo_Kernel import Echo_Kernel
+from osbot_jupyter.kernels.Echo_Kernel import Echo_Kernel, Echo_Kernel_Install
+
 
 class test_Echo_Kernel__Install(TestCase):
 
     def setUp(self):
         self.kernel_name  = "Echo"
         self.kernel_class = Echo_Kernel
+        self.kernel_spec  = Echo_Kernel_Install().kernel_spec
         self.python_kernel = Test_Server().docker().jupyter_kernel().first_or_new()
-        self.kernel_install = Kernel_Install(self.kernel_name, self.kernel_class, self.python_kernel)
+
+        self.kernel_install = Kernel_Install(self.kernel_name, self.kernel_class,self.kernel_spec, self.python_kernel)
         self.result = None
 
     def tearDown(self):
@@ -20,10 +23,11 @@ class test_Echo_Kernel__Install(TestCase):
             Dev.pprint(self.result)
 
     def test_install(self):
-        if self.kernel_install.exists() is False:
-            assert self.kernel_install.install().get('status') == 'ok'
+        #assert self.kernel_install.uninstall().get('status') == 'ok'
+        assert self.kernel_install.exists() is False
+        assert self.kernel_install.install().get('status') == 'ok'
         assert self.kernel_install.exists() is True
-        #self.kernel_install.uninstall()
+
 
 class test_Echo_Kernel(TestCase):
     def setUp(self):
@@ -43,6 +47,11 @@ class test_Echo_Kernel(TestCase):
 
     def test__init__(self):
         self.result = self.jp_echo.info()
+
+    def test___execute_on_kernel(self):
+        text = 'Hello...'
+        Dev.pprint(self.jp_echo.execute(text).get('stdout'))
+        #assert self.jp_echo.execute(text).get('stdout') == [text]
 
 
 
