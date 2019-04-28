@@ -1,0 +1,8 @@
+{
+ "argv": ["python", "-m",
+          "osbot_jupyter.kernels.PlotKernel", "-f",
+          "{connection_file}"],
+ "display_name": "Plotter",
+ "name": "Plotter",
+ "language": "python"
+}

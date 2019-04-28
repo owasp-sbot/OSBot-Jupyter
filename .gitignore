@@ -10,3 +10,6 @@ __pycache__
 .aws
 dev-notebook.py.ipynb
 notebooks/work/examples/.ipynb_checkpoints
+.bash_history
+first-plot.ipynb
+notebooks/seaborn-data

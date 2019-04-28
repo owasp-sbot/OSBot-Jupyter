@@ -66,7 +66,7 @@ class test_Jupyter_Kernel(TestCase):
 
     def test_kernels(self):
         assert len(self.jp_kernel.kernels()) > 0
-        self.result = self.jp_kernel.kernels()
+        #self.result = self.jp_kernel.kernels()
 
     def test_kernels_ids(self):
         assert len(self.jp_kernel.kernels_ids()) > 0

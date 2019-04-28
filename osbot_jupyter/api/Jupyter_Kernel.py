@@ -42,9 +42,9 @@ class Jupyter_Kernel(Jupyter_API):
     def kernels_ids(self):
         return list(set(self.kernels()))
 
-    def new(self):
+    def new(self,name=None):
         path = 'kernels'
-        data = {}
+        data = { "name": name}
         info = self.http_post(path, data)
         self.kernel_id = info.get('id')
         return self
@@ -83,29 +83,64 @@ class Jupyter_Kernel(Jupyter_API):
         port    = 8888
         ws      = self.execute_get_connection(ip, port)
         payload = self.execute_request(code)
-        result  = { 'output': None }
+        result  = {
+                    'output'        : None ,
+                    'stream'        : []   ,
+                    'display_data'  : []   ,
+                    'stdout'        : []   ,
+                    'unhandled'     : []
+                  }
 
         ws.send(payload)
+
         while True:                                 # I don't like 'while True' but it seems to be the only option
             response = json.loads(ws.recv())
             content  = response.get("content")
             msg_type = response.get("msg_type")
-            #Dev.pprint(response)
+
             if msg_type == 'execute_input' :
                 result['input'] = content.get('code')
 
-            if msg_type == 'execute_result':
+            elif msg_type == 'execute_result':
                 result['output'] = content.get('data').get('text/plain')
 
-            if msg_type == 'error':
+            elif msg_type == 'stream':
+                if content.get('name') == 'stdout':
+                    result['stdout'].append(content.get('text'))
+                else:
+                    result['stream'].append(content)
+
+            elif msg_type == 'display_data':
+                result['display_data'].append(content)
+
+            elif msg_type == 'error':
                 result['error' ] = content
 
-            if msg_type == "execute_reply" :
+            elif msg_type == "execute_reply" :
                 result['status'] = content.get('status')
                 break
+            elif msg_type == 'status':
+                pass                        # don't capture these
+            else:
+                result['unhandled'] = {'msg_type': msg_type, 'content': content}
+                #Dev.pprint(response)        # log the msg_types not currently handled
         ws.close()
 
         return result
+
+    def first_with_name(self,name):
+        for kernel in self.kernels().values():
+            if kernel.get('name') == name:
+                self.kernel_id = kernel.get('id')
+                return self
+        return None
+
+    def first_or_new(self, name):
+        first = self.first_with_name(name)
+        if first:
+            return first
+        return self.new(name)
+
 
     # def execute(self,code_to_execute):
     #
