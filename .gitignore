@@ -13,3 +13,4 @@ notebooks/work/examples/.ipynb_checkpoints
 .bash_history
 first-plot.ipynb
 notebooks/seaborn-data
+*.ipynb
