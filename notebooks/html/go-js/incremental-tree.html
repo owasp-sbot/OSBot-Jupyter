@@ -9,19 +9,21 @@
         <script src="https://unpkg.com/gojs/release/go.js"></script>
 
         <script id="helper_functions">
+
             function expandNode(node) {
                   var diagram = node.diagram;
                   diagram.startTransaction("CollapseExpandTree");
+
                   // this behavior is specific to this incrementalTree sample:
                   var data = node.data;
-                  if (!data.everExpanded) {
-                    // only create children once per node
-                    diagram.model.setDataProperty(data, "everExpanded", true);
-                    var numchildren = createSubTree(data);
-                    if (numchildren === 0) {  // now known no children: don't need Button!
-                      node.findObject('TREEBUTTON').visible = false;
-                    }
-                  }
+                  // if (!data.everExpanded) {
+                  //   // only create children once per node
+                  //   diagram.model.setDataProperty(data, "everExpanded", true);
+                  //   var numchildren = createSubTree(data);
+                  //   if (numchildren === 0) {  // now known no children: don't need Button!
+                  //     node.findObject('TREEBUTTON').visible = false;
+                  //   }
+                  // }
                   // this behavior is generic for most expand/collapse tree buttons:
                   if (node.isTreeExpanded) {
                     diagram.commandHandler.collapseTree(node);
@@ -64,16 +66,37 @@
                   return numchildren;
                 }
 
-            function expandAtRandom() {
-                  var eligibleNodes = [];
-                  myDiagram.nodes.each(function(n) {
-                    if (!n.isTreeExpanded) eligibleNodes.push(n);
-                  })
-                  var node = eligibleNodes[Math.floor(Math.random() * (eligibleNodes.length))];
-                  expandNode(node);
-                }
-            function add_node(key) {
-                myDiagram.model.addNodeData({'key':key})
+            // function expandAtRandom() {
+            //       var eligibleNodes = [];
+            //       myDiagram.nodes.each(function(n) {
+            //         if (!n.isTreeExpanded) eligibleNodes.push(n);
+            //       })
+            //       var node = eligibleNodes[Math.floor(Math.random() * (eligibleNodes.length))];
+            //       expandNode(node);
+            //     }
+            // function add_node(key,parent) {
+            //     myDiagram.model.addNodeData({'key':key, 'parent': parent })
+            // }
+            function add_node(data) {
+                myDiagram.model.addNodeData(data)
+            }
+
+            function expand_node(key) {
+                node = myDiagram.findNodeForKey(key)
+                node.diagram.commandHandler.expandTree(node)
+            }
+
+            function collapse_node(key) {
+                node = myDiagram.findNodeForKey(key)
+                node.diagram.commandHandler.collapseTree(node)
+            }
+
+            function zoom_to_fit() {
+                myDiagram.zoomToFit()
+            }
+
+            function clear_diagram() {
+                myDiagram.model = new go.TreeModel([])
             }
                 
         </script>
@@ -97,7 +120,7 @@
 
                 myDiagram.nodeTemplate =  $(go.Node, "Spot",  { selectionObjectName: "PANEL", isTreeExpanded: false, isTreeLeaf: false }                // Define the Node template. This uses a Spot Panel to position a button relative to the ellipse surrounding the text.
                                                            ,  $(go.Panel, "Auto", { name: "PANEL" }                                                     // the node's outer shape, which will surround the text
-                                                                                 , $(go.Shape, "Circle",  { fill: "whitesmoke", stroke: "black" }
+                                                                                 , $(go.Shape, "RoundedRectangle",  { fill: "whitesmoke", stroke: "black" }
                                                                                                        , new go.Binding("fill", "rootdistance"
                                                                                                                               , function(dist) { dist = Math.min(blues.length - 1, dist);
                                                                                                                                                  return blues[dist]; }))
@@ -113,14 +136,15 @@
                                                                                                                 }}));
 
                 // create the model with a root node data
-                myDiagram.model = new go.TreeModel([ { key: 0, color: blues[0], everExpanded: false } ]);
+                myDiagram.model = new go.TreeModel([])
+                //myDiagram.model = new go.TreeModel([ { key: 0, color: blues[0], everExpanded: false } ]);
 
 
                 document.getElementById('zoomToFit').addEventListener('click', function() { myDiagram.zoomToFit(); });
                 document.getElementById('expandAtRandom').addEventListener('click', function() { expandAtRandom(); });
 
-                for(i=0 ; i < 4;i++)
-                  expandAtRandom()
+                //for(i=0 ; i < 4;i++)
+                //  expandAtRandom()
             }
 
             window.addEventListener('message', function(event) { 

@@ -51,12 +51,22 @@ class test_Jp_Go_Js(TestCase):
         code =  """
                     %autoreload   
                     jp_go_js = Jp_Go_Js()      
-                    jp_go_js.invoke_method('add_node','123123')
+                    jp_go_js.invoke_method('add_node',{'key':'RISK-12'})
+                    jp_go_js.invoke_method('add_node',{'key':'RISK-1', 'parent': 'RISK-12' })
+                    jp_go_js.invoke_method('add_node',{'key':'RISK-2', 'parent': 'RISK-12' })
+                    jp_go_js.invoke_method('add_node',{'key':'RISK-3', 'parent': 'RISK-12' })                    
+                    jp_go_js.invoke_method('expand_node','RISK-12')
+                    jp_go_js.invoke_method('zoom_to_fit',None)                    
                 """
         self.jp_cell.delete().execute(code)
 
     def test_add_node(self):
         self.jp_cell.delete().execute('40+1')
+
+        # add_node('Risk-1');
+        # add_node('Risk-2', 'Risk-1')
+        # add_node('Risk-3', 'Risk-1')
+        # expand_node('Risk-1')
 
 
 
