@@ -32,13 +32,24 @@ class Jp_Go_Js:
         self.invoke_method('clear_diagram')
         return self
 
-    def add_node(self,key, parent=None):
-        self.invoke_method('add_node', {'key': key, 'parent':parent})
+    def add_node(self,key):
+        self.invoke_method('add_node', {'key': key, 'label': key,'rootdistance':2})
+        #print(json.dumps({'key': key, 'label': key,'rootdistance':2}))
         return self
+
+    def add_link(self, from_key,to_key,label):
+        #jp_go_js.invoke_method('add_link',{'from':'RISK-12','to':'RISK-1' ,'text':'aaaa'})
+        self.invoke_method('add_link', {'from': from_key, 'to': to_key, 'text':label})
+        #print(json.dumps({'from': from_key, 'to': to_key, 'text':label}))
+        return self
+
 
     def expand_node(self,key):
         self.invoke_method('expand_node', key)
         return self
+
+    def zoom_to_fit(self):
+        self.invoke_method('zoom_to_fit')
 
         #jp_go_js.invoke_method('add_node', {'key': 'RISK-1', 'parent': 'RISK-12'})
         #jp_go_js.invoke_method('add_node', {'key': 'RISK-2', 'parent': 'RISK-12'})

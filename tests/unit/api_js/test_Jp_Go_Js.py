@@ -54,19 +54,42 @@ class test_Jp_Go_Js(TestCase):
                     jp_go_js.invoke_method('add_node',{'key':'RISK-12'})
                     jp_go_js.invoke_method('add_node',{'key':'RISK-1', 'parent': 'RISK-12' })
                     jp_go_js.invoke_method('add_node',{'key':'RISK-2', 'parent': 'RISK-12' })
-                    jp_go_js.invoke_method('add_node',{'key':'RISK-3', 'parent': 'RISK-12' })                    
+                    jp_go_js.invoke_method('add_node',{'key':'RISK-3', 'parent': 'RISK-12' })
+                    
+                    jp_go_js.invoke_method('add_edge',{'from':'RISK-12','to':'RISK-1' })                    
                     jp_go_js.invoke_method('expand_node','RISK-12')
                     jp_go_js.invoke_method('zoom_to_fit',None)                    
                 """
         self.jp_cell.delete().execute(code)
 
-    def test_add_node(self):
-        self.jp_cell.delete().execute('40+1')
+    def test__create_from_issue(self):
+
+        code =  """
+                        %autoreload
+                        import sys; sys.path.append('..')
+                        from helper import *
+                        root_key = 'IA-402'
+                        links = issue(root_key).get('Issue Links')
+                        #set(links)
+                        jp_go_js.clear()
+                        jp_go_js.add_node(root_key).expand_node(root_key)
+                        for link_type,values in links.items():    
+                                                                                     
+                            for link_key in values:
+                                jp_go_js.add_node(link_key)
+                                jp_go_js.add_link(root_key,link_key,link_type)    
+                            #    jp_go_js.add_node(value, key)
+                            #jp_go_js.expand_node(key)    
+                """
+        self.jp_cell.delete().execute(code)
 
         # add_node('Risk-1');
         # add_node('Risk-2', 'Risk-1')
         # add_node('Risk-3', 'Risk-1')
         # expand_node('Risk-1')
+
+    def test___load_src_in_browse(self):
+        self.jp_cell.open(self.jp_go_js.src)
 
 
 
