@@ -54,7 +54,9 @@ class Jupyter_Web_Cell(Jupyter_Web):
             self.delete()
         return self
 
-    def execute(self, code):
+    def execute(self, code=None):
+        if code is None:
+            return self.execute_cell()
         return ( self.new_top()
                      .execute_python(code,new_cell=False))
 
@@ -76,12 +78,16 @@ class Jupyter_Web_Cell(Jupyter_Web):
         self.browser().sync__js_execute(js_code)
         return self
 
+    def text_dedent(self, value):
+        value = textwrap.dedent(value).strip()
+        return self.text(value)
+
     def text(self,value=None):
         if value is None:
             js_code = "Jupyter.notebook.get_selected_cell().get_text()"
             return self.browser().sync__js_execute(js_code)
         else:
-            encoded_text = base64.b64encode(value.strip().encode()).decode()
+            encoded_text = base64.b64encode(value.encode()).decode()
             js_code = """cell = Jupyter.notebook.get_selected_cell();
                          cell.set_text(atob('{0}'));""".format(encoded_text)
             self.browser().sync__js_execute(js_code)

@@ -12,7 +12,6 @@ class GSBot_Execution:
         if len(params) > 0:
             if params[0] == 'jira':
                 return self.invoke_jira(params[1:])
-
         return self.invoke_osbot(command)
 
     def invoke_osbot(self, command):
