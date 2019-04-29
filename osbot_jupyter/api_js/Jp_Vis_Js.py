@@ -11,7 +11,7 @@ class Jp_Vis_Js:
         self.div_id     = Misc.random_string_and_numbers(prefix='network_')
         #self.test = 42
         self.setup_code = """
-                                %autoreload
+                                %autoreloadF
     
                                 from osbot_jupyter.api_js.Jp_Vis_Js import Jp_Vis_Js
                                 jp_vis = Jp_Vis_Js()
@@ -73,6 +73,10 @@ class Jp_Vis_Js:
     # tests
 
     def simple_graph_test(self):
+        from time import sleep
+        sleep(0.2)
+        self.js_invoke('element.text(_{0}.body.data.nodes)'.format(self.div_id))
+        return
         assert self.a == 23
         for i in range(10,20):
             node = json.dumps({ "id": str(i), "label" : str(i) })

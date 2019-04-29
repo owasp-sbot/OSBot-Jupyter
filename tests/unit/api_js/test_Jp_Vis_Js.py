@@ -10,7 +10,7 @@ class test_Jp_Vis_Js(TestCase):
     def setUp(self):
         self.vis_js = Jp_Vis_Js()
         self.jp_cell = Test_Server().docker().jupyter_cell()
-        self.jp_cell.clear().input_hide()
+        self.jp_cell.clear()#.input_hide()
         self.jp_cell.new_top()
         self.result = None
 
