@@ -7,14 +7,15 @@ from pbx_gs_python_utils.utils.Misc import Misc
 class Jp_Go_Js:
 
     def __init__(self, width="100%", height=800):
-        self.frame_id = Misc.random_string_and_numbers(prefix='go_view_')
-        self.frame_id = 'go_view_12345'
-        self.src      = '/view/html/go-js/incremental-tree.html'
-        self.nodes    = []                                          # keep track of nodes added
-        self.edges    = []
-        self.width    = width
-        self.height   = height
-        self.verbose  = False
+        self.frame_id   = Misc.random_string_and_numbers(prefix='go_view_')
+        self.frame_id   = 'go_view_12345'
+        self.src        = '/view/html/go-js/incremental-tree.html'
+        self.nodes      = []                                          # keep track of nodes added
+        self.edges      = []
+        self.link_types = []
+        self.width      = width
+        self.height     = height
+        self.verbose    = False
         pass
 
     def add_iframe(self):
@@ -69,7 +70,7 @@ class Jp_Go_Js:
             print('adding node', key)
         if label is None: label = key
         if color is None: color = '#E1F5FE'
-        node = {'key': key, 'label': label, 'color': color ,'isTreeExpanded': True}    #'rootdistance':2}
+        node = {'key': key, 'label': label, 'color': color ,'font': '8pt'}    #'rootdistance':2}
 
         self.invoke_method('add_node', node)
         self.nodes.append(key)
@@ -112,28 +113,38 @@ class Jp_Go_Js:
 
     ## helper issue methods
 
-    def add_nodes_from_issue(self, issue_key, link_types_to_expand=None):
+    def add_nodes_from_issue(self, issue_key):
+
+        self.add_node(issue_key)  # .expand_node(issue_key)
+
         from osbot_jira.api.API_Issues import API_Issues
-        issue = API_Issues().issue(issue_key)
+        api_issues =  API_Issues()
+        issue = api_issues.issue(issue_key)
         if issue is None:
             print('no data received for key: {0}'.format(issue_key))
             return self
+
         links = issue.get('Issue Links')
         if links:
-            self.add_node(issue_key)#.expand_node(issue_key)
+            available_links     = "{0}".format('\n'.join(list(set(links))))
+            available_links_key = "links_for_{0}".format(issue_key)
+            self.add_node(available_links_key,available_links,color='#C0C0C0')
+            self.add_link(issue_key, available_links_key)
 
-            print('handling {0} with {1} links', issue_key, len(links))
+            #print('handling {0} with {1} links'.format(issue_key, len(links)))
             for link_type,values in links.items():
-                link_type_key = '{0}::{1}'.format(link_type, issue_key)
-                self.add_node(link_type_key,link_type, color='yellow')
-                self.add_link(issue_key,link_type_key)
-                if link_types_to_expand and (link_types_to_expand is not []) and (link_type not in link_types_to_expand):
-                    print('skipping links')
+                if (self.link_types is not []) and (link_type not in self.link_types):
+                    #print('skipping links')
                     continue
+                link_type_key = '{0}::{1}'.format(link_type, issue_key)
+                self.add_node(link_type_key, link_type, color='yellow')
+                self.add_link(issue_key, link_type_key)
                 if values:
                     for link_key in values:
-                         self.add_node(link_key)
-                         self.add_link(link_type_key,link_key)
+                        link_issue = api_issues.issue(link_key)
+                        summary    = "{0} \n{1}".format(link_issue.get('Summary'),link_key)
+                        self.add_node(link_key,summary)
+                        self.add_link(link_type_key,link_key, )
         else:
             print('no links for {0}'.format(issue_key))
 

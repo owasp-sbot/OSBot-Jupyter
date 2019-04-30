@@ -13,22 +13,22 @@
             function expandNode(node) {
                 var diagram = node.diagram;
 
-                if (node.isTreeExpanded)
-                {
-                    var message = {'action':'collapse', 'key': node.key }
-                    window.node = node
-                    console.log('collapsing nodes',message)
-                    diagram.commandHandler.collapseTree(node);
-                    parent.parent.postMessage(message,'*')
-                }
-                else
-                {
+                // if (node.isTreeExpanded)
+                // {
+                //     var message = {'action':'collapse', 'key': node.key }
+                //     window.node = node
+                //     console.log('collapsing nodes',message)
+                //     diagram.commandHandler.collapseTree(node);
+                //     parent.parent.postMessage(message,'*')
+                // }
+                // else
+                // {
                     var message = {'action':'expand', 'key': node.key }
                     window.node = node
                     console.log('expanding nodes', message)
                     parent.parent.postMessage(message,'*')
                     diagram.commandHandler.expandTree(node);
-                }
+                //}
                 //myDiagram.zoomToFit();
               }
 
@@ -80,7 +80,7 @@
                 var part = e.subject.part;
 
                     if (!(part instanceof go.Link)){
-                        part.data.expanded = ! part.data.expanded
+                        //part.data.expanded = ! part.data.expanded
                         key = part.data.key
                         node=myDiagram.findNodeForKey(key)
                         console.log("Clicked on " + key);
@@ -126,25 +126,24 @@
                                                   //"animationManager.isEnabled": false,
                                                 });
 
-                myDiagram.nodeTemplate =  $(go.Node, "Spot",  { selectionObjectName: "PANEL", isTreeExpanded: false, isTreeLeaf: false }                // Define the Node template. This uses a Spot Panel to position a button relative to the ellipse surrounding the text.
+                myDiagram.nodeTemplate =  $(go.Node, "Spot",  { selectionObjectName: "PANEL", isTreeExpanded: true, isTreeLeaf: false }                // Define the Node template. This uses a Spot Panel to position a button relative to the ellipse surrounding the text.
                                                            ,  $(go.Panel, "Auto", { name: "PANEL" }                                                     // the node's outer shape, which will surround the text
-                                                                                 , $(go.Shape, "RoundedRectangle", { fill: "whitesmoke", stroke: "black",
-                                                                                                                     click:  function(e, obj) { console.log('node clicked')}}
+                                                                                 , $(go.Shape, "RoundedRectangle", { fill: "whitesmoke", stroke: "black"}
                                                                                                                  , new go.Binding("fill", "color")
-                                                                                                                 , new go.Binding("isTreeExpanded", 'isTreeExpanded'))
+                                                                                                                 , new go.Binding("font", 'font'))
                                                                                                        // , new go.Binding("fill", "rootdistance"
                                                                                                        //                        , function(dist) { dist = Math.min(blues.length - 1, dist);
                                                                                                        //                                           return blues[dist]; }))
-                                                                                  ,$(go.TextBlock,{ font: "12pt sans-serif", margin: 5 },
-                                                                                                    new go.Binding("text", "label")      ))
-                                                          ,  $("TreeExpanderButton", {  name: 'TREEBUTTON', width: 20, height: 20,                      // the expand/collapse button, at the top-right corner
-                                                                                        alignment: go.Spot.TopRight, alignmentFocus: go.Spot.Center,
-                                                                                        click: function(e, obj) {                                       // customize the expander behavior to create children if the node has never been expanded
-                                                                                                                   var node = obj.part;                 // get the Node containing this Button (OBJ is the Button)
-                                                                                                                   if (node === null) return;
-                                                                                                                   e.handled = true;
-                                                                                                                   expandNode(node);
-                                                                                                                }}));
+                                                                                  ,$(go.TextBlock,{ font: "12pt sans-serif", margin: 5 , isMultiline: true  },
+                                                                                                    new go.Binding("text", "label")     )))
+                                                          // ,  $("TreeExpanderButton", {  name: 'TREEBUTTON', width: 20, height: 20,                      // the expand/collapse button, at the top-right corner
+                                                          //                               alignment: go.Spot.TopRight, alignmentFocus: go.Spot.Center,
+                                                          //                               click: function(e, obj) {                                       // customize the expander behavior to create children if the node has never been expanded
+                                                          //                                                          var node = obj.part;                 // get the Node containing this Button (OBJ is the Button)
+                                                          //                                                          if (node === null) return;
+                                                          //                                                          e.handled = true;
+                                                          //                                                          expandNode(node);
+                                                          //                                                       }}));
 
                 myDiagram.linkTemplate = $(go.Link,   $(go.Shape),                           // this is the link shape (the line)
                                                       $(go.Shape, { toArrow: "Standard" }),  // this is an arrowhead
