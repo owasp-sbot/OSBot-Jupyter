@@ -9,30 +9,28 @@
         <script src="https://unpkg.com/gojs/release/go.js"></script>
 
         <script id="helper_functions">
-
+            console.log('setup ')
             function expandNode(node) {
-                  var diagram = node.diagram;
-                  diagram.startTransaction("CollapseExpandTree");
+                var diagram = node.diagram;
 
-                  // this behavior is specific to this incrementalTree sample:
-                  var data = node.data;
-                  // if (!data.everExpanded) {
-                  //   // only create children once per node
-                  //   diagram.model.setDataProperty(data, "everExpanded", true);
-                  //   var numchildren = createSubTree(data);
-                  //   if (numchildren === 0) {  // now known no children: don't need Button!
-                  //     node.findObject('TREEBUTTON').visible = false;
-                  //   }
-                  // }
-                  // this behavior is generic for most expand/collapse tree buttons:
-                  if (node.isTreeExpanded) {
+                if (node.isTreeExpanded)
+                {
+                    var message = {'action':'collapse', 'key': node.key }
+                    window.node = node
+                    console.log('collapsing nodes',message)
                     diagram.commandHandler.collapseTree(node);
-                  } else {
-                    diagram.commandHandler.expandTree(node);
-                  }
-                  diagram.commitTransaction("CollapseExpandTree");
-                  myDiagram.zoomToFit();
+                    parent.parent.postMessage(message,'*')
                 }
+                else
+                {
+                    var message = {'action':'expand', 'key': node.key }
+                    window.node = node
+                    console.log('expanding nodes', message)
+                    parent.parent.postMessage(message,'*')
+                    diagram.commandHandler.expandTree(node);
+                }
+                //myDiagram.zoomToFit();
+              }
 
             // This dynamically creates the immediate children for a node.
             // The sample assumes that we have no idea of whether there are any children
@@ -78,6 +76,21 @@
             //     myDiagram.model.addNodeData({'key':key, 'parent': parent })
             // }
 
+            function node_clicked(e) {
+                var part = e.subject.part;
+
+                    if (!(part instanceof go.Link)){
+                        part.data.expanded = ! part.data.expanded
+                        key = part.data.key
+                        node=myDiagram.findNodeForKey(key)
+                        console.log("Clicked on " + key);
+                        expandNode(node)
+
+                    }
+
+
+                }
+
             function add_link(data)     { myDiagram.model.addLinkData(data) }
             function add_node(data)     { myDiagram.model.addNodeData(data) }
             function expand_all()       { myDiagram.nodes.each(function(n) {n.expandTree()}) }
@@ -115,8 +128,10 @@
 
                 myDiagram.nodeTemplate =  $(go.Node, "Spot",  { selectionObjectName: "PANEL", isTreeExpanded: false, isTreeLeaf: false }                // Define the Node template. This uses a Spot Panel to position a button relative to the ellipse surrounding the text.
                                                            ,  $(go.Panel, "Auto", { name: "PANEL" }                                                     // the node's outer shape, which will surround the text
-                                                                                 , $(go.Shape, "RoundedRectangle",  { fill: "whitesmoke", stroke: "black" }
-                                                                                                                 , new go.Binding("fill", "color")  )
+                                                                                 , $(go.Shape, "RoundedRectangle", { fill: "whitesmoke", stroke: "black",
+                                                                                                                     click:  function(e, obj) { console.log('node clicked')}}
+                                                                                                                 , new go.Binding("fill", "color")
+                                                                                                                 , new go.Binding("isTreeExpanded", 'isTreeExpanded'))
                                                                                                        // , new go.Binding("fill", "rootdistance"
                                                                                                        //                        , function(dist) { dist = Math.min(blues.length - 1, dist);
                                                                                                        //                                           return blues[dist]; }))
@@ -142,6 +157,7 @@
                                                         new go.Binding("text", "text")));
 
 
+                myDiagram.addDiagramListener("ObjectDoubleClicked", node_clicked)
                 // create the model with a root node data
 
                 myDiagram.model = new go.GraphLinksModel([], []);
@@ -163,9 +179,13 @@
             }
 
             // this is the main method that acts like the bridge between python and js
-            window.addEventListener('message', function(event) { 
+            window.addEventListener('message', function(event) {
+
                     method = event.data['method']
                     params = event.data['params']
+
+                    //console.log('[iframe received]', method,params)
+
                     window[method](params)
             })
 
@@ -188,7 +208,7 @@
               position : fixed;
               border:  1px solid lightgray;
             }
-            #zoomToFit {
+            #buttons {
                 position : fixed;
                 left     : 405px;
             }
@@ -196,7 +216,10 @@
     <body onload="init()">
     <div id="sample">
       <div id="myDiagramDiv" ></div>
-      <p><button id="zoomToFit">Zoom to Fit</button></p>
+
+      <p id="buttons">
+          <button id="zoomToFit">Zoom to Fit</button>
+          <button id="button_expand_all" onclick="window.expand_all()">expand all</button>
       <p>
     </div>
     </body>

@@ -100,6 +100,18 @@ class test_Jp_Go_Js(TestCase):
                """
         self.jp_cell.delete().execute(code)
 
+    def test__with_add_nodes_from_issue(self):
+        code =  """                        
+                    %autoreload                                                                        
+                    jp_go_js = Jp_Go_Js(800,500)                                                
+                    jp_go_js.add_iframe().add_event_listerner().wait(1)                    
+                    
+                    jp_go_js.clear_diagram()                                                
+                    jp_go_js.add_nodes_from_issue('IA-402', ['is parent of'])                        
+
+                """
+        self.jp_cell.delete().execute(code)
+
     def test_add_Iframe(self):
         self.jp_cell.clear()
         self.invoke_in_jp(Jp_Go_Js.add_iframe)
