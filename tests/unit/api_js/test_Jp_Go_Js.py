@@ -39,14 +39,6 @@ class test_Jp_Go_Js(TestCase):
         return self
 
 
-    def test_add_Iframe(self):
-        #url = self.jp_cell.browser().sync__url()
-        #self.jp_cell.browser().sync__open(url)
-        self.jp_cell.clear()
-        self.invoke_in_jp(Jp_Go_Js.add_iframe)
-        self.jp_cell.input_hide().new_top()
-        #self.jp_cell.new_top()
-
     def test_invoke_method(self):
         code =  """
                     %autoreload   
@@ -69,8 +61,7 @@ class test_Jp_Go_Js(TestCase):
                         import sys; sys.path.append('..')
                         from helper import *
                         root_key = 'IA-402'
-                        links = issue(root_key).get('Issue Links')
-                        #set(links)
+                        links = issue(root_key).get('Issue Links')                        
                         jp_go_js.clear()
                         jp_go_js.add_node(root_key).expand_node(root_key)
                         for link_type,values in links.items():    
@@ -83,10 +74,37 @@ class test_Jp_Go_Js(TestCase):
                 """
         self.jp_cell.delete().execute(code)
 
-        # add_node('Risk-1');
-        # add_node('Risk-2', 'Risk-1')
-        # add_node('Risk-3', 'Risk-1')
-        # expand_node('Risk-1')
+    def test__with_link_issues_as_sub_nodes(self):
+        code = """
+                    from time import sleep
+                    %autoreload
+                    import sys; sys.path.append('..')
+                    from helper import *
+                    root_key = 'IA-402'
+                    links = issue(root_key).get('Issue Links')                        
+                    #jp_go_js.add_iframe()                    
+                    #sleep(1)
+                    #jp_go_js.clear()
+                    jp_go_js.add_node(root_key).expand_node(root_key)
+                    for link_type,values in links.items():
+                        link_type_key = '{0}_{1}'.format(link_type, root_key)
+                        jp_go_js.add_node(link_type_key,link_type, color='yellow')                    
+                        jp_go_js.add_link(root_key,link_type_key,None)    
+                        for link_key in values:
+                            jp_go_js.add_node(link_key)
+                            jp_go_js.add_link(link_type_key,link_key)    
+                        #    jp_go_js.add_node(value, key)
+                    
+                        #jp_go_js.expand_node(key)    
+
+               """
+        self.jp_cell.delete().execute(code)
+
+    def test_add_Iframe(self):
+        self.jp_cell.clear()
+        self.invoke_in_jp(Jp_Go_Js.add_iframe)
+        self.jp_cell.input_hide().new_top()
+
 
     def test___load_src_in_browse(self):
         self.jp_cell.open(self.jp_go_js.src)

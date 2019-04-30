@@ -77,31 +77,16 @@
             // function add_node(key,parent) {
             //     myDiagram.model.addNodeData({'key':key, 'parent': parent })
             // }
-            function add_link(data) {
-                myDiagram.model.addLinkData(data)
-            }
 
-            function add_node(data) {
-                myDiagram.model.addNodeData(data)
-            }
+            function add_link(data)     { myDiagram.model.addLinkData(data) }
+            function add_node(data)     { myDiagram.model.addNodeData(data) }
+            function expand_all()       { myDiagram.nodes.each(function(n) {n.expandTree()}) }
+            function expand_node(key)   { node=myDiagram.findNodeForKey(key); node.diagram.commandHandler.expandTree(node) }
+            function collapse_all()     { myDiagram.nodes.each(function(n) {n.collapseTree()}) }
+            function collapse_node(key) { node=myDiagram.findNodeForKey(key); node.diagram.commandHandler.collapseTree(node) }
+            function zoom_to_fit()      { myDiagram.zoomToFit() }
+            function clear_diagram()    { myDiagram.model = new go.GraphLinksModel([], []); }
 
-            function expand_node(key) {
-                node = myDiagram.findNodeForKey(key)
-                node.diagram.commandHandler.expandTree(node)
-            }
-
-            function collapse_node(key) {
-                node = myDiagram.findNodeForKey(key)
-                node.diagram.commandHandler.collapseTree(node)
-            }
-
-            function zoom_to_fit() {
-                myDiagram.zoomToFit()
-            }
-
-            function clear_diagram() {
-                myDiagram.model = new go.GraphLinksModel([], []);
-            }
                 
         </script>
 
@@ -114,7 +99,13 @@
 
                 myDiagram =
                   $(go.Diagram, "myDiagramDiv", { initialContentAlignment     : go.Spot.Center,
-                                                  layout                      : $(go.ForceDirectedLayout),
+                                                  layout                      : $(go.ForceDirectedLayout, {
+                                                                                                            defaultElectricalCharge : 150  ,    // 150
+                                                                                                            defaultGravitationalMass: 0    ,    // 0
+                                                                                                            defaultSpringLength     : 50   ,    // 50
+                                                                                                            defaultSpringStiffness  : 0.05 ,    // 0.05
+                                                                                                            maxIterations           : 3000 ,    // 100
+                                                                                                          }),
                                                   "commandHandler.copiesTree" : true,  // moving and copying nodes also moves and copies their subtrees
                                                   "commandHandler.deletesTree": true,
                                                   "draggingTool.dragsTree"    : true,  // dragging for both move and copy
@@ -122,12 +113,13 @@
                                                   //"animationManager.isEnabled": false,
                                                 });
 
-                myDiagram.nodeTemplate =  $(go.Node, "Spot",  { selectionObjectName: "PANEL", isTreeExpanded: true, isTreeLeaf: false }                // Define the Node template. This uses a Spot Panel to position a button relative to the ellipse surrounding the text.
+                myDiagram.nodeTemplate =  $(go.Node, "Spot",  { selectionObjectName: "PANEL", isTreeExpanded: false, isTreeLeaf: false }                // Define the Node template. This uses a Spot Panel to position a button relative to the ellipse surrounding the text.
                                                            ,  $(go.Panel, "Auto", { name: "PANEL" }                                                     // the node's outer shape, which will surround the text
                                                                                  , $(go.Shape, "RoundedRectangle",  { fill: "whitesmoke", stroke: "black" }
-                                                                                                       , new go.Binding("fill", "rootdistance"
-                                                                                                                              , function(dist) { dist = Math.min(blues.length - 1, dist);
-                                                                                                                                                 return blues[dist]; }))
+                                                                                                                 , new go.Binding("fill", "color")  )
+                                                                                                       // , new go.Binding("fill", "rootdistance"
+                                                                                                       //                        , function(dist) { dist = Math.min(blues.length - 1, dist);
+                                                                                                       //                                           return blues[dist]; }))
                                                                                   ,$(go.TextBlock,{ font: "12pt sans-serif", margin: 5 },
                                                                                                     new go.Binding("text", "label")      ))
                                                           ,  $("TreeExpanderButton", {  name: 'TREEBUTTON', width: 20, height: 20,                      // the expand/collapse button, at the top-right corner
@@ -141,24 +133,16 @@
 
                 myDiagram.linkTemplate = $(go.Link,   $(go.Shape),                           // this is the link shape (the line)
                                                       $(go.Shape, { toArrow: "Standard" }),  // this is an arrowhead
-                                                      $(go.Panel, "Auto",  // this whole Panel is a link label
-                                                            $(go.Shape, "RoundedRectangle", { fill: "yellow", stroke: "gray" }),
-                                                            $(go.TextBlock, { margin: 3 },
-                                                              new go.Binding("text", "text"))
-                                                          ))
-                                                  //    $(go.TextBlock,                        // this is a Link label
-                                                  //      new go.Binding("text", "text")));
+                                                      // $(go.Panel, "Auto",  // this whole Panel is a link label
+                                                      //       $(go.Shape, "RoundedRectangle", { fill: "yellow", stroke: "gray" }),
+                                                      //       $(go.TextBlock, { margin: 1, font: "5pt sans-serif" },
+                                                      //         new go.Binding("text", "text"))
+                                                      //     ))
+                                                      $(go.TextBlock,                        // this is a Link label
+                                                        new go.Binding("text", "text")));
 
 
                 // create the model with a root node data
-
-                var nodeDataArray = [
-    { key: "Alpha", loc: "0 0" ,label:'a'},
-    { key: "Beta", loc: "100 50" ,label:'b'}
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
 
                 myDiagram.model = new go.GraphLinksModel([], []);
 
@@ -170,39 +154,49 @@
 
 
                 document.getElementById('zoomToFit').addEventListener('click', function() { myDiagram.zoomToFit(); });
-                document.getElementById('expandAtRandom').addEventListener('click', function() { expandAtRandom(); });
 
                 //for(i=0 ; i < 4;i++)
                 //  expandAtRandom()
 
 
-                test_data()
+                //test_data()
             }
 
+            // this is the main method that acts like the bridge between python and js
             window.addEventListener('message', function(event) { 
                     method = event.data['method']
                     params = event.data['params']
-                    console.log('> invoking method: ' + method)
-                    console.log('> with params: '     + JSON.stringify(params))
                     window[method](params)
             })
-            
-//            alert('all set')
 
-            function test_data()
-            {
-                add_node({'key':'Alpha','label':'123'})
-                add_node({'key':'Beta' , 'label' : 'cccccc'})
-                add_link({'from':'Alpha' , 'to' : 'e', 'text':'to e'})
-                add_link({'from':'Alpha' , 'to' : 'Beta', 'text':'to d'})
-
-            }
+            // function test_data()
+            // {
+            //     add_node({'key':'Alpha','label':'123'})
+            //     add_node({'key':'Beta' , 'label' : 'cccccc'})
+            //     add_link({'from':'Alpha' , 'to' : 'e', 'text':'to e'})
+            //     add_link({'from':'Alpha' , 'to' : 'Beta', 'text':'to d'})
+            //
+            // }
       </script>
     </head>
+    <style>
+            #myDiagramDiv {
+              top      : 5px;
+              bottom   : 5px;
+              left     : 5px;
+              right    : 5px;
+              position : fixed;
+              border:  1px solid lightgray;
+            }
+            #zoomToFit {
+                position : fixed;
+                left     : 405px;
+            }
+        </style>
     <body onload="init()">
     <div id="sample">
-      <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 250px"></div>
-      <p><button id="zoomToFit">Zoom to Fit</button><button id="expandAtRandom">Expand random Node</button></p>
+      <div id="myDiagramDiv" ></div>
+      <p><button id="zoomToFit">Zoom to Fit</button></p>
       <p>
     </div>
     </body>
