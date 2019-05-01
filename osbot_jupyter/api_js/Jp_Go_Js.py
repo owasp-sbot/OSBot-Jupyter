@@ -34,12 +34,18 @@ class Jp_Go_Js:
                             window.removeEventListener('message', window.message_listener)
                         }
                         console.log('adding event listener')
-                        window.message_listener = function(event) { 
+                        window.message_listener = function(event) {
+                         
                             console.log('message: ' + JSON.stringify(event.data))
-                            if (event.data.action == 'expand') {        
+                            if (event.data.action == 'expand') {
+                                Jupyter.notebook.select_next().select_next()        
                                 var nb = Jupyter.notebook.insert_cell_below()
+                                nb.select()
+                                Jupyter.notebook.get_selected_cell().unselect()                                
                                 nb.set_text("jp_go_js.add_nodes_from_issue('"+event.data.key+"')")
-                                nb.execute()                            
+                                nb.execute()     
+                                Jupyter.notebook.delete_cell()      
+                                console.log('cell created and deleted')                 
                               }
                           }
                             
