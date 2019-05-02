@@ -11,7 +11,7 @@ class Trace_Call:
         if self.img_file is None:  self.img_file  = '/tmp/trace_PyCallGraph.png'
         self.graphviz             = GraphvizOutput()
         self.graphviz.output_file = self.img_file
-        self.include_filter       = ['osbot*', 'pbx*', 'boto3*']
+        self.include_filter       = ['osbot*', 'pbx*'] #, 'boto3*'
 
     def rainbow(node):
         return Color.hsv(node.time.fraction * 0.8, 0.4, 0.9)
@@ -25,7 +25,7 @@ class Trace_Call:
                      0.2)
 
 
-    def trace_eval(self, method,*params):
+    def invoke_method(self, method, *params):
         self.graphviz.edge_color_func = lambda e: Color(0, 0, 0)
         # graphviz.node_color_func = rainbow #orange_green # greyscale
 

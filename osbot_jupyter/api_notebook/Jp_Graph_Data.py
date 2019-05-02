@@ -44,3 +44,30 @@ class Jp_Graph_Data:
         #nodes = data.get('nodes')
         #edges = data.get('edges')
 
+
+    def draw_graph(self,graph):
+        nodes = graph.nodes
+        edges = graph.edges
+        import networkx as nx
+        import matplotlib.pyplot as plt
+
+        size = 40
+        plt.figure(figsize=(size, size))
+        G = nx.DiGraph()
+
+        for node in nodes:
+            G.add_node(node)
+
+        for edge in edges:
+            G.add_edge(edge[0], edge[2], label=edge[1])
+
+        edge_labels = nx.get_edge_attributes(G, 'label')
+
+        # pos = nx.spring_layout(G)
+        # pos=nx.nx_pydot.graphviz_layout(G,prog='dot')
+        pos = nx.nx_pydot.graphviz_layout(G)
+
+        nx.draw_networkx_nodes(G, pos, node_shape='', node_size=100)
+        nx.draw_networkx_labels(G, pos, font_size=16)
+        nx.draw_networkx_edges(G, pos);
+        nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=edge_labels, font_size=10);

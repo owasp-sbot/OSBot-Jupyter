@@ -36,7 +36,6 @@ class test_Jp_Graph_Data(TestCase):
         assert len(self.jp_graph_data.jira_search('people di*')) > 10
 
     def test_graph_expand(self):
-        self.result = value
         depth         = 1
         key           = 'RISK-1610'
         link_types    = 'has RISK'
@@ -46,4 +45,4 @@ class test_Jp_Graph_Data(TestCase):
         assert len(graph.edges) == 6
 
     def test_run_with_trace(self):
-        self.result = Trace_Call().trace_eval(test_Jp_Graph_Data.test_graph_expand,self)
+        self.result = Trace_Call().invoke_method(test_Jp_Graph_Data.test_graph_expand, self)
