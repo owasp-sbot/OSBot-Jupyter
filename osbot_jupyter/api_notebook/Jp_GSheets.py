@@ -1,18 +1,21 @@
 from IPython.core.display import display, HTML, Javascript
 from IPython.lib.display import IFrame
 from IPython.display import display, Markdown
-from ipywidgets import widgets, HBox, Label, VBox
+from ipywidgets import widgets, HBox, Label, VBox, Layout
 from ipywidgets import HTML as Html_Widget
 from osbot_gsuite.apis.GSheets import GSheets
 from osbot_gsuite.apis.sheets.API_Jira_Sheets_Create import API_Jira_Sheets_Create
 from osbot_gsuite.apis.sheets.API_Jira_Sheets_Sync import API_Jira_Sheets_Sync
 from osbot_jira.api.jira_server.API_Jira_Rest import API_Jira_Rest
+from pbx_gs_python_utils.utils.Misc import Misc
+
 
 class Jp_GSheets():
 
-    def __init__(self, file_id=None, sheet_name=None):
+    def __init__(self, file_ids=None, sheet_name=None):
         self.gsuite_secret_id = 'gsuite_gsbot_user'
-        self.file_id          = file_id
+        self.file_id          = Misc.array_get(file_ids,0)
+        self.other_files      = file_ids
         self.sheet_name       = sheet_name
         self.gsheets          = GSheets               (self.gsuite_secret_id)
         self.gsheets_sync     = API_Jira_Sheets_Sync  (self.file_id,self.gsuite_secret_id)
@@ -25,6 +28,9 @@ class Jp_GSheets():
     def set_file_id(self,value):
         self.file_id = value
         return self
+
+    def set_other_files(self,other_files):
+        self.other_files = other_files
 
     def metadata(self):
         return self.gsheets.sheets_metadata(self.file_id)
@@ -48,8 +54,9 @@ class Jp_GSheets():
 
 
     def ui(self,height=400):
-        self.ui_add_iframe(height=height)
         self.ui_add_buttons()
+        self.ui_add_iframe(height=height)
+
 
     def ui_add_iframe(self,width='100%', height=400):
         iframe = IFrame(self.url(), width=width, height=height)
@@ -79,21 +86,28 @@ class Jp_GSheets():
         #sheet_link    = self.url()
         #link_to_sheet = Html_Widget("on this <a href='{0}' target='blank'>Google Sheet</a>".format(sheet_link));
 
-        text_file_id = widgets.Text(value=self.file_id, description='Sheet id')
-        text_file_id.observe(lambda value: self.set_file_id(value.new),'value')
+        def on_dropdown_change(value):
+            print(value)
+            text_file_id.value = value.new
+            self.ui_load__file_id()
 
+        text_file_id = widgets.Text(value=self.file_id, description='Current file id')
+        text_file_id.observe(lambda value: self.set_file_id(value.new),'value')
+        #self.other_files.insert(0,self.file_id)
+        list_file_ids = widgets.Dropdown(options = self.other_files, description='Other file ids')
+        list_file_ids.observe(on_dropdown_change ,'value')
         items = []
         items.append(add_button("Open file", self.ui_load__file_id, button_style='info'))
         items.append(add_button("Load Data", self.load_data))
         items.append(add_button("Sync Data", self.sync_data))
 
-
-
-        display(VBox([ HBox([text_file_id]),
+        display(VBox([ HBox([text_file_id,list_file_ids]),
                        HBox(items)         ]))
 
+        display(Javascript("$('.widget-text').width(500);$('.widget-dropdown').width(500)"))
+
     def ui_show_link(self):
-        html = "Here is the <a href='{0}' target='_blank'>link</a> for the sheet with id <i>{1}</i>".format(url, self.file_id)
+        html = "Here is the <a href='{0}' target='_blank'>link</a> for the sheet with id <i>{1}</i>".format(self.url(), self.file_id)
 
         display(HTML(html))
         return self

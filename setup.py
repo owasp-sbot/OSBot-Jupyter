@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    version                       = "0.3.93"               , # change this on every release
+    version                       = "0.3.94"               , # change this on every release
     name                          = "osbot_jupyter"  ,
 
     author                        = "Dinis Cruz",
