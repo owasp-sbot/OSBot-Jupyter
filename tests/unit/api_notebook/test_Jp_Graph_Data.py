@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev            import Dev
 from osbot_jupyter.api_notebook.Jp_Graph_Data import Jp_Graph_Data
+from osbot_jupyter.utils.Trace_Call import Trace_Call
 
 
 class test_Jp_Graph_Data(TestCase):
@@ -31,10 +32,18 @@ class test_Jp_Graph_Data(TestCase):
         assert len(graph.nodes) > 5
         assert len(graph.edges) > 5
 
+    def test_jira_search(self):
+        assert len(self.jp_graph_data.jira_search('people di*')) > 10
+
     def test_graph_expand(self):
+        self.result = value
         depth         = 1
         key           = 'RISK-1610'
         link_types    = 'has RISK'
         graph  = self.jp_graph_data.graph_expand(key, depth, link_types)
+
         assert len(graph.nodes) == 7
         assert len(graph.edges) == 6
+
+    def test_run_with_trace(self):
+        self.result = Trace_Call().trace_eval(test_Jp_Graph_Data.test_graph_expand,self)
