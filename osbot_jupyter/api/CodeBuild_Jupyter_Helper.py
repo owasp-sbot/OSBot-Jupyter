@@ -1,6 +1,7 @@
 from time import sleep
 
 from osbot_aws.apis.CodeBuild import CodeBuild
+from osbot_aws.apis.Secrets import Secrets
 from pbx_gs_python_utils.utils.Json import Json
 from pbx_gs_python_utils.utils.Misc import Misc
 
@@ -44,14 +45,30 @@ class CodeBuild_Jupyter_Helper:
         return CodeBuild_Jupyter(build_id=build_id)
 
     def start_build_and_wait_for_jupyter_load(self, max_seconds=60):
-        seconds_sleep = 5
         build = self.start_build()
-        for i in range(0,max_seconds,seconds_sleep):
-            sleep(seconds_sleep)
-            #print("after #{0}".format(i))
-            (url,_) = build.get_server_details_from_logs()
-            if url is not None:
-                return build
+        return self.wait_for_jupyter_load(build,max_seconds)
+
+    def start_build_for_repo(self,repo_name):
+        aws_secret = "git__{0}".format(repo_name)
+
+        data = Secrets(aws_secret).value_from_json_string()
+        repo_url = data['repo_url']
+        user = 'gsbot'
+        kvargs = {
+            'projectName'                 : self.project_name,
+            'timeoutInMinutesOverride'    : 25 ,
+            'sourceLocationOverride'      : repo_url,
+            #'buildspecOverride': 'osbot_gsheet_sync/tasks/{0}/buildspec.yml'.format(task_name),
+            'environmentVariablesOverride': [{'name': 'repo_name', 'value': repo_name, 'type': 'PLAINTEXT'},
+                                             {'name': 'user'     , 'value': user     , 'type': 'PLAINTEXT'}]
+        }
+        build_id = self.code_build.codebuild.start_build(**kvargs).get('build').get('arn')
+        return {'status': 'ok', 'data': build_id}
+
+    def start_build_for_repo_and_wait_for_jupyter_load(self, repo_name):
+        build_id = self.start_build_for_repo(repo_name).get('data')
+        build    = CodeBuild_Jupyter(build_id=build_id)
+        return self.wait_for_jupyter_load(build)
 
 
     def stop_all_active(self):
@@ -71,3 +88,10 @@ class CodeBuild_Jupyter_Helper:
         Json.save_json(file, config)
         return config
 
+    def wait_for_jupyter_load(self, build,max_seconds=90):
+        seconds_sleep = 5
+        for i in range(0,max_seconds,seconds_sleep):
+            sleep(seconds_sleep)
+            (ngrok_url,jupyter_token) = build.get_server_details_from_logs()
+            if ngrok_url is not None:
+                return "{0}?token={1}".format(ngrok_url, jupyter_token)

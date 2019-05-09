@@ -34,6 +34,12 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
         result = self.api.start_build_and_wait_for_jupyter_load()
         Dev.pprint(result.build_status())
 
+    def test_start_build_for_repo_and_wait_for_jupyter_load(self):
+        repo = 'gs-notebook-risks'
+        repo = 'gs-detect-notebooks'        
+        self.result = self.api.start_build_for_repo_and_wait_for_jupyter_load(repo)
+
+
     def test_stop_all_active(self):
         result = CodeBuild_Jupyter_Helper().stop_all_active()
         Dev.pprint("stopped builds {0}".format(result))
