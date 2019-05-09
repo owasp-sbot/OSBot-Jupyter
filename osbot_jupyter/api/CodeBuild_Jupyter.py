@@ -1,12 +1,7 @@
 from time import sleep
-
 from osbot_aws.apis.CodeBuild import CodeBuild
-from osbot_aws.apis.IAM import IAM
 from osbot_aws.apis.Logs import Logs
-from osbot_aws.helpers.Create_Code_Build import Create_Code_Build
-from pbx_gs_python_utils.utils.Files import Files
 from pbx_gs_python_utils.utils.Json import Json
-from pbx_gs_python_utils.utils.Local_Cache import use_local_cache_if_available
 from pbx_gs_python_utils.utils.Misc import Misc
 
 
@@ -31,6 +26,14 @@ class CodeBuild_Jupyter_Helper:
                 if stop_when_match:
                     return builds
         return builds
+
+    def get_active_server_details(self):
+        build_id = self.get_active_build_id()
+        if build_id is None:
+            self.start_build_and_wait_for_jupyter_load()
+            build_id = self.get_active_build_id()
+        code_build = CodeBuild_Jupyter(build_id)
+        return code_build.get_server_details_from_logs()
 
     def start_build(self):
         build_arn =self.code_build.build_start()

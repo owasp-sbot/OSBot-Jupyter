@@ -1,5 +1,3 @@
-from pbx_gs_python_utils.utils.Json import Json
-
 from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter_Helper, CodeBuild_Jupyter
 from osbot_jupyter.api.Docker_Jupyter   import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API      import Jupyter_API
@@ -28,14 +26,7 @@ class Test_Server:
         return self
 
     def codebuild(self):
-        self.code_build_helper = CodeBuild_Jupyter_Helper()
-        build_id          = self.code_build_helper.get_active_build_id()
-        if build_id is None:
-            self.code_build_helper.start_build_and_wait_for_jupyter_load()
-            build_id = self.code_build_helper.get_active_build_id()
-        code_build   = CodeBuild_Jupyter(build_id)
-        server, token = code_build.get_server_details_from_logs()
-
+        server, token = CodeBuild_Jupyter_Helper().get_active_server_details()
         self.server = server
         self.token  = token
         return self

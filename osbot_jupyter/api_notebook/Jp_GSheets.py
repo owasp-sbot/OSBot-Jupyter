@@ -65,7 +65,6 @@ class Jp_GSheets():
 
     def ui_load__file_id(self):
         code = "$('iframe').eq(0).attr('src', '{0}')".format(self.url())
-        print(code)
         display(Javascript(code))
 
     def ui_add_buttons(self):
@@ -87,7 +86,6 @@ class Jp_GSheets():
         #link_to_sheet = Html_Widget("on this <a href='{0}' target='blank'>Google Sheet</a>".format(sheet_link));
 
         def on_dropdown_change(value):
-            print(value)
             text_file_id.value = value.new
             self.ui_load__file_id()
 
@@ -115,3 +113,7 @@ class Jp_GSheets():
 #%autoreload
 #from osbot_jupyter.api_notebook.Jp_Helper import Jp_Helper
 ##Jp_Helper.trace_method(sheets.gsheets_sync.load_data_from_jira)
+
+
+
+#sheets.gsheets.set_values(file_id, 'new sheet', [['aaa','123']])
