@@ -2,7 +2,9 @@ from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
 
-from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter,CodeBuild_Jupyter_Helper
+from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter
+from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
+
 
 class test_CodeBuild_Jupyter_Helper(TestCase):
     def setUp(self):

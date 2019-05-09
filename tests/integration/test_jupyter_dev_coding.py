@@ -3,7 +3,7 @@ from unittest import TestCase
 from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Json import Json
 
-from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter_Helper
+from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API import Jupyter_API
 from osbot_jupyter.api.Jupyter_Web import Jupyter_Web

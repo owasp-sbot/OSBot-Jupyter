@@ -1,6 +1,6 @@
 from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
 
-from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter_Helper
+from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 
 
 class Jupyter_Commands:

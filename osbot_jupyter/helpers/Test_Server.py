@@ -1,4 +1,4 @@
-from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter_Helper, CodeBuild_Jupyter
+from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Docker_Jupyter   import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API      import Jupyter_API
 from osbot_jupyter.api.Jupyter_Kernel   import Jupyter_Kernel
