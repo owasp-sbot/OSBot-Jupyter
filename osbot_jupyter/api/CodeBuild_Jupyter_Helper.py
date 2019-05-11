@@ -11,9 +11,10 @@ from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter
 class CodeBuild_Jupyter_Helper:
 
     def __init__(self):
-        self.project_name = 'OSBot-Jupyter'
-        self.code_build   = CodeBuild(project_name=self.project_name,role_name=None)
-        self.max_builds   = 10
+        self.project_name  = 'OSBot-Jupyter'
+        self.code_build    = CodeBuild(project_name=self.project_name,role_name=None)
+        self.max_builds    = 10
+        self.build_timeout = 240
 
     def get_active_build_id(self):
         builds = self.get_active_builds(stop_when_match=True)
@@ -48,15 +49,15 @@ class CodeBuild_Jupyter_Helper:
         build = self.start_build()
         return self.wait_for_jupyter_load(build,max_seconds)
 
-    def start_build_for_repo(self,repo_name):
+    def start_build_for_repo(self,repo_name,user='gsbot'):
         aws_secret = "git__{0}".format(repo_name)
 
         data = Secrets(aws_secret).value_from_json_string()
         repo_url = data['repo_url']
-        user = 'gsbot'
+
         kvargs = {
             'projectName'                 : self.project_name,
-            'timeoutInMinutesOverride'    : 25 ,
+            'timeoutInMinutesOverride'    : self.build_timeout ,
             'sourceLocationOverride'      : repo_url,
             #'buildspecOverride': 'osbot_gsheet_sync/tasks/{0}/buildspec.yml'.format(task_name),
             'environmentVariablesOverride': [{'name': 'repo_name', 'value': repo_name, 'type': 'PLAINTEXT'},
@@ -65,8 +66,8 @@ class CodeBuild_Jupyter_Helper:
         build_id = self.code_build.codebuild.start_build(**kvargs).get('build').get('arn')
         return {'status': 'ok', 'data': build_id}
 
-    def start_build_for_repo_and_wait_for_jupyter_load(self, repo_name):
-        build_id = self.start_build_for_repo(repo_name).get('data')
+    def start_build_for_repo_and_wait_for_jupyter_load(self, repo_name, user='gsbot'):
+        build_id = self.start_build_for_repo(repo_name,user).get('data')
         build    = CodeBuild_Jupyter(build_id=build_id)
         return self.wait_for_jupyter_load(build)
 
@@ -95,3 +96,13 @@ class CodeBuild_Jupyter_Helper:
             (ngrok_url,jupyter_token) = build.get_server_details_from_logs()
             if ngrok_url is not None:
                 return "{0}?token={1}".format(ngrok_url, jupyter_token)
+
+    def util_rename_secret(self, old, new):
+        old = "git__{0}".format(old)
+        new = "git__{0}".format(new)
+        data = Secrets(old).value()
+        if data:
+            Secrets(new).create(data)
+        if Secrets(new).value() == Secrets(old).value():
+            Secrets(old).delete()
+            return True

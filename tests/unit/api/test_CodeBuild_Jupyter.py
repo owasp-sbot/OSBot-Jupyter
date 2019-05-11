@@ -36,7 +36,9 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
 
     def test_start_build_for_repo_and_wait_for_jupyter_load(self):
         repo = 'gs-notebook-risks'
-        repo = 'gs-detect-notebooks'        
+        #repo = 'gs-notebook-detect'
+        #repo = 'gs-notebook-gscs'
+        #self.result = self.api.util_rename_secret('gs-detect-notebooks', 'gs-notebook-detect')
         self.result = self.api.start_build_for_repo_and_wait_for_jupyter_load(repo)
 
 
