@@ -15,6 +15,7 @@ class CodeBuild_Jupyter_Helper:
         self.code_build    = CodeBuild(project_name=self.project_name,role_name=None)
         self.max_builds    = 10
         self.build_timeout = 240
+        self.server_sizes  = {'small': 'BUILD_GENERAL1_SMALL', 'medium': 'BUILD_GENERAL1_MEDIUM','large': 'BUILD_GENERAL1_LARGE'}
 
     def get_active_build_id(self):
         builds = self.get_active_builds(stop_when_match=True)
@@ -49,7 +50,7 @@ class CodeBuild_Jupyter_Helper:
         build = self.start_build()
         return self.wait_for_jupyter_load(build,max_seconds)
 
-    def start_build_for_repo(self,repo_name,user='gsbot'):
+    def start_build_for_repo(self,repo_name,user='gsbot', server_size='small'):
         aws_secret = "git__{0}".format(repo_name)
 
         data = Secrets(aws_secret).value_from_json_string()
@@ -59,7 +60,7 @@ class CodeBuild_Jupyter_Helper:
             'projectName'                 : self.project_name,
             'timeoutInMinutesOverride'    : self.build_timeout ,
             'sourceLocationOverride'      : repo_url,
-            #'buildspecOverride': 'osbot_gsheet_sync/tasks/{0}/buildspec.yml'.format(task_name),
+            'computeTypeOverride'         : self.server_sizes[server_size],
             'environmentVariablesOverride': [{'name': 'repo_name', 'value': repo_name, 'type': 'PLAINTEXT'},
                                              {'name': 'user'     , 'value': user     , 'type': 'PLAINTEXT'}]
         }

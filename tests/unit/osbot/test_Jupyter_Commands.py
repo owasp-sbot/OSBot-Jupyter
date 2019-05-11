@@ -21,6 +21,9 @@ class test_Jupyter_Commands(TestCase):
     def test_get_active_builds(self):
         self.result = self.jp_commands.get_active_builds()
 
+    def test_get_active_server(self):
+        self.result = self.jp_commands.get_active_server()
+
     def test_start_build(self):
         # repo = 'gs-notebook-risks'
         # repo = 'gs-notebook-detect'

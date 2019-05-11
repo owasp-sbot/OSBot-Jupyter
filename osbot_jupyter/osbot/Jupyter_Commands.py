@@ -20,13 +20,13 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
 
     @staticmethod
     def servers(team_id=None, channel=None, params=None):
-        text         = "Here are the running servers:"
+        text         = ":point_right: Here are the running servers:"
         servers_text = ""
         attachments = []
         for build_id,build in CodeBuild_Jupyter_Helper().get_active_builds().items():
             #print(build_id)
             build_info = build.build_info()
-            #Dev.pprint(build_info)
+            Dev.pprint(build_info)
             variables = {}
             for variable in build_info.get('environment').get('environmentVariables'):
                 variables[variable.get('name')] = variable.get('value')
@@ -36,12 +36,16 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
             timeout    = build_info.get('timeoutInMinutes')
             small_id   = build_id[-5:]
             server_url = build.url()
+
             if server_url is None:
-                servers_text += "*{0}*: booting up\n".format(repo_name, server_url)
+                user_text = "(server booting up)"
             else:
-                time = "{0}".format(build_info.get('startTime').strftime("%H:%M"))
-                servers_text += "*{1}*: <{2}|open in browser> \n(id: `{0}`, user: <@{3}>, started: {4}, timeout: {5})\n".format(
-                                        small_id, repo_name,server_url,user,time, timeout)
+                user_text = "<{0}|open>".format(server_url)
+            #    servers_text += "*{0}*: booting up\n".format(repo_name, server_url)
+            #else:
+            time = "{0}".format(build_info.get('startTime').strftime("%H:%M"))
+            servers_text += "*{1}*: {2} (id: `{0}`, user: <@{3}>, started: {4}, timeout: {5})\n".format(
+                                small_id, repo_name,user_text,user,time, timeout)
 
         attachments.append({"text":servers_text, 'color': 'good'})
 

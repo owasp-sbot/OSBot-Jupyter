@@ -34,6 +34,13 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
         result = self.api.start_build_and_wait_for_jupyter_load()
         Dev.pprint(result.build_status())
 
+
+    def test_start_build_for_repo__server_size(self):
+        repo = 'gs-notebook-gscs'
+        self.api.start_build_for_repo(repo, server_size = 'small' )
+        self.api.start_build_for_repo(repo, server_size = 'medium')
+        self.api.start_build_for_repo(repo, server_size = 'large' )
+
     def test_start_build_for_repo_and_wait_for_jupyter_load(self):
         repo = 'gs-notebook-risks'
         #repo = 'gs-notebook-detect'

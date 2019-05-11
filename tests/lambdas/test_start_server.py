@@ -23,7 +23,7 @@ class test_run_command(TestCase):
                 fh.write(base64.decodebytes(self.png_data.encode()))
             Dev.pprint("Png data with size {0} saved to {1}".format(len(self.png_data), png_file))
 
-    # def test_invoke_lambda(self):
+    # def test_invoke_lambda(self):w
     #     #payload     = { 'repo_name': 'gs-notebook-gscs',  "channel": "GDL2EC3EE", "team_id": "T7F3AUXGV"}
     #     payload     = { 'repo_name': 'gs-notebook-risks', 'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV', 'user': 'U7ESE1XS7'}
     #     self.result = self.aws_lambda.invoke(payload)

@@ -40,7 +40,8 @@ class test_run_command(TestCase):
         self.result = self.aws_lambda.invoke(payload)
 
     def test_invoke_servers(self):
-        payload     = {  'params': ['servers']}
+        self.aws_lambda.update_code()
+        payload     = {  'params': ['servers'], 'data': {'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV'}}
         self.result = self.aws_lambda.invoke(payload)
 
     def test___update_lambda_function(self):
