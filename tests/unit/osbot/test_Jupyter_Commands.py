@@ -10,12 +10,18 @@ class test_Jupyter_Commands(TestCase):
     def setUp(self):
         self.jp_commands = Jupyter_Commands()
         self.result = None
+        self.team_id   = 'T7F3AUXGV'
+        self.channel   = 'GDL2EC3EE'
 
     def tearDown(self):
         if self.result is not None:
             Dev.pprint(self.result)
 
-    def test_get_servers(self):
+    def test_screenshot(self):
+        params = ['dc10d', 'examples/simple-commands',1200]
+        self.result = self.jp_commands.screenshot(params=params, team_id=self.team_id, channel=self.channel)
+
+    def test_servers(self):
         self.result = self.jp_commands.servers()
 
     def test_get_active_builds(self):
@@ -28,7 +34,5 @@ class test_Jupyter_Commands(TestCase):
         # repo = 'gs-notebook-risks'
         # repo = 'gs-notebook-detect'
         print()
-        team_id   = 'T7F3AUXGV'
-        channel   = 'GDL2EC3EE'
         repo_name = 'gs-notebook-gscs'
-        self.result = self.jp_commands.start_server(params=[repo_name], team_id=team_id, channel=channel)
+        self.result = self.jp_commands.start_server(params=[repo_name], team_id=self.team_id, channel=self.channel)

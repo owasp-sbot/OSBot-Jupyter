@@ -4,6 +4,7 @@ from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
 from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
+from osbot_jupyter.api.Live_Notebook import Live_Notebook
 
 
 def send_message(message, channel, team_id):
@@ -17,6 +18,26 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
     @staticmethod
     def get_active_builds(*params):
         return "{0}".format(list(CodeBuild_Jupyter_Helper().get_active_builds().keys()))
+
+    @staticmethod
+    def screenshot(team_id=None, channel=None, params=None):
+        try:
+            short_id = params.pop(0)
+            path     = params.pop(0)
+            try:
+                width    = int(params.pop(0))
+            except:
+                width    = 800
+            send_message(":point_right: taking screenshot of notebook `{0}` in server `{1}` with width `{2}`".format(path,short_id,width),channel,team_id)
+            payload = {'short_id': short_id, 'path': path,'width': width}
+            png_data = Lambda('osbot_jupyter.lambdas.live_notebook').invoke(payload)
+            send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)),channel,team_id)
+            Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
+        except Exception as error:
+            send_message(":red_circle: error in screenshot: {0}".format(error),channel,team_id)
+
+        #slack_message('got image with size {0}'.format(len(png_data)),channel, team_id)
+        #return {'png_data': png_data, 'team_id': team_id, 'channel': channel}
 
     @staticmethod
     def servers(team_id=None, channel=None, params=None):
@@ -47,15 +68,16 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
             servers_text += "*{1}*: {2} (id: `{0}`, user: <@{3}>, started: {4}, timeout: {5})\n".format(
                                 small_id, repo_name,user_text,user,time, timeout)
 
-        attachments.append({"text":servers_text, 'color': 'good'})
-
-        slack_message(text, attachments, channel, team_id)
-
+        if servers_text:
+            attachments.append({"text":servers_text, 'color': 'good'})
+            slack_message(text, attachments, channel, team_id)
+        else:
+            slack_message(":information_source: there are no servers running! Why don't you start one using the command `jupyter start {repo name}` ", [], channel, team_id)
 
         #return "{0}".format(list(CodeBuild_Jupyter_Helper().get_active_builds().keys()))
 
     @staticmethod
-    def start_server(team_id=None, channel=None, params=None):
+    def start(team_id=None, channel=None, params=None):
         event     = Misc.array_pop(params)
         user      = Misc.get_value(event,'data', {}).get('user')
         repo_name = Misc.array_pop(params,0)
@@ -72,7 +94,15 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
         return CodeBuild_Jupyter_Helper().stop_all_active()
 
     @staticmethod
+    def stop(team_id=None, channel=None, params=None):
+        short_id = params.pop(0)
+        notebook = Live_Notebook().set_build_from_short_id(short_id)
+        if notebook:
+            notebook.stop()
+            return ':point_right: stopped server with id: `{0}`'.format(short_id)
+        return ':red_circle: error: could not find server with id: `{0}`'.format(short_id)
+
+    @staticmethod
     def get_active_server(*params):
-        slack_message("[get_active_server] {0}".format(params))
         server, token = CodeBuild_Jupyter_Helper().get_active_server_details()
         return "{0}?token={1}".format(server, token)
