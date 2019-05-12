@@ -8,7 +8,7 @@ from osbot_jupyter.api.Live_Notebook import Live_Notebook
 class test_Live_Notebook(TestCase):
 
     def setUp(self):
-        self.short_id = '0957b'
+        self.short_id = '3ddc8'
         self.notebook = Live_Notebook(short_id=self.short_id, headless=False)
         self.result   = None
 
@@ -30,10 +30,30 @@ class test_Live_Notebook(TestCase):
 
     # api methods
 
-    def test_contents(self):
-        self.result = self.notebook.contents('scenarios')
+    def test_files(self):
+        self.result = self.notebook.files('scenarios')
         #contents
 
+    def test_execute_command(self):
+        path ='notebooks/setup/gsbot-invoke.ipynb'
+        jp_web = self.notebook.jupyter_web()
+        jp_cell = self.notebook.jupyter_cell()
+
+        if (path in jp_web.url()) is False:
+            jp_web.open(path)
+        jp_cell.clear()
+        jp_cell.execute("""
+                            a=40+2
+                            print(123)
+                            a
+                            """)
+        self.result = jp_cell.output_wait_for_data()
+
+    def test_execute_python(self):
+        self.result = self.notebook.execute_python("""
+            a=40+2
+            print(123)
+            a                                      """, keep_contents=None)
 
     def test_screenshot(self):
         self.notebook.set_build_from_short_id(self.short_id)

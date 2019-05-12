@@ -31,7 +31,7 @@ class test_Jupyter_API(TestCase):
     #     self.result = self.api.create(tmp_file)
 
     def test_contents(self):
-        self.api.contents()
+        self.api.files()
         self.api.contents('work')
         self.result = self.api.contents(self.notebook_name)
 

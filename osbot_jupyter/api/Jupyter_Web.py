@@ -33,12 +33,13 @@ class Jupyter_Web:
     def logout(self):
         return self.open('logout')
 
-    def open(self, path):
-        if path and path.startswith('http'):
-            url = path
-        else:
-            url = self.resolve_url(path)
-        self.browser().sync__open(url)
+    def open(self, path=None):
+        if path:
+            if path and path.startswith('http'):
+                url = path
+            else:
+                url = self.resolve_url(path)
+            self.browser().sync__open(url)
         return self
 
     def open_notebook(self,notebook_path):
@@ -75,6 +76,8 @@ class Jupyter_Web:
     def ui_hide_input_boxes(self):
         self.browser().sync__js_execute("$('div.input').hide()")
         return self
+    def url(self):
+        return self.browser().sync__url()
 
     def set_url  (self, value): self._server   = value; return self
     def set_token(self, value): self.token  = value; return self

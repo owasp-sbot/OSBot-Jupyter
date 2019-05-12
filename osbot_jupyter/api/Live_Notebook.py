@@ -2,6 +2,7 @@ from osbot_jupyter.api.CodeBuild_Jupyter        import CodeBuild_Jupyter
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Jupyter_API              import Jupyter_API
 from osbot_jupyter.api.Jupyter_Web              import Jupyter_Web
+from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
 
 
 class Live_Notebook:
@@ -10,10 +11,13 @@ class Live_Notebook:
         self.short_id            = None
         self.build_id            = None
         self._code_build_Jupyter = None
+        self._jupyter_cell       = None
         self._jupyter_web        = None
         self._jupyter_api        = None
+        self._server_details     = None
         self._needs_login        = True
         self.jupyter_helper      = CodeBuild_Jupyter_Helper()
+        self.execute_python_file = 'notebooks/setup/gsbot-invoke.ipynb'
         if short_id:
             self.set_build_from_short_id(short_id)
 
@@ -35,21 +39,49 @@ class Live_Notebook:
             self._code_build_Jupyter = CodeBuild_Jupyter(self.build_id)
         return self._code_build_Jupyter
 
+    # NOT WORKING IN LAMBDA (I think it is because the Javascript is not being executed ok)
+    def execute_python(self, python_code,keep_contents=True, target=None):
+        jp_web  = self.jupyter_web()
+        jp_cell = self.jupyter_cell()
+        if target is None:
+            target = self.execute_python_file
+        if (target in jp_web.url()) is False:
+            jp_web.open(target)
+        if not keep_contents:
+            jp_cell.clear()
+        jp_cell.execute(python_code)
+        #jp_cell.new()
+        #jp_cell.text('some content')
+        return jp_cell.output_wait_for_data()
+
+    def server_details(self):
+        print('server_details')
+        if self._server_details is None:
+            print('acutually getting the data')
+            self._server_details = self.code_build_Jupyter().get_server_details_from_logs()
+        return self._server_details
+
+    def jupyter_cell(self):
+        if self._jupyter_cell is None:
+            server, token = self.server_details()
+            self._jupyter_cell = Jupyter_Web_Cell(server=server, token=token, headless=self.headless)
+        return self._jupyter_cell
+
     def jupyter_web(self):
         if self._jupyter_web is None:
-            server, token = self.code_build_Jupyter().get_server_details_from_logs()
+            server, token = self.server_details()
             self._jupyter_web = Jupyter_Web(server=server, token=token,headless=self.headless)
         return self._jupyter_web
 
     def jupyter_api(self):
         if self._jupyter_api is None:
-            server, token = self.code_build_Jupyter().get_server_details_from_logs()
+            server, token = self.server_details()
             self._jupyter_api = Jupyter_API(server=server, token=token)
         return self._jupyter_api
 
     # api Methods
 
-    def contents(self,path=''):
+    def files(self,path=''):
         text_body = ""
         data       = self.jupyter_api().contents(path)
         if data is None:
@@ -77,7 +109,7 @@ class Live_Notebook:
         return text_title, text_body
 
 
-    def screenshot(self,path, width=None):
+    def screenshot(self,path=None, width=None):
         return (self.login            ()
                     .open             (path)
                     .browser_width    (width)

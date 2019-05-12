@@ -3,6 +3,8 @@ import json
 import textwrap
 from time import sleep
 
+from pbx_gs_python_utils.utils.Dev import Dev
+
 from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 
 
@@ -98,30 +100,34 @@ class Jupyter_Web_Cell(Jupyter_Web):
         sleep(seconds)
         return self
 
+    # fluent methods
     def clear       (self       ): self.js_invoke("Jupyter.notebook.get_cells().forEach(function (cell) { Jupyter.notebook.delete_cell(cell.id) }) "); return self
-    def delete      (self       ): self.js_invoke("Jupyter.notebook.delete_cell()"             ); return self
-    def execute_cell(self       ): self.js_invoke("Jupyter.notebook.execute_cell()"            ); return self
-    def select      (self,index ): self.js_invoke("Jupyter.notebook.select({0})".format(index )); return self
-    def to_markdown (self       ): self.js_invoke("Jupyter.notebook.cells_to_markdown()"       ); return self
-    def to_code     (self       ): self.js_invoke("Jupyter.notebook.cells_to_code()"           ); return self
-
+    def delete      (self       ): self.js_invoke("Jupyter.notebook.delete_cell()"                                   ); return self
+    def execute_cell(self       ): self.js_invoke("Jupyter.notebook.execute_cell()"                                  ); return self
+    def select      (self,index ): self.js_invoke("Jupyter.notebook.select({0})".format(index )                      ); return self
+    def to_markdown (self       ): self.js_invoke("Jupyter.notebook.cells_to_markdown()"                             ); return self
+    def to_code     (self       ): self.js_invoke("Jupyter.notebook.cells_to_code()"                                 ); return self
     def input_hide  (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().input.hide()"                ); return self
     def input_show  (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().input.show()"                ); return self
-
     def output_hide (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.hide()"  ); return self
     def output_show (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.show()"  ); return self
     def output_clear(self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().clear_output()"              ); return self
-
     def unselect    (self       ): self.js_invoke("Jupyter.notebook.get_selected_cell().unselect()"                  ); return self
 
+    # methods that return values
+    def input_prompt(self):
+        return self.js_invoke("Jupyter.notebook.get_selected_cell().input.find('.input_prompt').text()")
+
     def output(self):
-        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.text()");
+        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.find('.output_result').text()");
 
     def output_html(self):
         return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.outputs[0].data['text/html']")
 
-    # def cell_selected_to_markdown(self):
-# Jupyter.notebook.cells_to_markdown() // change in ui the current cell to markdown
-# Jupyter.notebook.cells_to_code() // change in ui the current cell to markdown
-# Jupyter.notebook.delete_cell()
-# Jupyter.notebook.get_cells()
+    def output_wait_for_data(self, sleep_seconds = 0.5, max_attempts=30):
+        for i in range(1,max_attempts):
+            if self.input_prompt() != 'In\xa0[*]:':        # the [*] means the kernel is executing the current cells
+                return self.output()
+
+            self.wait(sleep_seconds)
+        return None

@@ -20,14 +20,14 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
         return "{0}".format(list(CodeBuild_Jupyter_Helper().get_active_builds().keys()))
 
     @staticmethod
-    def contents(team_id=None, channel=None, params=None):
+    def files(team_id=None, channel=None, params=None):
         event    = params.pop()
         short_id = Misc.array_pop(params,0)
         target   = " ".join(params)
         if short_id is None:
             return send_message(":red_circle: missing `short id`. The syntax for this method is `contents {short_id} [{path}]`", channel, team_id)
         notebook = Live_Notebook(short_id=short_id)
-        text_title, text_body = notebook.contents(target)
+        text_title, text_body = notebook.files(target)
         attachments = [{'text':text_body, 'color':'good'}]
         slack_message(text_title, attachments,channel,team_id)
 
