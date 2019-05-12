@@ -34,12 +34,15 @@ class Jupyter_Web:
         return self.open('logout')
 
     def open(self, path):
-        url = self.resolve_url(path)
+        if path and path.startswith('http'):
+            url = path
+        else:
+            url = self.resolve_url(path)
         self.browser().sync__open(url)
         return self
 
     def open_notebook(self,notebook_path):
-        return self.open('nbconvert/html/{0}.ipynb?download=false'.format(notebook_path))
+        return self.open(self.resolve_url_notebook_preview(notebook_path))
 
     def open_notebook_edit(self, notebook_path):
         return self.open('notebooks/{0}.ipynb'.format(notebook_path))
@@ -63,6 +66,11 @@ class Jupyter_Web:
         elif path[0] != '/'                : path = '/' + path
 
         return "{0}{1}".format(self.server, path)
+
+    def resolve_url_notebook_preview(self, notebook_path):
+        if '.ipynb' not in notebook_path:
+            notebook_path += '.ipynb'
+        return 'nbconvert/html/{0}?download=false'.format(notebook_path)
 
     def ui_hide_input_boxes(self):
         self.browser().sync__js_execute("$('div.input').hide()")

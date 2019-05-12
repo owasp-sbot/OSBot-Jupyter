@@ -1,7 +1,7 @@
-from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter
+from osbot_jupyter.api.CodeBuild_Jupyter        import CodeBuild_Jupyter
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
-from osbot_jupyter.api.Jupyter_API import Jupyter_API
-from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
+from osbot_jupyter.api.Jupyter_API              import Jupyter_API
+from osbot_jupyter.api.Jupyter_Web              import Jupyter_Web
 
 
 class Live_Notebook:
@@ -60,15 +60,17 @@ class Live_Notebook:
             folders = []
             text_title = ":point_right: Here are the files and folders for `{0}` in the server `{1}`".format(path, data.get('type'),self.short_id)
             for item in data.get('content'):
-                url  = "{0}/tree/{1}".format(self.jupyter_api().server, item.get('path'))
-                type = ""
+                url         = "{0}/tree/{1}".format(self.jupyter_api().server, item.get('path'))
+                url_preview = "{0}/{1}".format(self.jupyter_web().server, self.jupyter_web().resolve_url_notebook_preview(item.get('path')))
                 if item.get('type') == 'directory':
-                    folders.append("<{0}|{1}>".format(url,item.get('name'),  type))
+                    #folders.append("<{0}|{1}> (<{2}|preview>)".format(url,item.get('name'), url_preview))
+                    folders.append("<{0}|{1}>".format(url,item.get('name')))
                 else:
-                    files.append("<{0}|{1}>".format(url,item.get('name'),  type))
+                    files.append(" - {0} (<{1}|edit> , <{2}|preview>)\n".format(item.get('name'), url, url_preview))
+                    #files.append("<{0}|{1}>".format(url,item.get('name')))
 
             if files:
-                text_body += '*Files:* {0}\n\n'.format(' , '.join(files))
+                text_body += '*Files:* \n{0}\n\n'.format(''.join(files))
             if folders:
                 text_body += '*Folders:* {0}'.format(' , '.join(folders))
 
@@ -77,7 +79,7 @@ class Live_Notebook:
 
     def screenshot(self,path, width=None):
         return (self.login            ()
-                    .open_notebook    (path)
+                    .open             (path)
                     .browser_width    (width)
                     .screenshot_base64())
 
