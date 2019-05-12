@@ -76,7 +76,7 @@ class Jupyter_API:
         return self.contents(path) is not None
 
     def status(self):
-        return self.http_get('api/status')
+        return self.http_get('status')
 
     def url(self,path=None):
         if   path is None or len(path) == 0: path = '/'
@@ -87,7 +87,7 @@ class Jupyter_API:
         return "{0}{1}".format(self.server,path)
 
     def version(self):
-        return self.http_get('api')
+        return self.http_get('')
 
 
 

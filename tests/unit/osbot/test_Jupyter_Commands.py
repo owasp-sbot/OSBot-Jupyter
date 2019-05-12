@@ -12,10 +12,15 @@ class test_Jupyter_Commands(TestCase):
         self.result = None
         self.team_id   = 'T7F3AUXGV'
         self.channel   = 'GDL2EC3EE'
+        self.short_id = '0957b'
 
     def tearDown(self):
         if self.result is not None:
             Dev.pprint(self.result)
+
+    def test_contents(self):
+        path = 'scenarios'
+        self.result = self.jp_commands.contents(params=[self.short_id, path, {}], team_id=self.team_id, channel=self.channel)
 
     def test_screenshot(self):
         params = ['dc10d', 'examples/simple-commands',1200]

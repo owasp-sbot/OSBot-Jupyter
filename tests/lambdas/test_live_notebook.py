@@ -5,6 +5,7 @@ from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
 class test_run_command(TestCase):
     def setUp(self):
+        self.short_id   = '0957b'
         self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.live_notebook')
         self.result     = None
         self.png_data   = None
@@ -22,7 +23,7 @@ class test_run_command(TestCase):
             Dev.pprint("Png data with size {0} saved to {1}".format(len(self.png_data), png_file))
 
     def test_invoke_lambda(self):
-        payload     = { 'short_id' : 'dc10d', 'path':'examples/simple-commands', 'width':800}
+        payload     = { 'short_id' : self.short_id, 'path':'examples/simple-commands', 'width':800}
         self.png_data = self.aws_lambda.invoke(payload)
         #self.result =  self.aws_lambda.invoke(payload)
 
