@@ -5,9 +5,8 @@ from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
 class test_run_command(TestCase):
     def setUp(self):
-        self.short_id   = '0957b'
-        self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.screenshot')
-        self.aws_lambda.add_module('osbot_browser')
+        self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.nbconvert')
+        #self.aws_lambda.add_module('osbot_browser')
         self.aws_lambda.update_code()                                        # use when wanting to update lambda function
         self.result = None
         self.png_data = None
@@ -22,14 +21,16 @@ class test_run_command(TestCase):
                 fh.write(base64.decodebytes(self.png_data.encode()))
             Dev.pprint("Png data with size {0} saved to {1}".format(len(self.png_data), png_file))
 
-    def test_screenshot(self):
-        payload     = { 'short_id' : self.short_id, 'path':'', 'width':800}
-        self.png_data = self.aws_lambda.invoke(payload)
-        #self.result =  self.aws_lambda.invoke(payload)
+    def test_upload_dependency(self):
+        from osbot_aws.apis.Lambda import upload_dependency
+        self.result = upload_dependency('jupyter')
 
-    def test_screenshot___with_url(self):
-        payload = {'short_id': self.short_id, 'path': 'https://099f26ea.ngrok.io/nbconvert/html/scenarios/running-risk-stories-on-jupyter.ipynb?download=false', 'width': 800}
-        self.png_data = self.aws_lambda.invoke(payload)
+    def test_nbconvert(self):
+        payload     = { }
+        from osbot_aws.apis.Lambda import load_dependency
+        load_dependency('jupyter')
+        #self.png_data = self.aws_lambda.invoke(payload)
+        self.result =  self.aws_lambda.invoke(payload)
 
 
 
