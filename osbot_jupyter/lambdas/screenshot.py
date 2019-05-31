@@ -8,8 +8,9 @@ def run(event, context):
     short_id = event.get('short_id')
     path     = event.get('path')
     width    = event.get('width')
+    height   = event.get('height')
     notebook = Live_Notebook()
 
     notebook.set_build_from_short_id(short_id)
 
-    return notebook.screenshot(path=path,width=width)
+    return notebook.screenshot(path=path,width=width,height=height)

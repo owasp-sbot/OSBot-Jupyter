@@ -109,10 +109,10 @@ class Live_Notebook:
         return text_title, text_body
 
 
-    def screenshot(self,path=None, width=None):
+    def screenshot(self,path=None, width=None,height=None):
         return (self.login            ()
                     .open             (path)
-                    .browser_width    (width)
+                    .browser_size     (width,height)
                     .screenshot_base64())
 
     def login(self):

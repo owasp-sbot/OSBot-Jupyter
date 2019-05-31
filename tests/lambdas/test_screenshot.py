@@ -5,10 +5,10 @@ from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
 class test_run_command(TestCase):
     def setUp(self):
-        self.short_id   = '0957b'
+        self.short_id   = '1f5'
         self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.screenshot')
         self.aws_lambda.add_module('osbot_browser')
-        self.aws_lambda.update_code()                                        # use when wanting to update lambda function
+        #self.aws_lambda.update_code()                                        # use when wanting to update lambda function
         self.result = None
         self.png_data = None
 
@@ -24,11 +24,17 @@ class test_run_command(TestCase):
 
     def test_screenshot(self):
         payload     = { 'short_id' : self.short_id, 'path':'', 'width':800}
+        #self.png_data = self.aws_lambda.invoke(payload)
+        self.result =  self.aws_lambda.invoke(payload)
+
+    def test_screenshot__google(self):
+        payload     = { 'short_id' : self.short_id, 'path':'https://www.google.com', 'width':800}
         self.png_data = self.aws_lambda.invoke(payload)
         #self.result =  self.aws_lambda.invoke(payload)
 
     def test_screenshot___with_url(self):
-        payload = {'short_id': self.short_id, 'path': 'https://099f26ea.ngrok.io/nbconvert/html/scenarios/running-risk-stories-on-jupyter.ipynb?download=false', 'width': 800}
+        notebook = 'https://fcd32272.ngrok.io/nbconvert/html/users/dinis/rdf/part-1-loading-the-rdf-file.ipynb?download=false'
+        payload = {'short_id': self.short_id, 'path': notebook, 'width': 2000, 'height': 12000}
         self.png_data = self.aws_lambda.invoke(payload)
 
 

@@ -24,6 +24,11 @@ class Jupyter_Web:
             self.browser().sync__browser_width(width=width)
         return self
 
+    def browser_size(self,width,height):
+        if width:
+            self.browser().sync__browser_width(width=width, height=height)
+        return self
+
     def current_page(self):
         return self.browser().sync__url()
 

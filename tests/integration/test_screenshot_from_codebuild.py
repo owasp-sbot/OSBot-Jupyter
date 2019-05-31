@@ -5,7 +5,6 @@ from osbot_aws.helpers.Lambda_Package import Lambda_Package
 from pbx_gs_python_utils.utils.Dev import Dev
 
 from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter
-from osbot_jupyter.api.Jupyter import Jupyter
 
 
 class test_screenshot_from_codebuild(TestCase):

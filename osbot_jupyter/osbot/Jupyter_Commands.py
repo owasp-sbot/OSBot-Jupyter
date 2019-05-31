@@ -15,13 +15,15 @@ def send_message(message, channel, team_id):
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    @staticmethod
-    def get_active_builds(*params):
-        return "{0}".format(list(CodeBuild_Jupyter_Helper().get_active_builds().keys()))
+    api_version = 'v0.32'
+
+    # @staticmethod
+    # def get_active_builds(*params):
+    #     return "{0}".format(list(CodeBuild_Jupyter_Helper().get_active_builds().keys()))
 
     @staticmethod
     def files(team_id=None, channel=None, params=None):
-        event    = params.pop()
+        event    = params.pop()                             # needed due to injection of event param
         short_id = Misc.array_pop(params,0)
         target   = " ".join(params)
         if short_id is None:
@@ -33,7 +35,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
 
     @staticmethod
     def screenshot(team_id=None, channel=None, params=None):
-        event = params.pop()
+        event = params.pop()                                # needed due to injection of event param
         try:
             if len(params) < 2:
                 return send_message(":red_circle: missing `short id` and `path`. The syntax for this method is `screenshot {short_id} {path}`",channel, team_id)
@@ -44,8 +46,12 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
                 width    = int(params.pop(0))
             except:
                 width    = 800
-            send_message(":point_right: taking screenshot of notebook `{0}` in server `{1}` with width `{2}`".format(path,short_id,width),channel,team_id)
-            payload = {'short_id': short_id, 'path': path,'width': width}
+            try:
+                height   = int(params.pop(0))
+            except:
+                height    = 800
+            send_message(":point_right: taking screenshot of notebook `{0}` in server `{1}` with width `{2}` and (min) height `{3}`".format(path,short_id,width,height),channel,team_id)
+            payload = {'short_id': short_id, 'path': path,'width': width,'height': height}
             png_data = Lambda('osbot_jupyter.lambdas.screenshot').invoke(payload)
             send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)),channel,team_id)
             Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
@@ -118,7 +124,10 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
             return ':point_right: stopped server with id: `{0}`'.format(short_id)
         return ':red_circle: error: could not find server with id: `{0}`'.format(short_id)
 
+    # @staticmethod
+    # def get_active_server(*params):
+    #     server, token = CodeBuild_Jupyter_Helper().get_active_server_details()
+    #     return "{0}?token={1}".format(server, token)
     @staticmethod
-    def get_active_server(*params):
-        server, token = CodeBuild_Jupyter_Helper().get_active_server_details()
-        return "{0}?token={1}".format(server, token)
+    def version(*params):
+        return Jupyter_Commands.api_version

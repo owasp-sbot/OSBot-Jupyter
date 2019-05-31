@@ -1,3 +1,4 @@
+import base64
 from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
@@ -8,13 +9,21 @@ from osbot_jupyter.api.Live_Notebook import Live_Notebook
 class test_Live_Notebook(TestCase):
 
     def setUp(self):
-        self.short_id = '3ddc8'
-        self.notebook = Live_Notebook(short_id=self.short_id, headless=False)
-        self.result   = None
+        self.short_id      = '1f5d1'
+        self.notebook      = Live_Notebook(short_id=self.short_id, headless=True)
+        self.test_notebook ='notebooks/users/gsbot/gsbot-invoke.ipynb'
+        self.result        = None
+        self.png_data      = None
 
     def tearDown(self):
         if self.result is not None:
             Dev.pprint(self.result)
+        if self.png_data:
+            png_file = '/tmp/lambda_png_file.png'
+            with open(png_file, "wb") as fh:
+                fh.write(base64.decodebytes(self.png_data.encode()))
+            Dev.pprint("Png data with size {0} saved to {1}".format(len(self.png_data), png_file))
+
 
     # config methods
     def test_set_build_from_short_id(self):
@@ -35,17 +44,16 @@ class test_Live_Notebook(TestCase):
         #contents
 
     def test_execute_command(self):
-        path ='notebooks/setup/gsbot-invoke.ipynb'
         jp_web = self.notebook.jupyter_web()
         jp_cell = self.notebook.jupyter_cell()
-
-        if (path in jp_web.url()) is False:
-            jp_web.open(path)
+        #jp_web.login()
+        if (self.test_notebook in jp_web.url()) is False:
+            jp_web.open(self.test_notebook)
         jp_cell.clear()
-        jp_cell.execute("""
-                            a=40+2
-                            print(123)
-                            a
+        jp_cell.executze("""
+                            answer=40+2
+                            print('this was executed from an unit test')
+                            answer
                             """)
         self.result = jp_cell.output_wait_for_data()
 
@@ -57,5 +65,13 @@ class test_Live_Notebook(TestCase):
 
     def test_screenshot(self):
         self.notebook.set_build_from_short_id(self.short_id)
-        self.result = self.notebook.screenshot('examples/simple-commands',800)
+        self.png_data = self.notebook.screenshot(self.test_notebook,800)
+
+
+
+    def test_bug_screenshot_duplicates_first_page(self):
+        target_notebook = 'nbconvert/html/users/dinis/rdf/part-1-loading-the-rdf-file.ipynb?download=false'
+        #jp_web        = self.notebook.jupyter_web()
+        #jp_web.open(self.notebook)
+        self.png_data = self.notebook.screenshot(target_notebook, 2000,10000)
 

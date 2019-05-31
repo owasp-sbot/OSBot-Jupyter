@@ -12,7 +12,8 @@ class test_Deploy_Lambda_Functions(TestCase):
 
     def test_deploy_lambda_functions(self):
         targets = [
-                    'osbot_jupyter.lambdas.osbot'    ,   #   osbot.py    OSBot_Commands
+                    'osbot_jupyter.lambdas.osbot'      ,   #   osbot.py    OSBot_Commands
+                    'osbot_jupyter.lambdas.screenshot'
                    ]
         result = ""
         for target in targets:
