@@ -1,5 +1,7 @@
 import base64
 from unittest                           import TestCase
+
+from osbot_aws.Globals import Globals
 from pbx_gs_python_utils.utils.Dev      import Dev
 from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
