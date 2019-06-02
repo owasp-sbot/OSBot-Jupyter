@@ -8,6 +8,12 @@ from osbot_jupyter.lambdas.osbot import run
 
 class test_run_command(TestCase):
     def setUp(self):
+        self.bot_name = 'oss_bot'
+        self.profile_name = 'gs-detect-aws'  # 654386450934
+        self.region_name = 'eu-west-2'
+
+        Globals.aws_session_profile_name = self.profile_name
+        Globals.aws_session_region_name = self.region_name
         self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.osbot')
         self.result     = None
         #self.aws_lambda.update_code()       # use when wanting to update lambda function
@@ -21,9 +27,9 @@ class test_run_command(TestCase):
         payload = {'params': ['aaaa']}
         self.result = run(payload,{})
 
-    def test_invoke_directly__get_active_server(self):
-        payload = {'params': ['get_active_server']}
-        self.result = run(payload,{})
+    # def test_invoke_directly__get_active_server(self):
+    #     payload = {'params': ['get_active_server']}
+    #     self.result = run(payload,{})
 
 
     def test_invoke_lambda(self):
@@ -31,9 +37,9 @@ class test_run_command(TestCase):
         self.result = self.aws_lambda.invoke(payload)
 
 
-    def test_invoke_get_active_server(self):
-        payload     = { 'params': ['get_active_server']}
-        self.result = self.aws_lambda.invoke(payload)
+    # def test_invoke_get_active_server(self):
+    #     payload     = { 'params': ['get_active_server']}
+    #     self.result = self.aws_lambda.invoke(payload)
 
     def test_invoke_start_server(self):
         payload     = { 'params': ['start_server']}

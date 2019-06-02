@@ -54,6 +54,8 @@ class CodeBuild_Jupyter_Helper:
         aws_secret = "git__{0}".format(repo_name)
 
         data = Secrets(aws_secret).value_from_json_string()
+        if not data:
+            return None
         repo_url = data['repo_url']
 
         kvargs = {
@@ -68,9 +70,11 @@ class CodeBuild_Jupyter_Helper:
         return {'status': 'ok', 'data': build_id}
 
     def start_build_for_repo_and_wait_for_jupyter_load(self, repo_name, user='gsbot'):
-        build_id = self.start_build_for_repo(repo_name,user).get('data')
-        build    = CodeBuild_Jupyter(build_id=build_id)
-        return self.wait_for_jupyter_load(build)
+        result =  self.start_build_for_repo(repo_name,user)
+        if result:
+            build_id = result.get('data')
+            build    = CodeBuild_Jupyter(build_id=build_id)
+            return self.wait_for_jupyter_load(build)
 
 
     def stop_all_active(self):

@@ -4,26 +4,16 @@ from osbot_aws.apis.IAM                  import IAM
 from osbot_aws.helpers.Create_Code_Build import Create_Code_Build
 from pbx_gs_python_utils.utils.Dev import Dev
 
+from oss_bot.Deploy import Deploy
+
 
 class test_Create_Code_Build(TestCase):
 
     def setUp(self):
+        Deploy().setup()
         self.project_name    = 'OSBot-Jupyter'
         self.account_id      = IAM().account_id()
         self.api             = Create_Code_Build(account_id=self.account_id, project_name=self.project_name)
-
-    # def create_project_with_container__jupyter(self):
-    #     kvargs = {
-    #         'name'        : self.api.project_name,
-    #         'source'      : { 'type'                   : 'GITHUB',
-    #                        'location'                  : self.api.project_repo                 },
-    #         'artifacts'   : {'type'                    : 'NO_ARTIFACTS'                    },
-    #         'environment' : {'type'                    : 'LINUX_CONTAINER'                  ,
-    #                         'image'                    : 'jupyter/base-notebook'            ,
-    #                         'computeType'              : 'BUILD_GENERAL1_LARGE'            },
-    #         'serviceRole' : self.api.service_role
-    #     }
-    #     return self.api.code_build.codebuild.create_project(**kvargs)
 
     def create_project_with_container__osbot_jupyter(self):
         kvargs = {
@@ -33,7 +23,7 @@ class test_Create_Code_Build(TestCase):
             'artifacts'   : {'type'                    : 'NO_ARTIFACTS'                    },
             'environment' : {'type'                    : 'LINUX_CONTAINER'                  ,
                             'image'                    : '{0}.dkr.ecr.eu-west-2.amazonaws.com/osbot-jupyter:latest'.format(self.account_id)     ,
-                            'computeType'              : 'BUILD_GENERAL1_LARGE'            ,
+                            'computeType'              : 'BUILD_GENERAL1_SMALL'            ,
                             'imagePullCredentialsType' : 'SERVICE_ROLE'                    },
             'serviceRole' : self.api.service_role
         }

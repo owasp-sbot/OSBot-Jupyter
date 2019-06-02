@@ -1,17 +1,22 @@
 import base64
 from unittest                           import TestCase
 
+from osbot_aws.Globals import Globals
 from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Dev      import Dev
 from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
+from osbot_jupyter.Deploy import Deploy
+
+
 class test_run_command(TestCase):
     def setUp(self):
-        self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.start_server')
+
+        self.aws_lambda = Lambda('osbot_jupyter.lambdas.start_server')
         self.result     = None
         self.png_data   = None
-        #self.aws_lambda.add_module('osbot_browser')
-        self.aws_lambda.update_code()       # use when wanting to update lambda function
+
+        Deploy('osbot_jupyter.lambdas.start_server').deploy()
 
     def tearDown(self):
         if self.result:
@@ -37,3 +42,9 @@ class test_run_command(TestCase):
         payload = {'repo_name': 'gs-notebook-risks', 'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV', 'user': 'U7ESE1XS7'}
         result = Lambda('osbot_jupyter.lambdas.start_server').invoke_async(payload)
         self.result = result
+
+
+    def test_start_server_directly(self):
+        repo = 'jp-tests'
+        from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
+        self.result = CodeBuild_Jupyter_Helper().start_build_for_repo(repo)
