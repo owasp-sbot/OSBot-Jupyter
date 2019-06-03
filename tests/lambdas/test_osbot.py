@@ -52,5 +52,5 @@ class test_run_command(TestCase):
         payload     = {  'params': ['servers'], 'data': {'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV'}}
         self.result = self.aws_lambda.invoke(payload)
 
-    def test___update_lambda_function(self):
-        self.aws_lambda.update_code()  # use when wanting to update lambda function
+    #def test___update_lambda_function(self):
+    #    self.aws_lambda.update_code()  # use when wanting to update lambda function
