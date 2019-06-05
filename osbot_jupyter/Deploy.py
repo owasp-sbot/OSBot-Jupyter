@@ -40,8 +40,18 @@ class Deploy:
         if delete_before:
             self.package.delete()
         self.package.update_code()
-        #code_folder = Files.path_combine(__file__,'..')
-        #self.package.add_folder(code_folder)
-        #self.package.add_root_folder()
-        #self.package.add_pbx_gs_python_utils()
-        #return self.package.update()
+
+
+    def deploy_lambda__screenshot(self):
+        package = self.package
+        source_folder_1 = Files.path_combine(__file__, '../../../OSBot-Jupyter/osbot_jupyter')
+        source_folder_2 = Files.path_combine(__file__,'../../../OSBot-Browser/osbot_browser')
+        #return source_folder, Files.exists(source_folder)
+        package.add_folder(source_folder_1)
+        package.add_folder(source_folder_2)
+        package.add_module('osbot_aws')
+        package.add_pbx_gs_python_utils()
+        package.update()
+        #Dev.pprint(package.get_files())
+        #return package.update_code()
+        return package

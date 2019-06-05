@@ -15,7 +15,7 @@ class test_Deploy_Lambda_Functions(TestCase):
     def test_deploy_lambda_functions(self):
         targets = [
                     'osbot_jupyter.lambdas.osbot'      ,   #   osbot.py    OSBot_Commands
-                    'osbot_jupyter.lambdas.screenshot',
+                    #'osbot_jupyter.lambdas.screenshot',   # can't be deployed here
                     'osbot_jupyter.lambdas.start_server'
                    ]
         result = ""
@@ -28,6 +28,8 @@ class test_Deploy_Lambda_Functions(TestCase):
         slack_message(text, attachments)  # gs-bot-tests
         Dev.pprint(text, attachments)
 
+    def test_deploy_lambda__screenshot(self):
+        Deploy('osbot_jupyter.lambdas.screenshot').deploy_lambda__screenshot()
 
 if __name__ == '__main__':
     unittest.main()
