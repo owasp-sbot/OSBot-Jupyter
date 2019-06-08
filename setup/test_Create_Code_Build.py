@@ -23,7 +23,7 @@ class test_Create_Code_Build(TestCase):
             'artifacts'   : {'type'                    : 'NO_ARTIFACTS'                    },
             'environment' : {'type'                    : 'LINUX_CONTAINER'                  ,
                             'image'                    : '{0}.dkr.ecr.eu-west-2.amazonaws.com/osbot-jupyter:latest'.format(self.account_id)     ,
-                            'computeType'              : 'BUILD_GENERAL1_LARGE'            ,
+                            'computeType'              : 'BUILD_GENERAL1_SMALL'            ,
                             'imagePullCredentialsType' : 'SERVICE_ROLE'                    },
             'serviceRole' : self.api.service_role
         }
