@@ -15,7 +15,7 @@ def send_message(message, channel, team_id):
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    api_version = 'v0.32'
+    api_version = 'v0.33 (oss)'
 
     # @staticmethod
     # def get_active_builds(*params):
