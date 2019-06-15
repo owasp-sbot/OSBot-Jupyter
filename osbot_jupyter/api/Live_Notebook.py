@@ -2,7 +2,7 @@ from osbot_jupyter.api.CodeBuild_Jupyter        import CodeBuild_Jupyter
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Jupyter_API              import Jupyter_API
 from osbot_jupyter.api.Jupyter_Web              import Jupyter_Web
-from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
+from osbot_jupyter.api.Jupyter_Web_Cell         import Jupyter_Web_Cell
 
 
 class Live_Notebook:
@@ -109,11 +109,19 @@ class Live_Notebook:
         return text_title, text_body
 
 
-    def screenshot(self,path=None, width=None,height=None):
-        return (self.login            ()
-                    .open             (path)
-                    .browser_size     (width,height)
-                    .screenshot_base64())
+    def screenshot(self,path=None, width=None,height=None, delay=None):
+        jupyter_web = self.login()
+
+        (
+            jupyter_web.open        (path)
+                      .browser_size (width,height)
+                      .ui_css_fixes (width)
+                      .wait_seconds (delay)
+        )
+        if 'osbot-no-code' in path:
+            jupyter_web.ui_hide_input_boxes()
+
+        return jupyter_web.screenshot_base64()
 
     def login(self):
         if self._needs_login is True:

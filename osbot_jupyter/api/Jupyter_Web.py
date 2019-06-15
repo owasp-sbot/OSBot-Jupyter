@@ -81,8 +81,25 @@ class Jupyter_Web:
     def ui_hide_input_boxes(self):
         self.browser().sync__js_execute("$('div.input').hide()")
         return self
+
+    def ui_css_fixes(self, width='1200'):
+        css_fixes = """  $('body').css({{'background-color':'white'}})
+                         $('.container').width('{0}');
+                         $('.container').css  ({{'padding':'0px'}})
+                         $('#notebook' ).css  ({{'padding':'0px'}})                         
+                         $('.prompt').hide()                        
+                    """.format(width)
+        self.browser().sync__js_execute(css_fixes)
+        return self
+
     def url(self):
         return self.browser().sync__url()
 
     def set_url  (self, value): self._server   = value; return self
     def set_token(self, value): self.token  = value; return self
+
+    def wait_seconds(self,seconds=None):
+        if seconds:
+            from time import sleep
+            sleep(seconds)
+        return self

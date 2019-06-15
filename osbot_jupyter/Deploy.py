@@ -18,13 +18,11 @@ class Deploy:
                              .set_xrays_on())
 
 
-
     def deploy(self, delete_before=False):
         if delete_before:
             self.package.delete()
         self.package.update_code()
-        #code_folder = Files.path_combine(__file__,'..')
-        #self.package.add_folder(code_folder)
-        #self.package.add_root_folder()
-        #self.package.add_pbx_gs_python_utils()
-        #return self.package.update()
+
+    def deploy_screenshot(self):
+        self.package.add_module('osbot_browser')
+        self.package.update_code()
