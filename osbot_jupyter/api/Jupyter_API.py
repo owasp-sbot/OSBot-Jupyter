@@ -7,23 +7,32 @@ class Jupyter_API:
         self.server =  server
         self.token  = token
 
-    # this is not working
-    # def create(self,target):
-    #     data = {'ext': 'txt', 'type': 'Text File'}
-    #     return self.http_post('api/contents/{0}'.format(target),data)
-
-    def contents(self,target=None):
-        path = 'api/contents'
-        if target:
-            path = '{0}/{1}'.format(path,target)
-        return self.http_get(path)
-
+    # this is quite slow (simple requests taking 700ms to 1250ms
     def http_get(self, path):
         url = self.url(path)
         headers = {'Authorization': 'Token {0}'.format(self.token)}
         response = requests.get(url,headers=headers)
         if response.status_code != 404:
             return response.json()
+
+    # trying to debug why http_get is so slow (each request takes at least 1 sec
+    # def http_get(self, path):
+    #     from time import time
+    #     start = time()
+    #     url = self.url(path)
+    #     headers = {'Authorization': 'Token {0}'.format(self.token)}
+    #     from pbx_gs_python_utils.utils import Http
+    #     data = Http.GET(url,headers)
+    #     duration = time() - start
+    #     print('took {0:.2f} in http_get'.format(duration))
+    #     return json.loads(data)
+    #
+    #     response = requests.get(url,headers=headers)
+    #     if response.status_code != 404:
+    #
+    #         duration = time() - start
+    #         print('took {0:.2f} in http_get'.format(duration))
+    #         return response.json()
 
     def http_delete(self, path):
         url = self.url(path)
@@ -48,16 +57,138 @@ class Jupyter_API:
         url = self.url(path)
         headers = {
                 'Authorization': 'Token {0}'.format(self.token),
-                'Content-Type' :  'application/json' }
+                'Content-Type' :  'application/json'
+                    }
         response = requests.post(url,data=json.dumps(data), headers=headers)
         if response.status_code != 404:
             return response.json()
+
+    def http_put(self, path, data):
+        url = self.url(path)
+        headers = {
+                'Authorization': 'Token {0}'.format(self.token),
+                'Content-Type' :  'application/json'
+                    }
+        response = requests.put(url,data=json.dumps(data), headers=headers)
+        if response.status_code != 404:
+            return response.json()
+
+
+    # methods
+
+    def contents(self,target=None):
+        path = 'api/contents'
+        if target:
+            path = '{0}/{1}'.format(path,target)
+        return self.http_get(path)
+
+    def directory_contents(self, path_root=''):
+        from time import time
+        start = time()
+        files   = []
+        folders = []
+        data = self.contents(path_root)
+        if data is not None:
+            if type(data) is str:
+                print(data)
+            if data.get('type') == 'directory':
+                for item in data.get('content'):
+                    name = item.get('name')
+                    path = item.get('path')
+                    url  = "{0}/tree/{1}".format(self.server, item.get('path'))
+                    if item.get('type') == 'directory':
+                        folders.append({'name':  name, 'path': path, 'url': url, })
+                    else:
+                        files.append({'name': name, 'path': path, 'url': url, })
+        duration = time() - start
+        print('took {0:.2f} secs to get path: {1}'.format(duration,path_root))
+
+        return {'files': files, 'folders': folders}
+
+    # this won't work like this (too slow to get each folder contents
+    # def directory_contents_recursive(self, path_root=''):
+    #     all_files   = []
+    #     from time import time
+    #     start = time()
+    #     print('----')
+    #     def process_folder(path):
+    #         data = self.directory_contents(path)
+    #         #for file in data.get('files'):
+    #         #    all_files.append(file.get('path'))
+    #         for folder in data.get('folders'):
+    #             process_folder(folder.get('path'))
+    #             break
+    #     print('----')
+    #     process_folder(path_root)
+    #     duration = time() - start
+    #     print('took {0:.2f} in directory_contents_recursive'.format(duration))
+    #     return all_files
+
+    def file_delete(self, path):
+        contents_path = 'contents/{0}'.format(path)
+        if self.http_delete(contents_path) == {}:
+            return True
+        return False
+
+    # def folder_create(self,path):
+    #     folder_path = 'contents/{0}'.format(path)
+    #     config = {'type': 'directory'}
+    #     return self.http_post(folder_path,config)
+
+    def folder_create(self, path, contents=None):
+        notebook_path = 'contents/{0}'.format(path)
+        config = { 'type': 'directory' }
+        return self.http_put(notebook_path, config)
+
+    # def file_create(self,path):
+    #     file_path = 'contents/{0}'.format(path)
+    #     config = {'type': 'file'}
+    #     return self.http_post(file_path,config)
+
+    def file_create(self, path, contents=None):
+        notebook_path = 'contents/{0}'.format(path)
+        config = {
+                    'type'    : 'file',
+                    'format'  : 'text',
+                    'content' : contents
+                }
+        return self.http_put(notebook_path, config)
+
+    # def notebook_create(self,path):
+    #     notebook_path = 'contents/{0}'.format(path)
+    #     config = {'type': 'notebook'}
+    #     return self.http_post(notebook_path,config)
 
     def kernels(self):
         items = {}
         for kernel in self.http_get('api/kernels'):
             items[kernel.get('id')] = kernel
         return items
+
+
+    def notebook_create(self, path, code=None):
+        if code:
+            cells = [{  "cell_type"         : "code",
+                        "source"            : [code],
+                         "execution_count"  : None,
+                         "metadata"         : {},
+                         "outputs"          : []}]
+        else:
+            cells = []
+
+
+        notebook_path = 'contents/{0}'.format(path)
+        config = {
+                    'type'    : 'notebook',
+                    'format'  : 'text',
+                    'content' : {
+                                     "cells"         : cells,
+                                     "metadata"      : {},
+                                     "nbformat"      : 4,
+                                     "nbformat_minor": 2
+                                }
+                }
+        return self.http_put(notebook_path, config)
 
     def notebook_content(self,path):
         return self.contents(path).get('content')

@@ -15,7 +15,7 @@ def send_message(message, channel, team_id):
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    api_version = 'v0.33 (OSBot)'
+    api_version = 'v0.34 (OSBot)'
 
     # @staticmethod
     # def get_active_builds(*params):
@@ -39,7 +39,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
         try:
             if len(params) < 2:
                 return send_message(":red_circle: missing `short id` and `path`. The syntax for this method is `screenshot {short_id} {path}`",channel, team_id)
-
+            max_screenshot_delay = 15
             short_id = params.pop(0)
             path     = params.pop(0).replace('<', '').replace('>', '')  # fix extra chars added by Slack
             width    = Misc.to_int(Misc.array_pop(params, 0))
@@ -48,6 +48,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
             if not width : width = 1200
             if not height: height = 800
             if not delay : delay = 0
+            if delay > max_screenshot_delay : delay = max_screenshot_delay
             # try:
             #     width    = int(params.pop(0))
             # except:
@@ -115,7 +116,8 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
 
         if repo_name is None:
             return ":red_circle: you need to provide an git repo with notebooks, for example try `gs-notebook-gscs`"
-
+        if '-' not in repo_name and len(repo_name) < 10:
+            repo_name = 'gs-notebook-{0}'.format(repo_name)         # todo: move to config value (since this is implementation specific)
         payload = {'repo_name': repo_name, "channel": channel, "team_id": team_id, 'user':user}
         Lambda('osbot_jupyter.lambdas.start_server').invoke_async(payload)
 

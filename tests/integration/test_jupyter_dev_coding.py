@@ -35,7 +35,6 @@ class test_jupyter_dev_coding(TestCase):
             Dev.pprint(self.result)
 
 
-
     def test_open_dev_notebook(self):
         if self.jp_api.notebook_exists(self.notebook_path) is False:
             self.jp_api.create_notebook(notebook_name=self.notebook_name)

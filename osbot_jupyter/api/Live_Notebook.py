@@ -57,7 +57,7 @@ class Live_Notebook:
     def server_details(self):
         print('server_details')
         if self._server_details is None:
-            print('acutually getting the data')
+            print('actually getting the data')
             self._server_details = self.code_build_Jupyter().get_server_details_from_logs()
         return self._server_details
 

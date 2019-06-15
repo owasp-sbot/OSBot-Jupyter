@@ -36,8 +36,9 @@ class CodeBuild_Jupyter_Helper:
     def get_active_server_details(self):
         build_id = self.get_active_build_id()
         if build_id is None:
-            self.start_build_and_wait_for_jupyter_load()
-            build_id = self.get_active_build_id()
+            return None
+            #self.start_build_and_wait_for_jupyter_load()
+            #build_id = self.get_active_build_id()
         code_build = CodeBuild_Jupyter(build_id)
         return code_build.get_server_details_from_logs()
 
