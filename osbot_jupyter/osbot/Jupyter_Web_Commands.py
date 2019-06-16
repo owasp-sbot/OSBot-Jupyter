@@ -120,6 +120,9 @@ class Jupyter_Web_Commands:
         width    = Misc.to_int(Misc.array_pop(params, 0))
         height   = Misc.to_int(Misc.array_pop(params, 0))
         delay    = Misc.to_int(Misc.array_pop(params, 0))
+
+        if delay is None: delay = 1                             # add one second delay if no value is provided
+
         notebook = Live_Notebook()
 
         if notebook.set_build_from_short_id(short_id) is None:

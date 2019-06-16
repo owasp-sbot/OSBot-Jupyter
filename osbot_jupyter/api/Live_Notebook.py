@@ -60,10 +60,15 @@ class Live_Notebook:
         if short_id and type(short_id) is str:
             active_builds = self.jupyter_helper.get_active_builds()
             if active_builds:
-                for build_id in active_builds:
-                    if short_id in build_id:
+                for build_id, build in active_builds.items():
+                    if short_id in build_id:                                         # search on build_id
                         self.build_id = build_id
                         self.short_id = short_id
+                        return self
+                    repo_name = build.build_environment_variables().get('repo_name')  # search on repo_name
+                    if short_id in repo_name:
+                        self.build_id = build_id
+                        self.short_id = build_id                                      # in this case use the actual build id as the short id
                         return self
         return None
 
