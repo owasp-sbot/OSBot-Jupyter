@@ -56,6 +56,18 @@ class Jupyter_Web_Cell(Jupyter_Web):
             self.delete()
         return self
 
+    def execute_bash(self,bash_cmd, new_cell=True, delete_after=False):
+        python_code = "!{0}".format(bash_cmd)
+        if new_cell:
+            self.new();
+        self.text(python_code)
+        self.execute_cell()
+        output = self.output_wait_for_data()
+        if delete_after:
+            self.delete()
+        return output
+
+
     def execute(self, code=None):
         if code is None:
             return self.execute_cell()
@@ -119,7 +131,7 @@ class Jupyter_Web_Cell(Jupyter_Web):
         return self.js_invoke("Jupyter.notebook.get_selected_cell().input.find('.input_prompt').text()")
 
     def output(self):
-        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.find('.output_result').text()");
+        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.find('.output_text').text()");
 
     def output_html(self):
         return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.outputs[0].data['text/html']")

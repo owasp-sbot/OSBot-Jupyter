@@ -12,10 +12,11 @@ def send_message(message, channel, team_id):
         slack_message(message, [], channel, team_id)
     else:
         print(message)
+        return message
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    api_version = 'v0.34 (OSBot)'
+    api_version = 'v0.37 (OSBot)'
 
     # @staticmethod
     # def get_active_builds(*params):
@@ -139,6 +140,13 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
     # def get_active_server(*params):
     #     server, token = CodeBuild_Jupyter_Helper().get_active_server_details()
     #     return "{0}?token={1}".format(server, token)
+
+    @staticmethod
+    def web(team_id=None, channel=None, params=None):
+        event = Misc.array_pop(params)  # we don't need to propagate this object (which is the original params sent to the OS Bot lambda)
+        params = {'team_id':team_id, 'channel': channel, 'params':params}
+        Lambda('osbot_jupyter.lambdas.jupyter_web').invoke_async(params)
+
     @staticmethod
     def version(*params):
         return Jupyter_Commands.api_version

@@ -71,7 +71,12 @@ class test_Jupyter_Web_Cell(TestCase):
                         print(str(a) + "_double_" + 'single')
                         a"""
 
-        self.jp_cell.execute(python_code)
+        self.result = self.jp_cell.execute(python_code)
+
+    def test_execute_bash(self):
+        #bash_cmd = """ls -la .."""
+        bash_cmd = "!cd ../.. ; find -L"
+        self.result = self.jp_cell.execute_bash(bash_cmd,delete_after=True)
 
     def test_text_get_value(self):
         self.result = self.jp_cell.select(0).text()
@@ -91,7 +96,6 @@ class test_Jupyter_Web_Cell(TestCase):
         self.jp_cell.input_hide().wait(0.01).input_show()
 
     def test_to_markdown(self):
-        Dev.pprint(self.token)
         self.jp_cell.new().to_markdown().text('# an title 123').execute().wait(1).delete()
 
     def test_to_code(self):

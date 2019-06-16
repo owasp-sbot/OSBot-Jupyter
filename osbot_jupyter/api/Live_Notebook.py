@@ -27,11 +27,14 @@ class Live_Notebook:
         return self
 
     def set_build_from_short_id(self, short_id):
-        for build_id in self.jupyter_helper.get_active_builds():
-            if short_id in build_id:
-                self.build_id = build_id
-                self.short_id = short_id
-                return self
+        if short_id and type(short_id) is str:
+            active_builds = self.jupyter_helper.get_active_builds()
+            if active_builds:
+                for build_id in active_builds:
+                    if short_id in build_id:
+                        self.build_id = build_id
+                        self.short_id = short_id
+                        return self
         return None
 
     def code_build_Jupyter(self):
@@ -58,7 +61,8 @@ class Live_Notebook:
         print('server_details')
         if self._server_details is None:
             print('actually getting the data')
-            self._server_details = self.code_build_Jupyter().get_server_details_from_logs()
+            if self.code_build_Jupyter():
+                self._server_details = self.code_build_Jupyter().get_server_details_from_logs()
         return self._server_details
 
     def jupyter_cell(self):
@@ -118,7 +122,7 @@ class Live_Notebook:
                       .ui_css_fixes (width)
                       .wait_seconds (delay)
         )
-        if 'osbot-no-code' in path:
+        if path and 'osbot-no-code' in path:
             jupyter_web.ui_hide_input_boxes()
 
         return jupyter_web.screenshot_base64()
@@ -136,3 +140,4 @@ class Live_Notebook:
 
 
 
+    #def cell_contents(self):

@@ -9,7 +9,7 @@ from osbot_jupyter.api.Live_Notebook import Live_Notebook
 class test_Live_Notebook(TestCase):
 
     def setUp(self):
-        self.short_id      = '1f5d1'
+        self.short_id      = '78950'
         self.notebook      = Live_Notebook(short_id=self.short_id, headless=True)
         self.test_notebook ='notebooks/users/gsbot/gsbot-invoke.ipynb'
         self.result        = None
@@ -40,7 +40,7 @@ class test_Live_Notebook(TestCase):
     # api methods
 
     def test_files(self):
-        self.result = self.notebook.files('scenarios')
+        self.result = self.notebook.files('users')
         #contents
 
     def test_execute_command(self):
@@ -50,7 +50,7 @@ class test_Live_Notebook(TestCase):
         if (self.test_notebook in jp_web.url()) is False:
             jp_web.open(self.test_notebook)
         jp_cell.clear()
-        jp_cell.executze("""
+        jp_cell.execute("""
                             answer=40+2
                             print('this was executed from an unit test')
                             answer

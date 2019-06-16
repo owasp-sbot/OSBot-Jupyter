@@ -7,11 +7,11 @@ from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
 class test_run_command(TestCase):
     def setUp(self):
-        self.aws_lambda = Lambda_Package('osbot_jupyter.lambdas.start_server')
+        self.aws_lambda = Lambda('osbot_jupyter.lambdas.start_server')
         self.result     = None
         self.png_data   = None
         #self.aws_lambda.add_module('osbot_browser')
-        self.aws_lambda.update_code()       # use when wanting to update lambda function
+        #self.aws_lambda.update_code()       # use when wanting to update lambda function
 
     def tearDown(self):
         if self.result:

@@ -91,7 +91,7 @@ class CodeBuild_Jupyter_Helper:
         Json.save_json(file, config)
         return config
 
-    def wait_for_jupyter_load(self, build,max_seconds=90):
+    def wait_for_jupyter_load(self, build,max_seconds=150): # make it 2.5 minutes since sometimes it takes 90 secs for aws to fetch (was 90 seconds originally)
         seconds_sleep = 5
         for i in range(0,max_seconds,seconds_sleep):
             sleep(seconds_sleep)

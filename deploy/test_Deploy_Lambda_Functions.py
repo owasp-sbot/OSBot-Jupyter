@@ -36,9 +36,14 @@ class test_Deploy_Lambda_Functions(TestCase):
     def test_deploy_osbot_jupyter(self):
         self.result = Deploy('osbot_jupyter.lambdas.osbot').deploy()
 
+    def test_deploy_start_server(self):
+        self.result = Deploy('osbot_jupyter.lambdas.start_server').deploy()
 
     def test_deploy_screenshot(self):
         self.result = Deploy('osbot_jupyter.lambdas.screenshot').deploy_screenshot()
+
+    def test_deploy_jupyter_web(self):
+        self.result = Deploy('osbot_jupyter.lambdas.jupyter_web').deploy_jupyter_web()
 
 if __name__ == '__main__':
     unittest.main()

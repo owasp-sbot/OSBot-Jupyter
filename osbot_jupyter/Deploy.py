@@ -26,3 +26,7 @@ class Deploy:
     def deploy_screenshot(self):
         self.package.add_module('osbot_browser')
         self.package.update_code()
+
+    def deploy_jupyter_web(self):
+        self.package.add_module('osbot_browser')
+        self.package.update_code()
