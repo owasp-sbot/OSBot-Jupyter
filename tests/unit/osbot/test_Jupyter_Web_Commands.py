@@ -12,7 +12,7 @@ from osbot_jupyter.osbot.Jupyter_Web_Commands import Jupyter_Web_Commands
 class test_Jupyter_Web_Commands(TestCase):
 
     def setUp(self):
-        self.short_id    = '11d52'
+        self.short_id    = '12d62'
         self.result      = None
         self.png_data    = None
 

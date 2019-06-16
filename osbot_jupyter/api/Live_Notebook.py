@@ -25,12 +25,9 @@ class Live_Notebook:
     # global objects
     def browser(self):      # we have make sure there is only one instance of browser created
         if self._browser is None:
-            print('creating browser instance')
             from osbot_browser.browser.Browser_Lamdba_Helper import Browser_Lamdba_Helper
             browser_helper = Browser_Lamdba_Helper(headless=self.headless).setup()
             self._browser = browser_helper.api_browser
-        else:
-            print('using cached browser instance')
         return self._browser
 
     def jupyter_cell(self):
@@ -89,9 +86,7 @@ class Live_Notebook:
         return jp_cell.output_wait_for_data()
 
     def server_details(self):
-        print('server_details')
         if self._server_details is None:
-            print('actually getting the data')
             if self.code_build_Jupyter():
                 self._server_details = self.code_build_Jupyter().get_server_details_from_logs()
         return self._server_details
@@ -126,15 +121,16 @@ class Live_Notebook:
         return text_title, text_body
 
 
-    def screenshot(self,path=None, width=None,height=None, delay=None):
+    def screenshot(self,path=None, width=None,height=None, delay=None, apply_ui_fixes=True):
         jupyter_web = self.login()
-
         (
             jupyter_web.open         (path)
                        .browser_size (width,height)
-                       .ui_css_fixes (width)
                        .wait_seconds (delay)
         )
+        if apply_ui_fixes:
+            jupyter_web.ui_css_fixes(width)
+
         if path and 'osbot-no-code' in path:
             jupyter_web.ui_hide_input_boxes()
 

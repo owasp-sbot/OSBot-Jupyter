@@ -1,3 +1,5 @@
+import datetime
+
 from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
 from pbx_gs_python_utils.utils.Misc import Misc
@@ -61,8 +63,7 @@ class Jupyter_Web_Commands:
         try:
             event = Misc.array_pop(params)  # original slack event object
             if not params or len(params) < 2:
-                return send_message(':red_circle: You must provide the following params: `Server Id` and `code` (to execute)',
-                                    channel, team_id)
+                return send_message(':red_circle: You must provide the following params: `Server Id` and `code` (to execute)',channel, team_id)
 
             build_id   = str(Misc.array_pop(params, 0))
             code       = ' '.join(params)
@@ -72,11 +73,26 @@ class Jupyter_Web_Commands:
             if notebook.set_build_from_short_id(build_id) is None:
                 return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(build_id)
 
-            target_notebook = 'notebooks/users/gsbot/gsbot-invoke.ipynb'
-            send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), build_id, target_notebook, target_notebook), channel, team_id)
+            jupyter_web   = notebook.jupyter_web()
+            jupyter_cell  = notebook.jupyter_cell()
+            jupyter_api   = notebook.jupyter_api()
 
-            jupyter_web  = notebook.jupyter_web()
-            jupyter_cell = notebook.jupyter_cell()
+            today           = '{0}'.format(datetime.date.today().strftime('%d-%b-%y'))
+            target_notebook = 'users/gsbot/invoke-{0}.ipynb'.format(today)
+            if jupyter_api.contents(target_notebook) is None:  # we need to create the file
+                send_message(':point_right: Created temp file for dynamic execution: `{0}`'.format(target_notebook),channel, team_id)
+                jupyter_api.notebook_create(target_notebook)
+
+            target_notebook = "notebooks/{0}".format(target_notebook)
+
+            send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), build_id, target_notebook), channel, team_id)
+
+
+
+#            else:
+#                return 'file existed: {0}'.format(target_notebook)
+
+#            return "value: {0}".format(jupyter_api.contents(target_notebook))
 
             jupyter_web.login().open(target_notebook)
 
@@ -90,12 +106,11 @@ class Jupyter_Web_Commands:
 
             jupyter_cell.save_notebook()
             if channel:
-                return send_message(':point_right: execution result ```{0}```'.format(result),channel,team_id)
+                return send_message(':point_right: Code executed, here is the output:\n ```{0}```'.format(result),channel,team_id)
             else:
                 return result
-            #return send_png_to_slack(notebook.jupyter_web().screenshot_base64(), channel, team_id)
         except Exception as error:
-            return send_message(':red_circle: Error: {0}'.format(error))
+            return send_message(':red_circle: Error: {0}'.format(error),channel, team_id)
 
 
     @staticmethod
@@ -117,6 +132,7 @@ class Jupyter_Web_Commands:
             return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id)
 
         send_message(':point_right: taking screenshot of `{0}` with width `{1}`, height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
-        png_data = notebook.screenshot(path=path, width=width, height=height, delay=delay)
+
+        png_data = notebook.screenshot(path=path, width=width, height=height, delay=delay, apply_ui_fixes=False) # when calling the sceenshot via the web command,  don't apply the UI fixes
 
         return send_png_to_slack(png_data, channel,team_id)
