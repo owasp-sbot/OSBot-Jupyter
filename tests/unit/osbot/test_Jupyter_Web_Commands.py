@@ -47,8 +47,12 @@ class test_Jupyter_Web_Commands(TestCase):
         tmp_value = Misc.random_string_and_numbers()
         code      = "tmp_var='{0}' \nprint(tmp_var)".format(tmp_value)
         params = [self.short_id, code, { 'original':'slack data'}]
-        self.result = Jupyter_Web_Commands.execute_python(params=params)
-        #self.png_data = Jupyter_Web_Commands.execute_python(params=params)
+        assert tmp_value == Jupyter_Web_Commands.execute_python(params=params).strip()
+
+    def test_show_python_invoke_file(self):
+        params = [self.short_id, {}]
+        self.png_data = Jupyter_Web_Commands.show_python_invoke_file(params=params)
+
 
     def test_execute_python__via_lambda(self):
         self.result = Deploy('osbot_jupyter.lambdas.jupyter_web').deploy_jupyter_web()

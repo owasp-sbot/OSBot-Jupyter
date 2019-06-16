@@ -50,14 +50,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
             if not height: height = 800
             if not delay : delay = 0
             if delay > max_screenshot_delay : delay = max_screenshot_delay
-            # try:
-            #     width    = int(params.pop(0))
-            # except:
-            #     width    = 800
-            # try:
-            #     height   = int(params.pop(0))
-            # except:
-            #     height    = 800
+
             send_message(":point_right: taking screenshot of notebook `{0}` in server `{1}` with width `{2}`, (min) height `{3}` and delay `{4}`".format(path,short_id,width,height,delay),channel,team_id)
             payload = {'short_id': short_id, 'path': path,'width': width,'height': height, 'delay' : delay}
             png_data = Lambda('osbot_jupyter.lambdas.screenshot').invoke(payload)

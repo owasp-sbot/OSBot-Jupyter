@@ -1,3 +1,5 @@
+import datetime
+
 from osbot_jupyter.api.CodeBuild_Jupyter        import CodeBuild_Jupyter
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Jupyter_API              import Jupyter_API
@@ -70,20 +72,20 @@ class Live_Notebook:
             self._code_build_Jupyter = CodeBuild_Jupyter(self.build_id)
         return self._code_build_Jupyter
 
-    # NOT WORKING IN LAMBDA (I think it is because the Javascript is not being executed ok)
-    def execute_python(self, python_code,keep_contents=True, target=None):
-        jp_web  = self.jupyter_web()
-        jp_cell = self.jupyter_cell()           # the prob is the browser object is being created twice
-        if target is None:
-            target = self.execute_python_file
-        if (target in jp_web.url()) is False:
-            jp_web.open(target)
-        if not keep_contents:
-            jp_cell.clear()
-        jp_cell.execute(python_code)
-        #jp_cell.new()
-        #jp_cell.text('some content')
-        return jp_cell.output_wait_for_data()
+    # # NOT WORKING IN LAMBDA (I think it is because the Javascript is not being executed ok)
+    # def execute_python(self, python_code,keep_contents=True, target=None):
+    #     jp_web  = self.jupyter_web()
+    #     jp_cell = self.jupyter_cell()           # the prob is the browser object is being created twice
+    #     if target is None:
+    #         target = self.execute_python_file
+    #     if (target in jp_web.url()) is False:
+    #         jp_web.open(target)
+    #     if not keep_contents:
+    #         jp_cell.clear()
+    #     jp_cell.execute(python_code)
+    #     #jp_cell.new()
+    #     #jp_cell.text('some content')
+    #     return jp_cell.output_wait_for_data()
 
     def server_details(self):
         if self._server_details is None:
@@ -145,8 +147,28 @@ class Live_Notebook:
     def stop(self):
         return self.code_build_Jupyter().code_build.codebuild.stop_build(id=self.build_id).get('build')
 
+    def execute_python_in_notebook(self, target_notebook, code, source_event):
+        self.login()
+        self.jupyter_web().open(target_notebook)
 
+        self.jupyter_cell().wait_seconds(1)  # refactor with better method
 
+        self.jupyter_cell().new_top()                                                              \
+                           .to_markdown()                                                          \
+                           .text("### Code above requested by: \n ```{0}```".format(source_event)) \
+                           .execute()
+        result = self.jupyter_cell().execute_python(code).output_wait_for_data()
 
+        self.jupyter_cell().save_notebook()
+        return result
 
-    #def cell_contents(self):
+    def get_python_invoke_file(self):
+        today           = '{0}'.format(datetime.date.today().strftime('%d-%b-%y'))
+        target_notebook = 'users/gsbot/invoke-{0}.ipynb'.format(today)
+        created         = False
+        if self.jupyter_api().contents(target_notebook) is None:  # we need to create the file
+            self.jupyter_api().notebook_create(target_notebook)
+            created = True
+        target_notebook = "notebooks/{0}".format(target_notebook)
+
+        return target_notebook, created

@@ -20,9 +20,8 @@ def send_png_to_slack(png_data, channel, team_id):
     if len(png_data) == 3:
         send_message(":red_circle: error taking screenshot :{0} ".format(png_data), channel, team_id)
     else:
-        send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)),
-                     channel, team_id)
-        Lambda('utils.png_to_slack').invoke_async({'png_data': png_data, 'team_id': team_id, 'channel': channel})
+        send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)), channel, team_id)
+        Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
 
 class Jupyter_Web_Commands:
 
@@ -66,45 +65,20 @@ class Jupyter_Web_Commands:
                 return send_message(':red_circle: You must provide the following params: `Server Id` and `code` (to execute)',channel, team_id)
 
             build_id   = str(Misc.array_pop(params, 0))
-            code       = ' '.join(params)
-            headless   = channel is not None
-            notebook   = Live_Notebook(headless=headless)
+            code       = ' '.join(params).replace('“','"').replace('”','"').replace('‘',"'").replace('’',"'")
+            notebook   = Live_Notebook()
 
             if notebook.set_build_from_short_id(build_id) is None:
                 return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(build_id)
 
-            jupyter_web   = notebook.jupyter_web()
-            jupyter_cell  = notebook.jupyter_cell()
-            jupyter_api   = notebook.jupyter_api()
-
-            today           = '{0}'.format(datetime.date.today().strftime('%d-%b-%y'))
-            target_notebook = 'users/gsbot/invoke-{0}.ipynb'.format(today)
-            if jupyter_api.contents(target_notebook) is None:  # we need to create the file
+            (target_notebook,created) = notebook.get_python_invoke_file()
+            if created:
                 send_message(':point_right: Created temp file for dynamic execution: `{0}`'.format(target_notebook),channel, team_id)
-                jupyter_api.notebook_create(target_notebook)
-
-            target_notebook = "notebooks/{0}".format(target_notebook)
 
             send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), build_id, target_notebook), channel, team_id)
 
+            result = notebook.execute_python_in_notebook(target_notebook, code, event)
 
-
-#            else:
-#                return 'file existed: {0}'.format(target_notebook)
-
-#            return "value: {0}".format(jupyter_api.contents(target_notebook))
-
-            jupyter_web.login().open(target_notebook)
-
-            jupyter_cell.wait_seconds(1)        # refactor with better method
-
-            jupyter_cell.new_top()                                                       \
-                        .to_markdown()                                                   \
-                        .text("### Code above requested by: \n ```{0}```".format(event)) \
-                        .execute()
-            result = jupyter_cell.execute_python(code).output_wait_for_data()
-
-            jupyter_cell.save_notebook()
             if channel:
                 return send_message(':point_right: Code executed, here is the output:\n ```{0}```'.format(result),channel,team_id)
             else:
@@ -112,6 +86,26 @@ class Jupyter_Web_Commands:
         except Exception as error:
             return send_message(':red_circle: Error: {0}'.format(error),channel, team_id)
 
+    @staticmethod
+    def show_python_invoke_file(team_id=None, channel=None, params=None):
+        #event = Misc.array_pop(params)  # original slack event object
+        if not params or len(params) < 2:
+            return send_message(':red_circle: You must provide the following params: `Server Id`', channel, team_id)
+
+        build_id = str(Misc.array_pop(params, 0))
+        notebook = Live_Notebook()
+        if notebook.set_build_from_short_id(build_id) is None:
+            return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(build_id)
+
+
+        (target_notebook, created) = notebook.get_python_invoke_file()
+        send_message(":point_right: Today's python execution file is: `{0}`, here is what it looks like".format(target_notebook), channel, team_id)
+        width  = 1200
+        height = 1200
+        delay  = 2
+        png_data = notebook.screenshot(path=target_notebook, width=width, height=height, delay=delay, apply_ui_fixes=False)
+
+        return send_png_to_slack(png_data, channel,team_id)
 
     @staticmethod
     def screenshot(team_id=None, channel=None, params=None):
