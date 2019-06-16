@@ -26,6 +26,7 @@ class Jupyter_Web_Commands:
 
     @staticmethod
     def create_file(team_id=None, channel=None, params=None):
+        event = Misc.array_pop(params)          # original slack event object
         if not params or len(params) <2:
             return send_message(':red_circle: You must provide the following params: `Server Id` and `notebook path`',channel,team_id)
 
@@ -57,65 +58,49 @@ class Jupyter_Web_Commands:
 
     @staticmethod
     def execute_python(team_id=None, channel=None, params=None):
-        if not params or len(params) < 2:
-            return send_message(':red_circle: You must provide the following params: `Server Id` and `notebook path`',
-                                channel, team_id)
+        try:
+            event = Misc.array_pop(params)  # original slack event object
+            if not params or len(params) < 2:
+                return send_message(':red_circle: You must provide the following params: `Server Id` and `code` (to execute)',
+                                    channel, team_id)
 
-        build_id = str(Misc.array_pop(params, 0))
-        #file_path = Misc.array_pop(params, 0)
-        code       = ' '.join(params)
-        headless = channel is not None
-        notebook = Live_Notebook(headless=headless)
+            build_id   = str(Misc.array_pop(params, 0))
+            code       = ' '.join(params)
+            headless   = channel is not None
+            notebook   = Live_Notebook(headless=headless)
 
-        if notebook.set_build_from_short_id(build_id) is None:
-            return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(
-                build_id)
-        target_notebook = 'notebooks/users/gsbot/gsbot-invoke.ipynb'
-        send_message(':point_right: Running code with size `{0}` on server `{1}` : `{2}`'.format(len(code), build_id, target_notebook, target_notebook), channel, team_id)
+            if notebook.set_build_from_short_id(build_id) is None:
+                return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(build_id)
 
-        jupyter_web  = notebook.login().open(target_notebook)
-        browser      = jupyter_web.browser()
-        jupyter_cell = notebook.jupyter_cell().set_browser(browser)
+            target_notebook = 'notebooks/users/gsbot/gsbot-invoke.ipynb'
+            send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), build_id, target_notebook, target_notebook), channel, team_id)
 
-        #jupyter_web.sync__await_for_element('.input')
+            jupyter_web  = notebook.jupyter_web()
+            jupyter_cell = notebook.jupyter_cell()
 
-        #send_message('What is looks like before cell set', channel, team_id)
+            jupyter_web.login().open(target_notebook)
 
-        #send_png_to_slack(notebook.jupyter_web().screenshot_base64(), channel, team_id)
+            jupyter_cell.wait_seconds(1)        # refactor with better method
 
-        #notebook.execute_python(code)
+            jupyter_cell.new_top()                                                       \
+                        .to_markdown()                                                   \
+                        .text("### Code above requested by: \n ```{0}```".format(event)) \
+                        .execute()
+            result = jupyter_cell.execute_python(code).output_wait_for_data()
 
-        from time import sleep
-        sleep(1)
-        #send_message('after sleeping 3 secs', channel, team_id)
-        #jp_cell = notebook.jupyter_cell().text()
+            jupyter_cell.save_notebook()
+            if channel:
+                return send_message(':point_right: execution result ```{0}```'.format(result),channel,team_id)
+            else:
+                return result
+            #return send_png_to_slack(notebook.jupyter_web().screenshot_base64(), channel, team_id)
+        except Exception as error:
+            return send_message(':red_circle: Error: {0}'.format(error))
 
-        #js_code = "Jupyter.notebook.get_selected_cell().get_text()"
-        #data = browser.sync__js_execute(js_code)
-        data = jupyter_cell.new().text('a new cell').text()
-        #data = browser.sync__url()
-        send_message('data :{0}'.format(data), channel, team_id)
-
-        #jp_cell.new().text('40 +2')
-
-        #send_message('What is looks like after: ', channel, team_id)
-
-
-
-        result = jupyter_cell.execute_python(code).output_wait_for_data()
-
-        send_message(':point_right: execution result ```{0}```'.format(result),channel,team_id)
-
-        #jp_cell.wait_seconds(1)
-
-        send_png_to_slack(notebook.jupyter_web().screenshot_base64(), channel, team_id)
-
-        #png_data = notebook.jupyter_web().screenshot_base64()
-        #return send_png_to_slack(png_data, channel, team_id)
-        send_message('All done: ', channel, team_id)
 
     @staticmethod
     def screenshot(team_id=None, channel=None, params=None):
+        event = Misc.array_pop(params)  # original slack event object
         if not params or len(params) == 0:
             return send_message(':red_circle: You must provide an Server Id. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
 

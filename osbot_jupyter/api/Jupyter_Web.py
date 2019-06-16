@@ -4,13 +4,13 @@ from osbot_aws.apis.Lambda import load_dependency
 
 class Jupyter_Web:
 
-    def __init__(self, token=None,server=None, headless=True):
+    def __init__(self, token=None,server=None, headless=True, browser=None):
         self.headless       = headless
         #self.server         = {'schema':'http', 'ip':  '127.0.0.1' , 'port' : 8888 }
         self.token          = token
         self.tmp_screenshot = '/tmp/jupyter_screenshot.png'
         self.server         = server
-        self._browser       = None  # API_Browser(headless=headless)
+        self._browser       = browser
 
     def browser(self):
         if self._browser is None:

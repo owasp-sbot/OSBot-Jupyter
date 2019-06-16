@@ -143,7 +143,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
 
     @staticmethod
     def web(team_id=None, channel=None, params=None):
-        event = Misc.array_pop(params)  # we don't need to propagate this object (which is the original params sent to the OS Bot lambda)
+        #event = Misc.array_pop(params)
         params = {'team_id':team_id, 'channel': channel, 'params':params}
         Lambda('osbot_jupyter.lambdas.jupyter_web').invoke_async(params)
 

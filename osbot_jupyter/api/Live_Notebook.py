@@ -10,6 +10,7 @@ class Live_Notebook:
         self.headless            = headless
         self.short_id            = None
         self.build_id            = None
+        self._browser            = None
         self._code_build_Jupyter = None
         self._jupyter_cell       = None
         self._jupyter_web        = None
@@ -20,6 +21,36 @@ class Live_Notebook:
         self.execute_python_file = 'notebooks/setup/gsbot-invoke.ipynb'
         if short_id:
             self.set_build_from_short_id(short_id)
+
+    # global objects
+    def browser(self):      # we have make sure there is only one instance of browser created
+        if self._browser is None:
+            print('creating browser instance')
+            from osbot_browser.browser.Browser_Lamdba_Helper import Browser_Lamdba_Helper
+            browser_helper = Browser_Lamdba_Helper(headless=self.headless).setup()
+            self._browser = browser_helper.api_browser
+        else:
+            print('using cached browser instance')
+        return self._browser
+
+    def jupyter_cell(self):
+        if self._jupyter_cell is None:
+            server, token = self.server_details()
+            self._jupyter_cell = Jupyter_Web_Cell(server=server, token=token, headless=self.headless, browser= self.browser())
+        return self._jupyter_cell
+
+    def jupyter_web(self):
+        if self._jupyter_web is None:
+            server, token = self.server_details()
+            self._jupyter_web = Jupyter_Web(server=server, token=token,headless=self.headless, browser= self.browser())
+        return self._jupyter_web
+
+    def jupyter_api(self):
+        if self._jupyter_api is None:
+            server, token = self.server_details()
+            self._jupyter_api = Jupyter_API(server=server, token=token)
+        return self._jupyter_api
+
 
     # config methods
     def set_build_id(self,build_id):
@@ -64,24 +95,6 @@ class Live_Notebook:
             if self.code_build_Jupyter():
                 self._server_details = self.code_build_Jupyter().get_server_details_from_logs()
         return self._server_details
-
-    def jupyter_cell(self):
-        if self._jupyter_cell is None:
-            server, token = self.server_details()
-            self._jupyter_cell = Jupyter_Web_Cell(server=server, token=token, headless=self.headless)
-        return self._jupyter_cell
-
-    def jupyter_web(self):
-        if self._jupyter_web is None:
-            server, token = self.server_details()
-            self._jupyter_web = Jupyter_Web(server=server, token=token,headless=self.headless)
-        return self._jupyter_web
-
-    def jupyter_api(self):
-        if self._jupyter_api is None:
-            server, token = self.server_details()
-            self._jupyter_api = Jupyter_API(server=server, token=token)
-        return self._jupyter_api
 
     # api Methods
 

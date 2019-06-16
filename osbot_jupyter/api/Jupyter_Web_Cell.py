@@ -10,8 +10,8 @@ from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 
 class Jupyter_Web_Cell(Jupyter_Web):
 
-    def __init__(self, token=None, server=None, headless=True):
-        super().__init__(token=token, server=server, headless=headless)
+    def __init__(self, token=None, server=None, headless=True, browser=None):
+        super().__init__(token=token, server=server, headless=headless, browser=browser)
 
     def execute_html(self, html_code, new_cell=True, delete_after=False):
         python_code = "%%HTML \n{0}".format(html_code)
@@ -49,7 +49,7 @@ class Jupyter_Web_Cell(Jupyter_Web):
     def execute_python(self,python_code, new_cell=True, delete_after=False):
         python_code = textwrap.dedent(python_code)                  # dedent code based on first set of spaces/tabs
         if new_cell:
-            self.new();
+            self.new_top();
         self.text(python_code)
         self.execute_cell()
         if delete_after:
@@ -89,6 +89,11 @@ class Jupyter_Web_Cell(Jupyter_Web):
         js_code = """Jupyter.notebook.insert_cell_below();
                      Jupyter.notebook.select_next(true);
                      Jupyter.notebook.focus_cell();"""
+        self.browser().sync__js_execute(js_code)
+        return self
+
+    def save_notebook(self):
+        js_code = """Jupyter.notebook.save_notebook()"""
         self.browser().sync__js_execute(js_code)
         return self
 
