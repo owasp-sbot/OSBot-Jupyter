@@ -45,7 +45,7 @@ class Live_Notebook:
     # NOT WORKING IN LAMBDA (I think it is because the Javascript is not being executed ok)
     def execute_python(self, python_code,keep_contents=True, target=None):
         jp_web  = self.jupyter_web()
-        jp_cell = self.jupyter_cell()
+        jp_cell = self.jupyter_cell()           # the prob is the browser object is being created twice
         if target is None:
             target = self.execute_python_file
         if (target in jp_web.url()) is False:
@@ -117,10 +117,10 @@ class Live_Notebook:
         jupyter_web = self.login()
 
         (
-            jupyter_web.open        (path)
-                      .browser_size (width,height)
-                      .ui_css_fixes (width)
-                      .wait_seconds (delay)
+            jupyter_web.open         (path)
+                       .browser_size (width,height)
+                       .ui_css_fixes (width)
+                       .wait_seconds (delay)
         )
         if path and 'osbot-no-code' in path:
             jupyter_web.ui_hide_input_boxes()

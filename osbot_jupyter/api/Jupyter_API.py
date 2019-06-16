@@ -146,13 +146,20 @@ class Jupyter_API:
     #     return self.http_post(file_path,config)
 
     def file_create(self, path, contents=None):
-        notebook_path = 'contents/{0}'.format(path)
+        file_path = 'contents/{0}'.format(path)
         config = {
                     'type'    : 'file',
                     'format'  : 'text',
                     'content' : contents
                 }
-        return self.http_put(notebook_path, config)
+        try:                                                                # todo: refactor with similar code below
+            result = self.http_put(file_path, config)
+            if result.get('message'):
+                return {'status': 'error', 'data': result.get('message')}
+            else:
+                return {'status': 'ok', 'path': result.get('path')}
+        except Exception as error:
+            return {'status': 'error', 'data': '{0}'.format(error)}
 
     # def notebook_create(self,path):
     #     notebook_path = 'contents/{0}'.format(path)
@@ -188,7 +195,15 @@ class Jupyter_API:
                                      "nbformat_minor": 2
                                 }
                 }
-        return self.http_put(notebook_path, config)
+        try:
+            result = self.http_put(notebook_path, config)
+            if result.get('message'):
+                return {'status' : 'error', 'data': result.get('message') }
+            else:
+                return {'status': 'ok', 'path': result.get('path')}
+        except Exception as error:
+            return {'status': 'error', 'data': '{0}'.format(error)}
+
 
     def notebook_content(self,path):
         return self.contents(path).get('content')

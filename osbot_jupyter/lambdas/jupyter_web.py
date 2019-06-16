@@ -3,6 +3,8 @@ from pbx_gs_python_utils.utils.slack.Slack_Commands_Helper import Slack_Commands
 
 def run(event, context):
     try:
+        from osbot_aws.apis.Lambda import load_dependency
+        load_dependency('requests')
 
         channel = event.get('channel')
         team_id = event.get('team_id')

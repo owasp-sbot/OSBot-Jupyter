@@ -19,6 +19,10 @@ class Jupyter_Web:
             self._browser    = browser_helper.api_browser
         return self._browser
 
+    def set_browser(self, browser):
+        self._browser = browser
+        return self
+
     def browser_width(self,width):
         if width:
             self.browser().sync__browser_width(width=width)
