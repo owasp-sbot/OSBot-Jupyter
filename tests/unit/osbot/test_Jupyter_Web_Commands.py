@@ -43,21 +43,31 @@ class test_Jupyter_Web_Commands(TestCase):
         self.result = Jupyter_Web_Commands.create_file(params=params)
 
 
-    def test_execute_python(self):
+    def test_exec(self):
         tmp_value = Misc.random_string_and_numbers()
         code      = "tmp_var='{0}' \nprint(tmp_var)".format(tmp_value)
         params = [self.short_id, code, { 'original':'slack data'}]
-        assert tmp_value == Jupyter_Web_Commands.execute_python(params=params).strip()
+        assert tmp_value == Jupyter_Web_Commands.exec(params=params).strip()
 
-    def test_show_python_invoke_file(self):
+    def test_update_notebook(self):
+        target_notebook = 'reports/report-test.ipynb'
+        params          = [self.short_id, target_notebook, {}]
+        self.result     = Jupyter_Web_Commands.update_notebook(params = params)
+
+        # code      = "tmp_var='{0}' \nprint(tmp_var)".format(tmp_value)
+        # params = [self.short_id, code, { 'original':'slack data'}]
+        # assert tmp_value == Jupyter_Web_Commands.exec(params=params).strip()
+
+
+    def test_view_exec_file(self):
         params = [self.short_id, {}]
-        self.png_data = Jupyter_Web_Commands.show_python_invoke_file(params=params)
+        self.png_data = Jupyter_Web_Commands.view_exec_file(params=params)
 
 
-    def test_execute_python__via_lambda(self):
+    def test_exec__via_lambda(self):
         self.result = Deploy('osbot_jupyter.lambdas.jupyter_web').deploy_jupyter_web()
 
-        payload = {'params':['execute_python', self.short_id, '20*2 + 2', {}] , 'channel': 'DG30MH0KV', 'team_id' : 'T0SDK1RA8' }
+        payload = {'params':['exec', self.short_id, '20*2 + 2', {}] , 'channel': 'DG30MH0KV', 'team_id' : 'T0SDK1RA8' }
         self.result = Lambda('osbot_jupyter.lambdas.jupyter_web').invoke(payload)
 
     # deploy lambda

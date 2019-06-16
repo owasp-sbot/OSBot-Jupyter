@@ -1,10 +1,8 @@
-import datetime
-
 from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
-from pbx_gs_python_utils.utils.Misc import Misc
+from pbx_gs_python_utils.utils.Misc            import Misc
+from osbot_jupyter.api.Live_Notebook           import Live_Notebook
 
-from osbot_jupyter.api.Live_Notebook import Live_Notebook
 
 
 def send_message(message, channel, team_id):
@@ -58,24 +56,28 @@ class Jupyter_Web_Commands:
             return send_message(':red_circle: Error creating notebook ```{0}```'.format(result.get('data')),channel, team_id)
 
     @staticmethod
-    def execute_python(team_id=None, channel=None, params=None):
+    def exec(team_id=None, channel=None, params=None):
         try:
             event = Misc.array_pop(params)  # original slack event object
-            if not params or len(params) < 2:
+
+            if not params or len(params) < 1:
                 return send_message(':red_circle: You must provide the following params: `Server Id` and `code` (to execute)',channel, team_id)
 
-            build_id   = str(Misc.array_pop(params, 0))
+            if not params or len(params) == 1:
+                short_id   = 'gscs'                     # hard code this for now
+            else:
+                short_id   = str(Misc.array_pop(params, 0))
             code       = ' '.join(params).replace('“','"').replace('”','"').replace('‘',"'").replace('’',"'")
             notebook   = Live_Notebook()
 
-            if notebook.set_build_from_short_id(build_id) is None:
-                return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(build_id)
+            if notebook.set_build_from_short_id(short_id) is None:
+                return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id)
 
             (target_notebook,created) = notebook.get_python_invoke_file()
             if created:
                 send_message(':point_right: Created temp file for dynamic execution: `{0}`'.format(target_notebook),channel, team_id)
 
-            send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), build_id, target_notebook), channel, team_id)
+            send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), short_id, target_notebook), channel, team_id)
 
             result = notebook.execute_python_in_notebook(target_notebook, code, event)
 
@@ -87,19 +89,21 @@ class Jupyter_Web_Commands:
             return send_message(':red_circle: Error: {0}'.format(error),channel, team_id)
 
     @staticmethod
-    def show_python_invoke_file(team_id=None, channel=None, params=None):
+    def view_exec_file(team_id=None, channel=None, params=None):
         #event = Misc.array_pop(params)  # original slack event object
         if not params or len(params) < 2:
-            return send_message(':red_circle: You must provide the following params: `Server Id`', channel, team_id)
+            build_id = 'gscs'               # for now default to this one
+            #return send_message(':red_circle: You must provide the following params: `Server Id`', channel, team_id)
+        else:
+            build_id = str(Misc.array_pop(params, 0))
 
-        build_id = str(Misc.array_pop(params, 0))
         notebook = Live_Notebook()
         if notebook.set_build_from_short_id(build_id) is None:
             return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(build_id)
 
 
         (target_notebook, created) = notebook.get_python_invoke_file()
-        send_message(":point_right: Today's python execution file is: `{0}`, here is what it looks like".format(target_notebook), channel, team_id)
+        send_message(":point_right: Today's python execution file in server `{0}` is `{1}`, here is what it looks like:".format(build_id, target_notebook), channel, team_id)
         width  = 1200
         height = 1200
         delay  = 2
@@ -133,3 +137,82 @@ class Jupyter_Web_Commands:
         png_data = notebook.screenshot(path=path, width=width, height=height, delay=delay, apply_ui_fixes=False) # when calling the sceenshot via the web command,  don't apply the UI fixes
 
         return send_png_to_slack(png_data, channel,team_id)
+
+    @staticmethod
+    def preview(team_id=None, channel=None, params=None):
+        event = Misc.array_pop(params)  # original slack event object
+
+        if not params or len(params) == 0:
+            return send_message(':red_circle: You must provide an Server Id. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
+
+        if len(params) == 1:
+            short_id = 'gscs'                                   # for now hardcode to this one
+        else:
+            short_id = Misc.array_pop(params, 0)
+
+        path     = Misc.array_pop(params, 0)
+        width    = Misc.to_int(Misc.array_pop(params, 0))
+        height   = Misc.to_int(Misc.array_pop(params, 0))
+        delay    = Misc.to_int(Misc.array_pop(params, 0))
+
+        if width  is None: width  = 1200
+        if height is None: height = 800
+        if delay  is None: delay  = 0
+
+
+        notebook = Live_Notebook()
+
+        if notebook.set_build_from_short_id(short_id) is None:
+            return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id)
+
+        path = 'nbconvert/html/{0}?download=false&osbot-no-code'.format(path)
+
+        send_message(':point_right: taking screenshot of `{0}` with width `{1}`, height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
+
+        png_data = notebook.screenshot(path=path, width=width, height=height, delay=delay, apply_ui_fixes=True)
+
+        return send_png_to_slack(png_data, channel,team_id)
+
+    @staticmethod
+    def report(team_id=None, channel=None, params=None):
+        event  = Misc.array_pop(params)  # original slack event object
+        name   = Misc.array_pop(params)
+        report = "reports/{0}.ipynb".format(name)
+        params = ['gscs',report, event]
+        return Jupyter_Web_Commands.preview(team_id, channel, params)
+
+    @staticmethod
+    def update_notebook(team_id=None, channel=None, params=None):
+        event = Misc.array_pop(params)  # original slack event object
+
+        if not params or len(params) < 2:
+            return send_message(':red_circle: You must provide the following params: `Server Id` and `notebook path` (to update)', channel,team_id)
+
+        short_id        = str(Misc.array_pop(params, 0))
+        target_notebook = Misc.array_pop(params, 0)
+
+        if '.ipynb' not in target_notebook:
+            target_notebook += '.ipynb'
+
+        notebook = Live_Notebook()
+        if notebook.set_build_from_short_id(short_id) is None:
+            return send_message(':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id), channel, team_id)
+
+        if notebook.jupyter_api().contents(target_notebook) is None:
+            return send_message(":red_circle: Could not find notebook `{0}` in server `{1}`".format(target_notebook, short_id),channel, team_id)
+
+
+        send_message(":point_right: Updating notebook `{0}` on server `{1}`".format(target_notebook,short_id), channel, team_id)
+
+        target_notebook_fixed = "notebooks/{0}".format(target_notebook)
+        code = '!cd ../..; jupyter nbconvert --to notebook --inplace --execute {0}'.format(target_notebook_fixed)
+
+        result = notebook.execute_python_in_notebook(target_notebook_fixed,code, event)
+        if '[NbConvertApp] Writing' not in result:
+            return send_message(":red_circle:  Update failed: \n ```{0}```".format(result), channel, team_id)
+
+        send_message(":point_right: Notebook updated ok", channel, team_id)
+        params = [short_id, target_notebook, event]
+        return Jupyter_Web_Commands.preview(team_id,channel,params)
+
+
