@@ -141,7 +141,7 @@ class Jupyter_Web_Cell(Jupyter_Web):
     def output_html(self):
         return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.outputs[0].data['text/html']")
 
-    def output_wait_for_data(self, sleep_seconds = 0.5, max_attempts=30):
+    def output_wait_for_data(self, sleep_seconds = 0.5, max_attempts=120): # max wait 1 minute
         for i in range(1,max_attempts):
             if self.input_prompt() != 'In\xa0[*]:':        # the [*] means the kernel is executing the current cells
                 return self.output()

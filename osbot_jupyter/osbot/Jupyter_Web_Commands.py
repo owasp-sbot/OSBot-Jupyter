@@ -205,13 +205,25 @@ class Jupyter_Web_Commands:
         send_message(":point_right: Updating notebook `{0}` on server `{1}`".format(target_notebook,short_id), channel, team_id)
 
         target_notebook_fixed = "notebooks/{0}".format(target_notebook)
-        code = '!cd ../..; jupyter nbconvert --to notebook --inplace --execute {0}'.format(target_notebook_fixed)
+        code = '!cd ../../..; jupyter nbconvert --to notebook --inplace --execute {0}'.format(target_notebook_fixed)
 
-        result = notebook.execute_python_in_notebook(target_notebook_fixed,code, event)
-        if '[NbConvertApp] Writing' not in result:
-            return send_message(":red_circle:  Update failed: \n ```{0}```".format(result), channel, team_id)
+        # note for longer executions the save is not working ok
+        (invoke_notebook, created) = notebook.get_python_invoke_file()
+        send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), short_id, invoke_notebook), channel, team_id)
 
-        send_message(":point_right: Notebook updated ok", channel, team_id)
+        result = notebook.execute_python_in_notebook(invoke_notebook,code, event)
+
+        #send_message("result: ```{0}``` ".format(result),channel, team_id)
+
+        if result and ('[NbConvertApp] Writing' not in result): #or ('[js eval error]' in result):
+            if 'matched no files' in result:
+                send_message(":red_circle:  Update failed, could not find notebook \n ```{0}```".format(target_notebook_fixed), channel, team_id)
+                send_message("Here is the execution code: ```{0}````".format(code), channel, team_id)
+                return
+            else:
+                return send_message(":red_circle:  Update failed: \n ```{0}```".format(result), channel, team_id)
+
+        send_message(":point_right: Notebook updated ok", channel, team_id) # need to double check
         params = [short_id, target_notebook, event]
         return Jupyter_Web_Commands.preview(team_id,channel,params)
 
