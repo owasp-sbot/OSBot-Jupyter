@@ -10,7 +10,7 @@ from osbot_jupyter.lambdas.osbot import run
 
 class test_run_command(TestCase):
     def setUp(self):
-        self.bot_name = 'oss_bot'
+        self.bot_name = 'gw_bot'
         self.profile_name = 'gs-detect-aws'  # 654386450934
         self.region_name = 'eu-west-2'
 

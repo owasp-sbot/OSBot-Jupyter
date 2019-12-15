@@ -4,7 +4,7 @@ from osbot_aws.apis.IAM                  import IAM
 from osbot_aws.helpers.Create_Code_Build import Create_Code_Build
 from pbx_gs_python_utils.utils.Dev import Dev
 
-from oss_bot.Deploy import Deploy
+from gw_bot.Deploy import Deploy
 
 
 class test_Create_Code_Build(TestCase):

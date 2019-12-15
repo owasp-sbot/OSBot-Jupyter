@@ -8,7 +8,7 @@ from pbx_gs_python_utils.utils.Files import Files
 class Deploy:
 
     def __init__(self, lambda_name):
-        self.bot_name = 'oss_bot'
+        self.bot_name = 'gw_bot'
         self.profile_name = 'gs-detect-aws'  # 654386450934
         self.region_name = 'eu-west-2'
 
