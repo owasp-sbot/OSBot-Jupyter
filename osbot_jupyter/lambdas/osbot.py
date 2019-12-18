@@ -7,7 +7,7 @@ def load_dependency(target):
     import shutil
     import sys
     s3         = S3()
-    s3_bucket  = 'oss-bot-lambdas'
+    s3_bucket  = 'gw-bot-lambdas'
     s3_key     = 'lambdas-dependencies/{0}.zip'.format(target)
 
     tmp_dir    = Files.path_combine('/tmp/lambdas-dependencies', target)
