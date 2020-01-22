@@ -1,5 +1,7 @@
 from pbx_gs_python_utils.utils.Misc import Misc
-from pbx_gs_python_utils.utils.slack.Slack_Commands_Helper import Slack_Commands_Helper
+
+from gw_bot.api.Slack_Commands_Helper import Slack_Commands_Helper
+
 
 def load_dependency(target):
     from pbx_gs_python_utils.utils.Files import Files

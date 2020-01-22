@@ -11,7 +11,7 @@ from pbx_gs_python_utils.utils.Misc import Misc
 class Jp_Graph_Data:
 
     def __init__(self):
-        self.lambda_graph   = Lambda('lambdas.gsbot.gsbot_graph')
+        self.lambda_graph   = Lambda('osbot_jira.lambdas.graph')
         self.api_issues     = API_Issues()
         self.gs_bot_jira    = GS_Bot_Jira()
         self.graph_commands = Lambda_Graph_Commands()
