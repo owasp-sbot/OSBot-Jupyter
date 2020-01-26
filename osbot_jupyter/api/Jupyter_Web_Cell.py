@@ -10,8 +10,8 @@ from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 
 class Jupyter_Web_Cell(Jupyter_Web):
 
-    def __init__(self, token=None, server=None, headless=True):
-        super().__init__(token=token, server=server, headless=headless)
+    def __init__(self, token=None, server=None, headless=True, browser=None):
+        super().__init__(token=token, server=server, headless=headless, browser=browser)
 
     def execute_html(self, html_code, new_cell=True, delete_after=False):
         python_code = "%%HTML \n{0}".format(html_code)
@@ -49,12 +49,24 @@ class Jupyter_Web_Cell(Jupyter_Web):
     def execute_python(self,python_code, new_cell=True, delete_after=False):
         python_code = textwrap.dedent(python_code)                  # dedent code based on first set of spaces/tabs
         if new_cell:
-            self.new();
+            self.new_top();
         self.text(python_code)
         self.execute_cell()
         if delete_after:
             self.delete()
         return self
+
+    def execute_bash(self,bash_cmd, new_cell=True, delete_after=False):
+        python_code = "!{0}".format(bash_cmd)
+        if new_cell:
+            self.new();
+        self.text(python_code)
+        self.execute_cell()
+        output = self.output_wait_for_data()
+        if delete_after:
+            self.delete()
+        return output
+
 
     def execute(self, code=None):
         if code is None:
@@ -77,6 +89,11 @@ class Jupyter_Web_Cell(Jupyter_Web):
         js_code = """Jupyter.notebook.insert_cell_below();
                      Jupyter.notebook.select_next(true);
                      Jupyter.notebook.focus_cell();"""
+        self.browser().sync__js_execute(js_code)
+        return self
+
+    def save_notebook(self):
+        js_code = """Jupyter.notebook.save_notebook()"""
         self.browser().sync__js_execute(js_code)
         return self
 
@@ -119,12 +136,12 @@ class Jupyter_Web_Cell(Jupyter_Web):
         return self.js_invoke("Jupyter.notebook.get_selected_cell().input.find('.input_prompt').text()")
 
     def output(self):
-        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.find('.output_result').text()");
+        return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.element.find('.output_text').text()");
 
     def output_html(self):
         return self.js_invoke("Jupyter.notebook.get_selected_cell().output_area.outputs[0].data['text/html']")
 
-    def output_wait_for_data(self, sleep_seconds = 0.5, max_attempts=30):
+    def output_wait_for_data(self, sleep_seconds = 0.5, max_attempts=120): # max wait 1 minute
         for i in range(1,max_attempts):
             if self.input_prompt() != 'In\xa0[*]:':        # the [*] means the kernel is executing the current cells
                 return self.output()

@@ -4,13 +4,13 @@ from osbot_aws.apis.Lambda import load_dependency
 
 class Jupyter_Web:
 
-    def __init__(self, token=None,server=None, headless=True):
+    def __init__(self, token=None,server=None, headless=True, browser=None):
         self.headless       = headless
         #self.server         = {'schema':'http', 'ip':  '127.0.0.1' , 'port' : 8888 }
         self.token          = token
         self.tmp_screenshot = '/tmp/jupyter_screenshot.png'
         self.server         = server
-        self._browser       = None  # API_Browser(headless=headless)
+        self._browser       = browser
 
     def browser(self):
         if self._browser is None:
@@ -18,6 +18,10 @@ class Jupyter_Web:
             browser_helper  = Browser_Lamdba_Helper(headless=self.headless).setup()
             self._browser    = browser_helper.api_browser
         return self._browser
+
+    def set_browser(self, browser):
+        self._browser = browser
+        return self
 
     def browser_width(self,width):
         if width:
@@ -81,8 +85,25 @@ class Jupyter_Web:
     def ui_hide_input_boxes(self):
         self.browser().sync__js_execute("$('div.input').hide()")
         return self
+
+    def ui_css_fixes(self, width='1200'):
+        css_fixes = """  $('body').css({{'background-color':'white'}})
+                         $('.container').width('{0}');
+                         $('.container').css  ({{'padding':'0px'}})
+                         $('#notebook' ).css  ({{'padding':'0px'}})                         
+                         $('.prompt').hide()                        
+                    """.format(width)
+        self.browser().sync__js_execute(css_fixes)
+        return self
+
     def url(self):
         return self.browser().sync__url()
 
     def set_url  (self, value): self._server   = value; return self
     def set_token(self, value): self.token  = value; return self
+
+    def wait_seconds(self,seconds=None):
+        if seconds:
+            from time import sleep
+            sleep(seconds)
+        return self

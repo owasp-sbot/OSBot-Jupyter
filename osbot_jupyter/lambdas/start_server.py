@@ -8,7 +8,7 @@ def run(event, context):
     channel   = event.get('channel')
     team_id   = event.get('team_id')
     user      = event.get('user')
-    slack_message(":point_right: Hi <@{0}>, starting Jupyter server for you with the repo `{1}`.\n :information_source: This should take between 20 and 60 seconds".format(user, repo_name), [], channel, team_id)
+    slack_message(":point_right: Hi <@{0}>, starting Jupyter server for you with the repo `{1}`.\n :information_source: This should take between 60 and 150 seconds".format(user, repo_name), [], channel, team_id)
     try:
         from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 

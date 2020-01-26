@@ -9,7 +9,7 @@ from osbot_jupyter.api.Live_Notebook import Live_Notebook
 class test_Live_Notebook(TestCase):
 
     def setUp(self):
-        self.short_id      = '1f5d1'
+        self.short_id      = '12d62'
         self.notebook      = Live_Notebook(short_id=self.short_id, headless=True)
         self.test_notebook ='notebooks/users/gsbot/gsbot-invoke.ipynb'
         self.result        = None
@@ -27,8 +27,13 @@ class test_Live_Notebook(TestCase):
 
     # config methods
     def test_set_build_from_short_id(self):
-        assert self.notebook.set_build_from_short_id(self.short_id) is True
-        assert self.notebook.set_build_from_short_id('aaaa'       ) is False
+
+        assert self.notebook.set_build_from_short_id(self.short_id) is self.notebook
+        assert self.notebook.set_build_from_short_id('aaaa'       ) is None
+
+        assert self.notebook.set_build_from_short_id('gscs'       ) is self.notebook  # will need this server to be running
+        assert self.notebook.set_build_from_short_id('aaaa'       ) is None
+
 
     def test_jupyter_api(self):
         assert self.notebook.jupyter_api().version()     == {'version': '5.7.8'}
@@ -40,7 +45,7 @@ class test_Live_Notebook(TestCase):
     # api methods
 
     def test_files(self):
-        self.result = self.notebook.files('scenarios')
+        self.result = self.notebook.files('users')
         #contents
 
     def test_execute_command(self):
@@ -50,7 +55,7 @@ class test_Live_Notebook(TestCase):
         if (self.test_notebook in jp_web.url()) is False:
             jp_web.open(self.test_notebook)
         jp_cell.clear()
-        jp_cell.executze("""
+        jp_cell.execute("""
                             answer=40+2
                             print('this was executed from an unit test')
                             answer

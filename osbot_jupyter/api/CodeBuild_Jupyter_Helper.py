@@ -36,8 +36,9 @@ class CodeBuild_Jupyter_Helper:
     def get_active_server_details(self):
         build_id = self.get_active_build_id()
         if build_id is None:
-            self.start_build_and_wait_for_jupyter_load()
-            build_id = self.get_active_build_id()
+            return None
+            #self.start_build_and_wait_for_jupyter_load()
+            #build_id = self.get_active_build_id()
         code_build = CodeBuild_Jupyter(build_id)
         return code_build.get_server_details_from_logs()
 
@@ -94,7 +95,7 @@ class CodeBuild_Jupyter_Helper:
         Json.save_json(file, config)
         return config
 
-    def wait_for_jupyter_load(self, build,max_seconds=90):
+    def wait_for_jupyter_load(self, build,max_seconds=150): # make it 2.5 minutes since sometimes it takes 90 secs for aws to fetch (was 90 seconds originally)
         seconds_sleep = 5
         for i in range(0,max_seconds,seconds_sleep):
             sleep(seconds_sleep)

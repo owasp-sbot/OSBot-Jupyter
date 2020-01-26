@@ -1,7 +1,6 @@
 import unittest
 from unittest import TestCase
 
-from osbot_aws.Globals import Globals
 from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Files import Files
 from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
@@ -11,25 +10,40 @@ from osbot_jupyter.Deploy import Deploy
 
 class test_Deploy_Lambda_Functions(TestCase):
 
+    def setUp(self):
+        self.result = None
 
-    def test_deploy_lambda_functions(self):
-        targets = [
-                    'osbot_jupyter.lambdas.osbot'      ,   #   osbot.py    OSBot_Commands
-                    #'osbot_jupyter.lambdas.screenshot',   # can't be deployed here
-                    'osbot_jupyter.lambdas.start_server'
-                   ]
-        result = ""
-        for target in targets:
-            Deploy(target).deploy()
-            result += " • {0}\n".format(target)
+    def tearDown(self):
+        if self.result is not None:
+            Dev.pprint(self.result)
 
-        text        = ":hotsprings: [osbot-gsuite] updated lambda functions"
-        attachments = [{'text': result, 'color': 'good'}]
-        slack_message(text, attachments)  # gs-bot-tests
-        Dev.pprint(text, attachments)
+    # def test_deploy_lambda_functions(self):
+    #     targets = [
+    #                 'osbot_jupyter.lambdas.osbot'      ,   #   osbot.py    OSBot_Commands
+    #                 #'osbot_jupyter.lambdas.screenshot'
+    #                ]
+    #     result = ""
+    #     for target in targets:
+    #         Deploy(target).deploy()
+    #         result += " • {0}\n".format(target)
+    #
+    #     text        = ":hotsprings: [osbot-gsuite] updated lambda functions"
+    #     attachments = [{'text': result, 'color': 'good'}]
+    #     slack_message(text, attachments)  # gs-bot-tests
+    #     Dev.pprint(text, attachments)
 
-    def test_deploy_lambda__screenshot(self):
-        Deploy('osbot_jupyter.lambdas.screenshot').deploy_lambda__screenshot()
+    # this is the main lambda (responsible for the `jupyter/jp` command
+    def test_deploy_osbot_jupyter(self):
+        self.result = Deploy('osbot_jupyter.lambdas.osbot').deploy()
+
+    def test_deploy_start_server(self):
+        self.result = Deploy('osbot_jupyter.lambdas.start_server').deploy()
+
+    def test_deploy_screenshot(self):
+        self.result = Deploy('osbot_jupyter.lambdas.screenshot').deploy_screenshot()
+
+    def test_deploy_jupyter_web(self):
+        self.result = Deploy('osbot_jupyter.lambdas.jupyter_web').deploy_jupyter_web()
 
 if __name__ == '__main__':
     unittest.main()

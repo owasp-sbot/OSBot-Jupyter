@@ -13,6 +13,14 @@ class CodeBuild_Jupyter:
             self._build_info = self.code_build.build_info(self.build_id)
         return self._build_info
 
+    def build_environment_variables(self):
+        variables = {}
+        build_info = self.build_info()
+        if build_info:
+            for variable in build_info.get('environment').get('environmentVariables'):
+                variables[variable.get('name')] = variable.get('value')
+        return variables
+
     def build_status(self):
         return self.build_info(reload_data=True).get('buildStatus')
 
