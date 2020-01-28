@@ -1,15 +1,17 @@
 from unittest import TestCase
 
+from gw_bot.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.CodeBuild import CodeBuild
 from pbx_gs_python_utils.utils.Dev import Dev
 
 from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 
-class test_CodeBuild_Jupyter(TestCase):
+class test_CodeBuild_Jupyter(Test_Helper):
     def setUp(self):
+        super().setUp()
         self.result = None
-        self.build_id = 'OSBot-Jupyter:f8119f0f-6cf9-468c-a193-f11846c4cc1d'
+        self.build_id = 'OSBot-Jupyter:baea0626-3ad2-4e47-a41e-ff82ce5865ad'
         self.api      = CodeBuild_Jupyter(build_id = self.build_id)
 
 

@@ -70,8 +70,8 @@ class CodeBuild_Jupyter_Helper:
         build_id = self.code_build.codebuild.start_build(**kvargs).get('build').get('arn')
         return {'status': 'ok', 'data': build_id}
 
-    def start_build_for_repo_and_wait_for_jupyter_load(self, repo_name, user='gsbot'):
-        result =  self.start_build_for_repo(repo_name,user)
+    def start_build_for_repo_and_wait_for_jupyter_load(self, repo_name, user='gsbot', server_size='small'):
+        result =  self.start_build_for_repo(repo_name=repo_name,user=user, server_size=server_size)
         if result:
             build_id = result.get('data')
             build    = CodeBuild_Jupyter(build_id=build_id)

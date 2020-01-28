@@ -1,12 +1,15 @@
 import base64
 from unittest                           import TestCase
 
+from gw_bot.Deploy import Deploy
+from gw_bot.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Dev      import Dev
 from osbot_aws.helpers.Lambda_Package   import Lambda_Package
 
-class test_run_command(TestCase):
+class test_run_command(Test_Helper):
     def setUp(self):
+        super().setUp()
         self.aws_lambda = Lambda('osbot_jupyter.lambdas.start_server')
         self.result     = None
         self.png_data   = None
@@ -33,7 +36,12 @@ class test_run_command(TestCase):
         self.result = self.aws_lambda.invoke(payload)
 
 
-    def test_invoke_async(self):
-        payload = {'repo_name': 'gs-notebook-risks', 'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV', 'user': 'U7ESE1XS7'}
-        result = Lambda('osbot_jupyter.lambdas.start_server').invoke_async(payload)
+    def test_invoke(self):
+        lambda_name = 'osbot_jupyter.lambdas.start_server'
+        Deploy().deploy_lambda__jupyter(lambda_name)
+        payload = { 'repo_name'  : 'gwbot-jupyter-notebooks',
+                    'channel'    : 'DRE51D4EM'              ,
+                    'user'       : 'UR9UENEAW'              ,
+                    'server_size': 'large'                  }
+        result = Lambda(lambda_name).invoke(payload)
         self.result = result

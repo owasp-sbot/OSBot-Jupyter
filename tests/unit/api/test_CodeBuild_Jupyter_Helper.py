@@ -43,10 +43,7 @@ class test_CodeBuild_Jupyter_Helper(Test_Helper):
         self.api.start_build_for_repo(repo, server_size = 'large' )
 
     def test_start_build_for_repo_and_wait_for_jupyter_load(self):
-        repo = 'gs-notebook-risks'
-        #repo = 'gs-notebook-detect'
-        #repo = 'gs-notebook-gscs'
-        #self.result = self.api.util_rename_secret('gs-detect-notebooks', 'gs-notebook-detect')
+        repo = 'gwbot-jupyter-notebooks'
         self.result = self.api.start_build_for_repo_and_wait_for_jupyter_load(repo)
 
 
@@ -60,5 +57,5 @@ class test_CodeBuild_Jupyter_Helper(Test_Helper):
 
 
     def test_gw_repo_start_build_for_repo__server_size(self):
-        repo_name = 'jp-monday'
-        self.api.start_build_for_repo(repo_name, server_size = 'large' )
+        repo_name = 'gwbot-jupyter-notebooks'
+        self.result = self.api.start_build_for_repo(repo_name, server_size = 'large' )
