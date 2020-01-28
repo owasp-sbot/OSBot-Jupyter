@@ -2,11 +2,13 @@ from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev import Dev
 
+from gw_bot.helpers.Test_Helper import Test_Helper
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 
 
-class test_CodeBuild_Jupyter_Helper(TestCase):
+class test_CodeBuild_Jupyter_Helper(Test_Helper):
     def setUp(self):
+        super().setUp()
         self.api    = CodeBuild_Jupyter_Helper()
         self.result = None
 
@@ -55,3 +57,8 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
     def test_save_active_server_details(self):
         tmp_file    = '/tmp/active_jupyter_server.yml'
         self.result = self.api.save_active_server_details(tmp_file)
+
+
+    def test_gw_repo_start_build_for_repo__server_size(self):
+        repo_name = 'jp-monday'
+        self.api.start_build_for_repo(repo_name, server_size = 'large' )
