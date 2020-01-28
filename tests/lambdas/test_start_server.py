@@ -36,6 +36,10 @@ class test_run_command(Test_Helper):
         self.result = self.aws_lambda.invoke(payload)
 
 
+    def test_just_update(self):
+        lambda_name = 'osbot_jupyter.lambdas.start_server'
+        Deploy().deploy_lambda__jupyter(lambda_name)
+
     def test_invoke(self):
         lambda_name = 'osbot_jupyter.lambdas.start_server'
         Deploy().deploy_lambda__jupyter(lambda_name)
