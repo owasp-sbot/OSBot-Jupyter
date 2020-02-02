@@ -105,17 +105,22 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
     @staticmethod
     def start(team_id=None, channel=None, params=None):
         try:
-            slack_message(':point_right: about to start a jupyter notebook')
-            event     = Misc.array_pop(params)
-            user      = Misc.get_value(event,'data', {}).get('user')
-            repo_name = Misc.array_pop(params,0)
+            server_size = 'large'
+            event       = Misc.array_pop(params)
+            user        = Misc.get_value(event,'data', {}).get('user')
+            repo_name   = Misc.array_pop(params,0)
 
             if repo_name is None:
                 repo_name = 'gwbot-jupyter-notebooks'                   # todo: move to global param value
                 #return ":red_circle: you need to provide an git repo with notebooks, for example try `gs-notebook-gscs`"
             if '-' not in repo_name and len(repo_name) < 10:
                 repo_name = 'gs-notebook-{0}'.format(repo_name)         # todo: move to config value (since this is implementation specific)
-            payload = {'repo_name': repo_name, "channel": channel, "team_id": team_id, 'user':user}
+            payload = {
+                        'repo_name': repo_name,
+                        "channel"  : channel  ,
+                        'user'     : user     ,
+                        'server_size': server_size}
+            #slack_message(f':point_right: about to start a jupyter notebook with params: {payload} ', [], channel)
             Lambda('osbot_jupyter.lambdas.start_server').invoke_async(payload)
         except Exception as error:
             return f':red_circle: error in Jupyter start command: {error}'
