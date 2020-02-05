@@ -25,7 +25,7 @@ class test_Jupyter_Web_Cell(TestCase):
     # check test environment
     def test_jp_web_open_page(self):
         notebook_path = 'users/gsbot/gsbot-invoke.ipynb'
-        self.jp_web.login()
+        #self.jp_web.login()
         self.jp_web.open_notebook(notebook_path)
 
     def test_jp_web_edit_page(self):
