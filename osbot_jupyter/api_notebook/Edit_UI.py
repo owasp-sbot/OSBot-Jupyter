@@ -1,10 +1,9 @@
 from time import sleep
 import qgrid
+import pandas as pd
 import ipywidgets as widgets
-from IPython.display import display, Javascript
 from osbot_jupyter.api_notebook.QGrid_To_Jira import QGrid_To_Jira
 from osbot_jira.api.API_Issues import API_Issues
-from osbot_jupyter.api_notebook.utils import *    # these methods need to be refactored out into util classes
 
 class Edit_UI():
 
@@ -102,7 +101,7 @@ class Edit_UI():
             summary = self.text_summary.value
             status = '...'
             issue_id = self.issue_id
-            print('Creating `{0}` issue in project `{1}` with summary `{2}`, and link `{3}` to `{4}`'.format(issue_type,
+            print("Creating '{0}' issue in project '{1}' with summary '{2}', and link '{3}' to '{4}'".format(issue_type,
                                                                                                              project,
                                                                                                              summary,
                                                                                                              link_type,
@@ -110,13 +109,13 @@ class Edit_UI():
         try:
             # Create issue
             self.button_status.style.button_color = '#E59866'
-            self.button_status.description = 'Creating `{0}` issue in project `{1}`'.format(issue_type, project)
+            self.button_status.description = "Creating '{0}' issue in project '{1}'".format(issue_type, project)
 
             new_issue_id = qgrid_to_jira.api_jira.issue_create(project, summary, '', issue_type).key
 
             # Link issue
             self.button_status.style.button_color = 'orange'
-            self.button_status.description = 'Linking new issue `{0}` issue to `{1}`'.format(new_issue_id, issue_id)
+            self.button_status.description = "Linking new issue '{0}' issue to '{1}'".format(new_issue_id, issue_id)
 
             qgrid_to_jira.api_jira.issue_add_link(issue_id, link_type, new_issue_id)
 
@@ -168,7 +167,7 @@ class Edit_UI():
         old = event.get('old')
         with self.output_area:
             # print(event)
-            print("updating field `{0}` with value `{1}` on issue `{2}".format(field, value, key))
+            print("updating field '{0}' with value '{1}' on issue '{2}'".format(field, value, key))
         self.button_status.style.button_color = 'orange'
 
         qgrid_to_jira = QGrid_To_Jira(None);
