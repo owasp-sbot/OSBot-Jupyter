@@ -7,7 +7,7 @@ from osbot_jira.api.API_Issues import API_Issues
 
 class Edit_UI():
 
-    def __init__(self, issue_id, issues=None):
+    def __init__(self, issue_id=None, issues=None):
         self.issue_id      = issue_id
         self.issues        = issues
         self.columns       = ['Key', 'Summary', 'Issue Link', 'Description', 'Status'] # 'Latest_Information'
@@ -70,8 +70,6 @@ class Edit_UI():
 
     def ui_add_grid(self):
         def on_value_change_local(event, qgrid_widget):
-            # with self.output_area:
-            #    print('on on_value_change_local')
             self.on_value_change(event, qgrid_widget)
 
         self.grid = qgrid.show_grid(pd.DataFrame([]), grid_options={'maxVisibleRows': 100})
@@ -82,6 +80,7 @@ class Edit_UI():
 
     def show_ui(self, show_load_issue=True, show_add_issue=True, show_add_link=True, show_qgrid=True, show_output=True):
         items = []
+
         if show_load_issue: items.append(self.ui_load_issue())
         if show_add_link: items.append(self.ui_link_issue())
         if show_add_issue: items.append(self.ui_add_issue())
@@ -186,20 +185,21 @@ class Edit_UI():
             self.button_status.description = 'Update Error: {0}'.format(result.get('data'))
 
     def create_grid(self):
-        try:
-            # self.graph    = jira.graph_links(self.issue_id, 'all', 1)
-            # self.df_graph = graph_table(self.graph,self.columns).fillna('')
-            df_issues = self.get_issue_df()
-            if len(df_issues) >0 :
-                self.grid.df = self.get_issue_df()
-                return True
-            message = f"No links found for '{self.issue_id}'"
-        except Exception as error:
-            with self.output_area:
-                print('error :{0}'.format(error))
-            message = 'Create Grid Error: {0}'.format(error)
-        self.button_status.style.button_color = 'pink'
-        self.button_status.description = message
+        if self.issue_id:
+            try:
+                # self.graph    = jira.graph_links(self.issue_id, 'all', 1)
+                # self.df_graph = graph_table(self.graph,self.columns).fillna('')
+                df_issues = self.get_issue_df()
+                if len(df_issues) >0 :
+                    self.grid.df = self.get_issue_df()
+                    return True
+                message = f"No links found for '{self.issue_id}'"
+            except Exception as error:
+                with self.output_area:
+                    print('error :{0}'.format(error))
+                message = 'Create Grid Error: {0}'.format(error)
+            self.button_status.style.button_color = 'pink'
+            self.button_status.description = message
         return False
 
     def get_issue_df(self):
