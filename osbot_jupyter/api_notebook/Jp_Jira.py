@@ -2,7 +2,7 @@ from osbot_aws.apis.Lambda import Lambda
 
 class Jp_Jira:
     def issue(self,issue_id):
-        print('getting screenshot of issue {0} from jira'.format(issue_id))
+        #print('getting screenshot of issue {0} from jira'.format(issue_id))
 
         from IPython.display import display_html
 
