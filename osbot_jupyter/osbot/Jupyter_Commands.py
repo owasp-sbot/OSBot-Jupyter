@@ -16,7 +16,7 @@ def send_message(message, channel, team_id):
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    api_version = 'v0.37 (OSBot)'
+    api_version = 'v0.38 (GW Bot)'
 
     # @staticmethod
     # def get_active_builds(*params):

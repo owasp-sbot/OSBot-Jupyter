@@ -1,10 +1,10 @@
-from pbx_gs_python_utils.utils.slack.Slack_Commands_Helper import Slack_Commands_Helper
+from gw_bot.api.Slack_Commands_Helper import Slack_Commands_Helper
+from gw_bot.lambdas.png_to_slack import load_dependencies
 
 
 def run(event, context):
     try:
-        from osbot_aws.apis.Lambda import load_dependency
-        load_dependency('requests')
+        load_dependencies('requests,syncer,pyppeteer')
 
         channel = event.get('channel')
         team_id = event.get('team_id')

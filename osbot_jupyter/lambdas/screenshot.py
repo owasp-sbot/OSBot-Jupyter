@@ -1,11 +1,8 @@
-
+from gw_bot.lambdas.png_to_slack import load_dependencies
 
 
 def run(event, context):
-    from osbot_jupyter.lambdas.osbot import load_dependency
-    load_dependency('requests')
-    load_dependency('syncer')
-    load_dependency('pyppeteer')
+    load_dependencies('requests,syncer,pyppeteer')
 
     from osbot_jupyter.api.Live_Notebook import Live_Notebook
 

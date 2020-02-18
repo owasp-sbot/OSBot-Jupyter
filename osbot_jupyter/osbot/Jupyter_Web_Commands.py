@@ -113,7 +113,7 @@ class Jupyter_Web_Commands:
 
     @staticmethod
     def screenshot(team_id=None, channel=None, params=None):
-        event = Misc.array_pop(params)  # original slack event object
+        event = Misc.array_pop(params)  # original slack event object (don't think this is needed anymore)
         if not params or len(params) == 0:
             return send_message(':red_circle: You must provide an Server Id. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
 
@@ -125,6 +125,9 @@ class Jupyter_Web_Commands:
         height   = Misc.to_int(Misc.array_pop(params, 0))
         delay    = Misc.to_int(Misc.array_pop(params, 0))
 
+        if not path  : path = '/'
+        if not width : width = 1200
+        if not height: height = 500
         if delay is None: delay = 1                             # add one second delay if no value is provided
 
         notebook = Live_Notebook()
@@ -173,13 +176,13 @@ class Jupyter_Web_Commands:
 
         return send_png_to_slack(png_data, channel,team_id)
 
-    @staticmethod
-    def report(team_id=None, channel=None, params=None):
-        event  = Misc.array_pop(params)  # original slack event object
-        name   = Misc.array_pop(params)
-        report = "reports/{0}.ipynb".format(name)
-        params = ['gscs',report, event]
-        return Jupyter_Web_Commands.preview(team_id, channel, params)
+    # @staticmethod
+    # def report(team_id=None, channel=None, params=None):
+    #     event  = Misc.array_pop(params)  # original slack event object
+    #     name   = Misc.array_pop(params)
+    #     report = "reports/{0}.ipynb".format(name)
+    #     params = ['gscs',report, event]
+    #     return Jupyter_Web_Commands.preview(team_id, channel, params)
 
     @staticmethod
     def update_notebook(team_id=None, channel=None, params=None):

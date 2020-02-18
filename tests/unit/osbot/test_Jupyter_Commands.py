@@ -25,6 +25,9 @@ class test_Jupyter_Commands(Test_Helper):
         path = 'scenarios'
         self.result = self.jp_commands.contents(params=[self.short_id, path, {}], team_id=self.team_id, channel=self.channel)
 
+    def test_files(self):
+        self.result = self.jp_commands.files(params=['6d21f',{}])
+
     def test_screenshot(self):
         params = ['dc10d', 'examples/simple-commands',1200]
         self.result = self.jp_commands.screenshot(params=params, team_id=self.team_id, channel=self.channel)

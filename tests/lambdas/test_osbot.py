@@ -1,23 +1,22 @@
 import base64
 from unittest                           import TestCase
 
+from gw_bot.Deploy import Deploy
+from gw_bot.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Dev      import Dev
-from osbot_aws.helpers.Lambda_Package   import Lambda_Package
-
 from osbot_jupyter.lambdas.osbot import run
 
 
-class test_run_command(TestCase):
+class test_run_command(Test_Helper):
     def setUp(self):
+        super().setUp()
         self.aws_lambda = Lambda('osbot_jupyter.lambdas.osbot')
         self.result     = None
         #self.aws_lambda.update_code()       # use when wanting to update lambda function
 
-    def tearDown(self):
-        if self.result:
-            Dev.pprint(self.result)
-
+    def test_update_lambda(self):
+        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.osbot', include_osbot_browser=True)
 
     def test_invoke_directly(self):
         payload = {'params': ['aaaa']}
@@ -28,8 +27,8 @@ class test_run_command(TestCase):
         self.result = run(payload,{})
 
 
-    def test_invoke_lambda(self):
-        payload     = { 'data' : { 'params': ['help']}}
+    def test_invoke_lambda__version(self):
+        payload     = { 'params': ['version']}
         self.result = self.aws_lambda.invoke(payload)
 
 
@@ -46,5 +45,5 @@ class test_run_command(TestCase):
     #     payload     = {  'params': ['servers'], 'data': {'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV'}}
     #     self.result = self.aws_lambda.invoke(payload)
 
-    def test___update_lambda_function(self):
-        self.aws_lambda.update_code()  # use when wanting to update lambda function
+    #def test___update_lambda_function(self):
+    #    self.aws_lambda.update_code()  # use when wanting to update lambda function
