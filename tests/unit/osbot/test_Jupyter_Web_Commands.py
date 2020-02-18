@@ -5,7 +5,6 @@ from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Dev import Dev
 from pbx_gs_python_utils.utils.Misc import Misc
 
-from osbot_jupyter.Deploy import Deploy
 from osbot_jupyter.osbot.Jupyter_Web_Commands import Jupyter_Web_Commands
 
 
@@ -65,12 +64,5 @@ class test_Jupyter_Web_Commands(TestCase):
 
 
     def test_exec__via_lambda(self):
-        self.result = Deploy('osbot_jupyter.lambdas.jupyter_web').deploy_jupyter_web()
-
         payload = {'params':['exec', self.short_id, '20*2 + 2', {}] , 'channel': 'DG30MH0KV', 'team_id' : 'T0SDK1RA8' }
         self.result = Lambda('osbot_jupyter.lambdas.jupyter_web').invoke(payload)
-
-    # deploy lambda
-
-    def test_deploy_jupyter_web(self):
-        self.result = Deploy('osbot_jupyter.lambdas.jupyter_web').deploy_jupyter_web()
