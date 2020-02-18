@@ -1,4 +1,4 @@
-from osbot_aws.apis.Lambda import load_dependency
+from osbot_aws.Dependencies import load_dependency
 
 
 # NOT working at the moment

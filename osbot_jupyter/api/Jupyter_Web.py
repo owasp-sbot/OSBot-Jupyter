@@ -1,6 +1,5 @@
 import base64
 
-from osbot_aws.apis.Lambda import load_dependency
 
 class Jupyter_Web:
 

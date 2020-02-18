@@ -1,6 +1,4 @@
-from osbot_aws.apis.Lambda import load_dependency
-from pbx_gs_python_utils.utils.Process import Process
-
+from osbot_aws.Dependencies import load_dependency
 
 #Not working: throwing issue: Cannot import name 'constants'",
 def run(event, context):
