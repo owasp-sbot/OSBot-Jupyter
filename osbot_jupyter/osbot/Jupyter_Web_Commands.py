@@ -1,5 +1,5 @@
 from osbot_aws.apis.Lambda import Lambda
-from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
+from gw_bot.helpers.Lambda_Helpers import slack_message
 from pbx_gs_python_utils.utils.Misc            import Misc
 from osbot_jupyter.api.Live_Notebook           import Live_Notebook
 
@@ -19,7 +19,7 @@ def send_png_to_slack(png_data, channel, team_id):
         send_message(":red_circle: error taking screenshot :{0} ".format(png_data), channel, team_id)
     else:
         send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)), channel, team_id)
-        Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
+        Lambda('gw_bot.lambdas.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
 
 class Jupyter_Web_Commands:
 

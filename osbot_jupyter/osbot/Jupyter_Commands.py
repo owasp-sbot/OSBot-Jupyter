@@ -1,6 +1,6 @@
+from gw_bot.helpers.Lambda_Helpers import slack_message
 from osbot_aws.apis.Lambda import Lambda
 from pbx_gs_python_utils.utils.Dev import Dev
-from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
 from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
@@ -17,10 +17,6 @@ def send_message(message, channel, team_id):
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
     api_version = 'v0.38 (GW Bot)'
-
-    # @staticmethod
-    # def get_active_builds(*params):
-    #     return "{0}".format(list(CodeBuild_Jupyter_Helper().get_active_builds().keys()))
 
     @staticmethod
     def files(team_id=None, channel=None, params=None):
@@ -58,7 +54,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
                 send_message(":red_circle: error taking screenshot :{0} ".format(png_data),channel,team_id)
             else:
                 send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)),channel,team_id)
-                Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
+                Lambda('gw_bot.lambdas..png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
         except Exception as error:
             send_message(":red_circle: error in screenshot: {0}".format(error),channel,team_id)
 
@@ -138,11 +134,6 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
             notebook.stop()
             return ':point_right: stopped server with id: `{0}`'.format(short_id)
         return ':red_circle: error: could not find server with id: `{0}`'.format(short_id)
-
-    # @staticmethod
-    # def get_active_server(*params):
-    #     server, token = CodeBuild_Jupyter_Helper().get_active_server_details()
-    #     return "{0}?token={1}".format(server, token)
 
     @staticmethod
     def web(team_id=None, channel=None, params=None):

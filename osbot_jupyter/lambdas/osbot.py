@@ -1,7 +1,7 @@
 from pbx_gs_python_utils.utils.Misc import Misc
 
 from gw_bot.api.Slack_Commands_Helper import Slack_Commands_Helper
-from gw_bot.lambdas.png_to_slack import load_dependencies
+from osbot_aws.Dependencies import load_dependencies
 
 
 # def load_dependency(target):

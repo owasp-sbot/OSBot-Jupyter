@@ -38,7 +38,7 @@ def find_notebooks(name):
 
 
 def send_png_to_slack(png_data, channel, team_id):
-    Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
+    Lambda('gw_bot.lambdas.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
 
 
 # pandas
@@ -69,7 +69,7 @@ def graph_expand(source, depth, link_types, height=200, show=True):
 
 def graph_render(graph, height=200):
     puml = graph.render_puml().puml
-    png_data = Lambda('utils.puml_to_png').invoke({"puml": puml}).get('png_base64')
+    png_data = Lambda('gw_bot.lambdas.puml_to_png').invoke({"puml": puml}).get('png_base64')
     show_png(png_data, height)
 
 
@@ -132,7 +132,7 @@ def show_issues(issues_ids):
 def render_puml(puml, height=None):
     from osbot_aws.apis.Lambda import Lambda
     puml = "@startuml\n{0}\n@enduml".format(puml)
-    png_data = Lambda('utils.puml_to_png').invoke({"puml": puml}).get('png_base64')
+    png_data = Lambda('gw_bot.lambdas.puml_to_png').invoke({"puml": puml}).get('png_base64')
     show_png(png_data, height)
 
 

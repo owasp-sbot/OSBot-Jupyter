@@ -1,6 +1,3 @@
-
-
-
 def run(event, context):
     url = event.get('url')
     if url:
