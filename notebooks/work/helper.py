@@ -26,7 +26,7 @@ def issue(key):
 
 def jira_links(start, direction, depth):
     view = None
-    lambda_graph = Lambda('osbot_jira.lambdas.elastic_jira')
+    lambda_graph = Lambda('osbot_jira.lambdas.jira')
 
     payload = {"params": ['links', start, direction, depth, view]}
     result = lambda_graph.invoke(payload)
