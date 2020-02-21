@@ -2,7 +2,7 @@ from gw_bot.api.Slack_Commands_Helper import Slack_Commands_Helper
 from osbot_aws.Dependencies import load_dependencies
 
 
-def run(event, context):
+def run(event, context=None):
     try:
         load_dependencies('requests,syncer,pyppeteer')
 

@@ -15,22 +15,26 @@ class test_jupyter_web(Test_Helper):
     def setUp(self):
         super().setUp()
         self.lambda_name = 'osbot_jupyter.lambdas.jupyter_web'
-        self.short_id    = '42117'
+        self.short_id    = 'af2b0'                               # todo: get this from
         self.aws_lambda  = Lambda(self.lambda_name)
         self.result      = None
         self.png_data    = None
 
         #Deploy(self.lambda_name).deploy_jupyter_web()  # when wanting to deploy it                                    # use when wanting to update lambda function
     def test_update_lambda_function(self):
-        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.jupyter_web', include_osbot_browser=True)
+        Deploy().deploy_lambda__jupyter_web('osbot_jupyter.lambdas.jupyter_web')
+
+    def test_invoke_directly____preview(self):
+        event = {"params": ['preview',self.short_id,'asd', {}]}
+        self.png_data = run(event, {})[0]
 
     def test_invoke_directly____screenshot(self):
-        event = {"params": ['screenshot', '6d21f',{}]}
+        event = {"params": ['screenshot', self.short_id,{}]}
         self.png_data = run(event, {})[0]
 
     def test_screenshot(self):
         self.test_update_lambda_function()
-        payload       = { "params": ['screenshot', '6d21f','/abc', {}]}
+        payload       = { "params": ['screenshot', self.short_id,'/abc', {}]}
         self.png_data =  self.aws_lambda.invoke(payload)[0]
         #self.png_data =  self.aws_lambda.invoke(payload)[0]
 

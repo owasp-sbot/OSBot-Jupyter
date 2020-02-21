@@ -16,7 +16,7 @@ class test_run_command(Test_Helper):
         #self.aws_lambda.update_code()       # use when wanting to update lambda function
 
     def test_update_lambda(self):
-        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.osbot', include_osbot_browser=True)
+        Deploy().deploy_lambda__jupyter_web('osbot_jupyter.lambdas.osbot')
 
     def test_invoke_directly(self):
         payload = {'params': ['aaaa']}

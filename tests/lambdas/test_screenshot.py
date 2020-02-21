@@ -30,7 +30,7 @@ class test_run_command(Test_Helper):
 
     def test_update_lambda(self):
         lambda_name = 'osbot_jupyter.lambdas.screenshot'
-        Deploy().deploy_lambda__jupyter(lambda_name, include_osbot_browser=True)
+        Deploy().deploy_lambda__jupyter_web(lambda_name)
 
     def test_screenshot(self):
         self.test_update_lambda()

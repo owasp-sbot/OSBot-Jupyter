@@ -11,7 +11,7 @@ from osbot_jupyter.osbot.Jupyter_Web_Commands import Jupyter_Web_Commands
 class test_Jupyter_Web_Commands(TestCase):
 
     def setUp(self):
-        self.short_id    = 'gscs'
+        self.short_id    = ''
         self.result      = None
         self.png_data    = None
 

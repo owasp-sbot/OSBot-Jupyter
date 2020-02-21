@@ -145,14 +145,11 @@ class Jupyter_Web_Commands:
     def preview(team_id=None, channel=None, params=None):
         event = Misc.array_pop(params)  # original slack event object
 
-        if not params or len(params) == 0:
-            return send_message(':red_circle: You must provide an Server Id. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
+        if not params or len(params) < 2:
+            return send_message(':red_circle: You must provide an Server Id and file to process. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
 
-        if len(params) == 1:
-            short_id = 'gscs'                                   # for now hardcode to this one
-        else:
-            short_id = Misc.array_pop(params, 0)
 
+        short_id = Misc.array_pop(params, 0)
         path     = Misc.array_pop(params, 0)
         width    = Misc.to_int(Misc.array_pop(params, 0))
         height   = Misc.to_int(Misc.array_pop(params, 0))
