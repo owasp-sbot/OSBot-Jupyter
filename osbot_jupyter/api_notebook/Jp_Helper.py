@@ -2,8 +2,7 @@ import base64
 
 from IPython.display                 import display_html
 from osbot_aws.apis.Lambda           import Lambda
-from pbx_gs_python_utils.utils.Files import Files
-from osbot_jupyter.utils.Trace_Call  import Trace_Call
+from osbot_utils.decorators.trace.Trace_Call import Trace_Call
 
 
 class Jp_Helper:

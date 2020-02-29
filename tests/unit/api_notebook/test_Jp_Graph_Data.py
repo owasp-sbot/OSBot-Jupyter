@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from pbx_gs_python_utils.utils.Dev            import Dev
 from osbot_jupyter.api_notebook.Jp_Graph_Data import Jp_Graph_Data
-from osbot_jupyter.utils.Trace_Call import Trace_Call
+from osbot_utils.decorators.trace.Trace_Call import Trace_Call
 
 
 class test_Jp_Graph_Data(TestCase):
