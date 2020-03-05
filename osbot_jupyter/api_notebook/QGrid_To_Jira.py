@@ -18,7 +18,7 @@ class QGrid_To_Jira:
         return {'status': 'ok', 'data': result}
 
     def jira_remove_links_to_target(self, from_id, link_type, to_id):
-        issue_links = self.api_jira.issue_links(from_id).get(link_type)
+        issue_links = self.api_jira.issue_links(from_id,{}).get(link_type)
         if issue_links:
             for issue_link in issue_links:
                 if to_id == issue_link.get('Key'):
