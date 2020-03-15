@@ -10,7 +10,7 @@ def run(event, context=None):
         team_id = event.get('team_id')
         params  = event.get('params')
 
-        if params and len(params) == 1: params = []     # todo: this case (when the last param is the events data), needs to be handled by Jupyter_Web_Commands
+        if params and len(params) == 1: params = []     # todo: fix this case (when the last param is the events data), needs to be handled by Jupyter_Web_Commands
 
         from osbot_jupyter.osbot.Jupyter_Web_Commands import Jupyter_Web_Commands
 

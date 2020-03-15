@@ -17,20 +17,21 @@ class CodeBuild_Jupyter_Helper:
         self.build_timeout = 240
         self.server_sizes  = {'small': 'BUILD_GENERAL1_SMALL', 'medium': 'BUILD_GENERAL1_MEDIUM','large': 'BUILD_GENERAL1_LARGE'}
 
-    def get_active_build_id(self):
-        builds = self.get_active_builds(stop_when_match=True)
+    def get_active_build_id(self, project_name=None):
+        builds = self.get_active_builds(project_name=project_name, stop_when_match=True)
         return Misc.array_pop(list(set(builds)))
 
-    def get_active_builds(self, stop_when_match=False):
+    def get_active_builds(self, project_name=None, stop_when_match=False):
         build_ids   = list(self.code_build.project_builds_ids(self.project_name))[0:self.max_builds]
         build_infos = self.code_build.codebuild.batch_get_builds(ids=build_ids).get('builds')
         builds = {}
         for build_info in build_infos:
             build_id = build_info.get('id')
             if build_info.get('currentPhase') != 'COMPLETED':
-                builds[build_id] = CodeBuild_Jupyter(build_id=build_id, build_info=build_info)
-                if stop_when_match:
-                    return builds
+                if project_name is None or project_name == build_info.get('projectName'):
+                    builds[build_id] = CodeBuild_Jupyter(build_id=build_id, build_info=build_info)
+                    if stop_when_match:
+                        return builds
         return builds
 
     def get_active_server_details(self):
@@ -103,12 +104,12 @@ class CodeBuild_Jupyter_Helper:
             if ngrok_url is not None:
                 return "{0}?token={1}".format(ngrok_url, jupyter_token)
 
-    def util_rename_secret(self, old, new):
-        old = "git__{0}".format(old)
-        new = "git__{0}".format(new)
-        data = Secrets(old).value()
-        if data:
-            Secrets(new).create(data)
-        if Secrets(new).value() == Secrets(old).value():
-            Secrets(old).delete()
-            return True
+    # def util_rename_secret(self, old, new):
+    #     old = "git__{0}".format(old)
+    #     new = "git__{0}".format(new)
+    #     data = Secrets(old).value()
+    #     if data:
+    #         Secrets(new).create(data)
+    #     if Secrets(new).value() == Secrets(old).value():
+    #         Secrets(old).delete()
+    #         return True

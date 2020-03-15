@@ -42,12 +42,12 @@ class Jupyter_Web_Commands:
         send_message(':point_right: Creating `{0}` on server `{1}` at location `{2}` with content of size `{3}`'.format(file_type, build_id, file_path, len(file_contents)), channel, team_id)
 
         jupyter_api = notebook.jupyter_api()
-        if file_type is 'notebook':
+        if file_type == 'notebook':
             result = jupyter_api.notebook_create(file_path, file_contents)
         else:
             result = jupyter_api.file_create(file_path, file_contents)
         if result.get('status') == 'ok':
-            if file_type is 'notebook':
+            if file_type == 'notebook':
                 url = "{0}/notebooks/{1}".format(jupyter_api.server, file_path)
             else:
                 url = "{0}/edit/{1}".format(jupyter_api.server, file_path)
@@ -165,7 +165,10 @@ class Jupyter_Web_Commands:
         if notebook.set_build_from_short_id(short_id) is None:
             return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id)
 
-        path = 'nbconvert/html/{0}?download=false&osbot-no-code'.format(path)
+        if '?show-code' in path:
+            path = f'nbconvert/html/{path}'
+        else:
+            path = f'nbconvert/html/{path}?download=false&osbot-no-code'
 
         send_message(':point_right: taking screenshot of `{0}` with width `{1}`, height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
 
