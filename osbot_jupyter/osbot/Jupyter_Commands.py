@@ -101,7 +101,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
     @staticmethod
     def start(team_id=None, channel=None, params=None):
         try:
-            server_size = 'large'
+            server_size = 'medium'
             event       = Misc.array_pop(params)
             user        = Misc.get_value(event,'data', {}).get('user')
             repo_name   = Misc.array_pop(params,0)

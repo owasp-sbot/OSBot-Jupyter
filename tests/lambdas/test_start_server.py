@@ -46,6 +46,6 @@ class test_run_command(Test_Helper):
         payload = { 'repo_name'  : 'gwbot-jupyter-notebooks',
                     'channel'    : 'DRE51D4EM'              ,
                     'user'       : 'UR9UENEAW'              ,
-                    'server_size': 'large'                  }
+                    'server_size': 'medium'                  }
         result = Lambda(lambda_name).invoke(payload)
         self.result = result
