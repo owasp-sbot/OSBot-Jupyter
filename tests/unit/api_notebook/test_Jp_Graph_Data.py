@@ -26,9 +26,8 @@ class test_Jp_Graph_Data(TestCase):
 
     def test_jira_links(self):
         depth         = 1
-        key           = 'RISK-1610'
-        direction     = 'all'
-        graph  = self.jp_graph_data.jira_links(key, direction, depth)
+        key           = 'PERSON-1'
+        graph  = self.jp_graph_data.jira_links(key, depth)
         assert len(graph.nodes) > 5
         assert len(graph.edges) > 5
 

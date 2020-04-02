@@ -27,8 +27,8 @@ class Jp_Graph_Data:
     def issues(self,issue_id):
         return self.api_issues.issues(issue_id)
 
-    def jira_links(self,source, direction, depth):
-        params = ['links',source, direction, depth]
+    def jira_links(self,source, depth):
+        params = ['links',source, depth]
         return self.gs_bot_jira.cmd_links(params, save_graph=False)
 
     def jira_search(self, query):
