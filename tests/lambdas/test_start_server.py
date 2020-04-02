@@ -31,18 +31,20 @@ class test_run_command(Test_Helper):
     #     payload     = { 'repo_name': 'gs-notebook-risks', 'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV', 'user': 'U7ESE1XS7'}
     #     self.result = self.aws_lambda.invoke(payload)
 
+
+    #def test_invoke_directly(self):
+
     def test_invoke_lambda_bad_repo(self):
         payload     = { 'repo_name': 'gs-notebook-AAAAA', "team_id" : "T7F3AUXGV", "channel": "GDL2EC3EE"}
         self.result = self.aws_lambda.invoke(payload)
 
 
     def test_just_update(self):
-        lambda_name = 'osbot_jupyter.lambdas.start_server'
-        Deploy().deploy_lambda__jupyter(lambda_name)
+        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.osbot')
+        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.start_server')
 
     def test_invoke(self):
-        lambda_name = 'osbot_jupyter.lambdas.start_server'
-        Deploy().deploy_lambda__jupyter(lambda_name)
+        self.test_just_update()
         payload = { 'repo_name'  : 'gwbot-jupyter-notebooks',
                     'channel'    : 'DRE51D4EM'              ,
                     'user'       : 'UR9UENEAW'              ,

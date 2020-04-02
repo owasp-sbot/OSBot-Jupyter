@@ -8,8 +8,7 @@ def run(event, context):
         user        = event.get('user')
         server_size = event.get('server_size','small')
 
-        slack_message(":point_right: Hi <@{0}>, starting Jupyter server for you with the repo `{1}`.\n :information_source: This should take between 60 and 150 seconds".format(user, repo_name), [], channel, team_id)
-
+        slack_message(f":point_right: Hi <@{user}>, starting Jupyter server for you with the repo `{repo_name}` with server size `{server_size}`.\n :information_source: This should take between 60 and 150 seconds", [], channel, team_id)
 
         from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
         login_url = CodeBuild_Jupyter_Helper().start_build_for_repo_and_wait_for_jupyter_load(repo_name=repo_name,user=user,server_size=server_size)
