@@ -27,7 +27,7 @@ class Jp_Graph_Data:
     def issues(self,issue_id):
         return self.api_issues.issues(issue_id)
 
-    def jira_links(self,source, depth):
+    def jira_links(self,source, depth=1):
         params = ['links',source, depth]
         return self.gs_bot_jira.cmd_links(params, save_graph=False)
 
