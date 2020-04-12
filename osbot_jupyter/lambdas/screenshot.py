@@ -2,7 +2,7 @@ from osbot_aws.Dependencies import load_dependencies
 
 
 def run(event, context):
-    load_dependencies('requests,syncer,pyppeteer')
+    load_dependencies('requests,syncer,pyppeteer,websocket-client')
 
     from osbot_jupyter.api.Live_Notebook import Live_Notebook
 

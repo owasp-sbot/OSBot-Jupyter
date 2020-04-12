@@ -70,9 +70,9 @@ class Jupyter_Kernel(Jupyter_API):
         msg_type = 'execute_request';
         content = {'code': code, 'silent': False}
 
-        hdr = {'msg_id'  : uuid.uuid1().hex                     ,
+        hdr = {'msg_id'  : uuid.uuid4().hex                     ,
                'username': 'test'                               ,
-               'session' : uuid.uuid1().hex                     ,
+               'session' : uuid.uuid4().hex                     ,
                'data'    : datetime.datetime.now().isoformat()  ,
                'msg_type': msg_type                             ,
                'version' : '5.0'

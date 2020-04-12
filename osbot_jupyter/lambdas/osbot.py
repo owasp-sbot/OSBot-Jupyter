@@ -28,7 +28,7 @@ from osbot_aws.Dependencies import load_dependencies
 
 def run(event, context):
     try:
-        load_dependencies('requests,syncer,pyppeteer')
+        load_dependencies('requests,syncer,pyppeteer,websocket-client')
         from osbot_jupyter.osbot.Jupyter_Commands import Jupyter_Commands
         params  = Misc.get_value(event, 'params',[])
         if not params: params = ['']

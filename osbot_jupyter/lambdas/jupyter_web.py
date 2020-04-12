@@ -4,7 +4,7 @@ from osbot_aws.Dependencies import load_dependencies
 
 def run(event, context=None):
     try:
-        load_dependencies('requests,syncer,pyppeteer')
+        load_dependencies('requests,syncer,pyppeteer,websocket-client')
 
         channel = event.get('channel')
         team_id = event.get('team_id')
