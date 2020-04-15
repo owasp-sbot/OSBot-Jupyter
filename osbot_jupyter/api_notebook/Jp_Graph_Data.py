@@ -19,7 +19,7 @@ class Jp_Graph_Data:
 
     def lambda_invoke(self, params):
         result = self.lambda_graph.invoke( {'params': params , 'data': {}})
-        return Misc.json_load(result)
+        return json_load(result)
 
     def issue(self,issue_id):
         return self.api_issues.issue(issue_id)
