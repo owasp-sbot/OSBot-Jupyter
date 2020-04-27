@@ -5,7 +5,7 @@ from osbot_aws.apis.Lambda import Lambda
 from osbot_jira.api.GS_Bot_Jira import GS_Bot_Jira
 from osbot_jira.api.elk.Elk_To_Slack import ELK_to_Slack
 from osbot_jira.api.graph.Lambda_Graph_Commands import Lambda_Graph_Commands
-from pbx_gs_python_utils.utils.Misc import Misc
+from osbot_utils.utils.Json import json_load
 
 
 class Jp_Graph_Data:
