@@ -2,10 +2,10 @@ from time import sleep
 
 from osbot_aws.apis.CodeBuild import CodeBuild
 from osbot_aws.apis.Secrets import Secrets
-from pbx_gs_python_utils.utils.Json import Json
-from pbx_gs_python_utils.utils.Misc import Misc
 
 from osbot_jupyter.api.CodeBuild_Jupyter import CodeBuild_Jupyter
+from osbot_utils.utils import Misc
+from osbot_utils.utils.Json import Json
 
 
 class CodeBuild_Jupyter_Helper:

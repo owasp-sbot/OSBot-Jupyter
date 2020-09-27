@@ -1,8 +1,7 @@
 from osbot_aws.apis.Lambda import Lambda
 from gw_bot.helpers.Lambda_Helpers import slack_message
-from pbx_gs_python_utils.utils.Misc            import Misc
 from osbot_jupyter.api.Live_Notebook           import Live_Notebook
-
+from osbot_utils.utils import Misc
 
 
 def send_message(message, channel, team_id):

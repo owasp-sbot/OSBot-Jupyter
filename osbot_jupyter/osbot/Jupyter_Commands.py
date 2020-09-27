@@ -1,10 +1,9 @@
 from gw_bot.helpers.Lambda_Helpers import slack_message
 from osbot_aws.apis.Lambda import Lambda
-from pbx_gs_python_utils.utils.Dev import Dev
-from pbx_gs_python_utils.utils.Misc import Misc
-
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Live_Notebook import Live_Notebook
+from osbot_utils.utils import Misc
+from osbot_utils.utils.Dev import Dev
 
 
 def send_message(message, channel, team_id):
@@ -16,7 +15,7 @@ def send_message(message, channel, team_id):
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    api_version = 'v0.39 (GW Bot)'
+    api_version = 'v0.40 (GW Bot)'
 
     @staticmethod
     def files(team_id=None, channel=None, params=None):

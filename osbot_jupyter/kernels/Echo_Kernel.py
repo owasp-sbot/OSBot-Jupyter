@@ -4,12 +4,6 @@ from time import sleep
 
 from ipykernel.kernelbase import Kernel
 
-from jupyter_client.kernelspec import KernelSpecManager
-from pbx_gs_python_utils.utils.Dev import Dev
-from pbx_gs_python_utils.utils.Files import Files
-
-from osbot_jupyter.api.Kernel_Install import Kernel_Install
-
 
 class Echo_Kernel_Install:
     def __init__(self):

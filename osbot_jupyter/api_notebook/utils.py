@@ -2,7 +2,6 @@
 import json
 from time import sleep
 from IPython.display import display_html
-from pbx_gs_python_utils.utils.Process import Process
 from osbot_jupyter.api_notebook.Jp_Graph_Data import Jp_Graph_Data
 from osbot_jira.api.graph.Lambda_Graph import Lambda_Graph
 from osbot_jira.api.graph.GS_Graph import GS_Graph
@@ -11,6 +10,8 @@ from osbot_jupyter.api_notebook.Jp_Jira import Jp_Jira
 from osbot_aws.apis.Lambda import Lambda
 import pandas as pd
 import qgrid
+
+from osbot_utils.utils.Process import Process
 
 jira = Jira()
 

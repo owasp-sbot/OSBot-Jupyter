@@ -1,5 +1,3 @@
-from pbx_gs_python_utils.utils.Misc import Misc
-
 from gw_bot.api.Slack_Commands_Helper import Slack_Commands_Helper
 from osbot_aws.Dependencies import load_dependencies
 
@@ -24,6 +22,7 @@ from osbot_aws.Dependencies import load_dependencies
 #         shutil.unpack_archive(zip_file, extract_dir = tmp_dir)  # unpack them
 #         sys.path.append(tmp_dir)                                # add tmp_dir to the path that python uses to check for dependencies
 #     return Files.exists(tmp_dir)
+from osbot_utils.utils import Misc
 
 
 def run(event, context):

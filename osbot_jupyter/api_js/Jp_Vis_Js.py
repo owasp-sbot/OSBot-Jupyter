@@ -2,7 +2,8 @@ import json
 from time import sleep
 
 from IPython.display import display, HTML, Javascript
-from pbx_gs_python_utils.utils.Misc import Misc
+
+from osbot_utils.utils import Misc
 
 
 class Jp_Vis_Js:

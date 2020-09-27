@@ -21,7 +21,7 @@ class Jupyter_API:
     #     start = time()
     #     url = self.url(path)
     #     headers = {'Authorization': 'Token {0}'.format(self.token)}
-    #     from pbx_gs_python_utils.utils import Http
+    #     from .utils import Http
     #     data = Http.GET(url,headers)
     #     duration = time() - start
     #     print('took {0:.2f} in http_get'.format(duration))

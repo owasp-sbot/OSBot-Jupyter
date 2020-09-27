@@ -3,8 +3,8 @@ from unittest import TestCase
 from gw_bot.Deploy import Deploy
 from gw_bot.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.Lambda import Lambda
-from pbx_gs_python_utils.utils.Dev import Dev
 from osbot_jupyter.osbot.Jupyter_Commands import Jupyter_Commands
+from osbot_utils.utils.Dev import Dev
 
 
 class test_Jupyter_Commands(Test_Helper):
@@ -68,5 +68,5 @@ class test_Jupyter_Commands(Test_Helper):
         self.result = self.invoke_lambda(['web'])
 
     def test_version__via_lambda(self):
-        self.test_update_lambda()
+        #self.test_update_lambda()
         self.result = self.invoke_lambda(['version'])

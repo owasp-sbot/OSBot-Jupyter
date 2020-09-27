@@ -7,7 +7,6 @@ from osbot_gsuite.apis.GSheets import GSheets
 from osbot_gsuite.apis.sheets.API_Jira_Sheets_Create import API_Jira_Sheets_Create
 from osbot_gsuite.apis.sheets.API_Jira_Sheets_Sync import API_Jira_Sheets_Sync
 from osbot_jira.api.jira_server.API_Jira_Rest import API_Jira_Rest
-from pbx_gs_python_utils.utils.Misc import Misc
 
 
 class Jp_GSheets():
