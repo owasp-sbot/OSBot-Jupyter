@@ -1,4 +1,3 @@
-import base64
 
 
 class Jupyter_Web:
@@ -81,8 +80,15 @@ class Jupyter_Web:
             notebook_path += '.ipynb'
         return 'nbconvert/html/{0}?download=false'.format(notebook_path)
 
+    def ui_add_jquery(self):
+        from osbot_utils.utils.Http import GET
+        jquery_url = 'https://code.jquery.com/jquery-3.5.1.min.js'
+        jquery_code = GET(jquery_url)
+        self.browser().sync__js_execute(jquery_code)
+        return self
+
     def ui_hide_input_boxes(self):
-        self.browser().sync__js_execute("$('div.input').hide()")
+        self.browser().sync__js_execute("$('.jp-Cell-inputWrapper').hide()")
         return self
 
     def ui_css_fixes(self, width='1200'):
