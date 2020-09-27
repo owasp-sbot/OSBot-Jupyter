@@ -68,4 +68,5 @@ class test_Jupyter_Commands(Test_Helper):
         self.result = self.invoke_lambda(['web'])
 
     def test_version__via_lambda(self):
+        self.test_update_lambda()
         self.result = self.invoke_lambda(['version'])

@@ -16,7 +16,7 @@ def send_message(message, channel, team_id):
 
 class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=None)
 
-    api_version = 'v0.38 (GW Bot)'
+    api_version = 'v0.39 (GW Bot)'
 
     @staticmethod
     def files(team_id=None, channel=None, params=None):
@@ -101,7 +101,7 @@ class Jupyter_Commands:         #*params = (team_id=None, channel=None, params=N
     @staticmethod
     def start(team_id=None, channel=None, params=None):
         try:
-            server_size = 'medium'
+            server_size = 'large'
             event       = Misc.array_pop(params)
             user        = Misc.get_value(event,'data', {}).get('user')
             repo_name   = Misc.array_pop(params,0)
