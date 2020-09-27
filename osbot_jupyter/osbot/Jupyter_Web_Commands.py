@@ -247,7 +247,7 @@ class Jupyter_Web_Commands:
         source_notebook = "icap/gwbot-reporting/TEST-milestones-TEST.ipynb"
         target_notebook = f"icap/gwbot-reporting/{source}.ipynb"
 
-        send_message(f":python: creating milestone view for {source}", channel, team_id)  # need to double check
+        send_message(f":python: creating milestone view for `{source}`", channel, team_id)  # need to double check
 
         exec_params    = [short_id, f"!papermill ../../{source_notebook} ../../{target_notebook} -p source {source}", {} ]
         preview_params = [short_id, f"{target_notebook}"                                                            , {} ]
