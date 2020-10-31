@@ -1,4 +1,4 @@
-from gw_bot.helpers.Lambda_Helpers import slack_message
+from osbot_aws.helpers.Lambda_Helpers import slack_message
 
 def run(event, context):
     try:

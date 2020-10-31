@@ -1,4 +1,4 @@
-from gw_bot.helpers.Lambda_Helpers import slack_message
+from osbot_aws.helpers.Lambda_Helpers import slack_message
 from osbot_aws.apis.Lambda import Lambda
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.api.Live_Notebook import Live_Notebook

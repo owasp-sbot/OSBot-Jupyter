@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from gw_bot.helpers.Test_Helper import Test_Helper
+from osbot_aws.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.CodeBuild import CodeBuild
 from pbx_gs_python_utils.utils.Dev import Dev
 

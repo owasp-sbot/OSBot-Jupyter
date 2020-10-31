@@ -1,5 +1,5 @@
 from osbot_aws.apis.Lambda import Lambda
-from gw_bot.helpers.Lambda_Helpers import slack_message
+from osbot_aws.helpers.Lambda_Helpers import slack_message
 from osbot_jupyter.api.Live_Notebook           import Live_Notebook
 from osbot_utils.utils import Misc
 
