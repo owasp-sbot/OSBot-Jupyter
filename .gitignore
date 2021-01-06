@@ -15,3 +15,4 @@ first-plot.ipynb
 notebooks/seaborn-data
 *.ipynb
 gs-notebook-vulns
+osbot_jupyter.egg-info
