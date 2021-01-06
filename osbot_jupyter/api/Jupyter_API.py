@@ -21,7 +21,7 @@ class Jupyter_API:
     #     start = time()
     #     url = self.url(path)
     #     headers = {'Authorization': 'Token {0}'.format(self.token)}
-    #     from pbx_gs_python_utils.utils import Http
+    #     from .utils import Http
     #     data = Http.GET(url,headers)
     #     duration = time() - start
     #     print('took {0:.2f} in http_get'.format(duration))
@@ -255,9 +255,9 @@ class Jupyter_API:
             content = {'code': code, 'silent': False}
 
 
-            hdr = {'msg_id': uuid.uuid1().hex,
+            hdr = {'msg_id': uuid.uuid4().hex,
                    'username': 'test',
-                   'session': uuid.uuid1().hex,
+                   'session': uuid.uuid4().hex,
                    'data': datetime.datetime.now().isoformat(),
                    'msg_type': msg_type,
                    'version': '5.0'}

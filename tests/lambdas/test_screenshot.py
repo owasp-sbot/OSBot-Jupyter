@@ -1,19 +1,18 @@
 import base64
-from unittest                           import TestCase
 
+from gw_bot.Deploy import Deploy
+from osbot_aws.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.Lambda import Lambda
-from pbx_gs_python_utils.utils.Dev      import Dev
-from osbot_aws.helpers.Lambda_Package   import Lambda_Package
-
-from osbot_jupyter.Deploy import Deploy
+from osbot_utils.utils.Dev import Dev
 
 
-class test_run_command(TestCase):
+class test_run_command(Test_Helper):
     def setUp(self):
+        super().setUp()
         self.lambda_name = 'osbot_jupyter.lambdas.screenshot'
-        self.short_id   = '05e'
+        self.short_id   = 'ec6a1'
         self.aws_lambda = Lambda(self.lambda_name)
-        Deploy(self.lambda_name).deploy_screenshot()                                    # use when wanting to update lambda function
+        #Deploy(self.lambda_name).deploy_screenshot()                                    # use when wanting to update lambda function
         self.result = None
         self.png_data = None
 
@@ -27,10 +26,15 @@ class test_run_command(TestCase):
                 fh.write(base64.decodebytes(self.png_data.encode()))
             Dev.pprint("Png data with size {0} saved to {1}".format(len(self.png_data), png_file))
 
+    def test_update_lambda(self):
+        lambda_name = 'osbot_jupyter.lambdas.screenshot'
+        Deploy().deploy_lambda__jupyter_web(lambda_name)
+
     def test_screenshot(self):
+        self.test_update_lambda()
         payload     = { 'short_id' : self.short_id, 'path':'', 'width':800}
-        #self.png_data = self.aws_lambda.invoke(payload)
-        self.result =  self.aws_lambda.invoke(payload)
+        self.png_data = self.aws_lambda.invoke(payload)
+        #self.result =  self.aws_lambda.invoke(payload)
 
     def test_screenshot__google(self):
         payload     = { 'short_id' : self.short_id, 'path':'https://www.google.com', 'width':800}

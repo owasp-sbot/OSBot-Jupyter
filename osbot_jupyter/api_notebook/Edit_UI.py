@@ -1,25 +1,23 @@
 from time import sleep
+import qgrid
+import pandas as pd
 import ipywidgets as widgets
-from IPython.display import display, Javascript
-from QGrid_To_Jira import QGrid_To_Jira
+from osbot_jupyter.api_notebook.QGrid_To_Jira import QGrid_To_Jira
 from osbot_jira.api.API_Issues import API_Issues
-
-from utils import *
-
 
 class Edit_UI():
 
-    def __init__(self, issue_id, issues=None):
-        self.issue_id = issue_id
-        self.issues = issues
-        self.columns = ['Key', 'Summary', 'Latest_Information', 'Description', 'Status']
-        self.projects = ['SEC', 'RISK', 'VULN', 'GSCS']
-        self.issue_types = ['Task', 'Vulnerability', 'Question', 'Risk', 'Meeting']
-        self.link_types = ['delivered by', 'has RISK', 'is parent of', 'uses']
+    def __init__(self, issue_id=None, issues=None):
+        self.issue_id      = issue_id
+        self.issues        = issues
+        self.columns       = ['Key', 'Summary', 'Issue Link', 'Description', 'Status'] # 'Latest_Information'
+        self.projects      = ['TASK', 'OUTCOME', 'KEYRESULT', 'QUESTION']
+        self.issue_types   = ['Task', 'Outcome', 'KeyResult', 'Question']
+        self.link_types    = ['is delivered by', 'is parent of', 'uses']
         self.qgrid_to_jira = QGrid_To_Jira(None)
-        self.api_jira = self.qgrid_to_jira.api_jira
+        self.api_jira      = self.qgrid_to_jira.api_jira
         self.api_jira_rest = self.qgrid_to_jira.api_jira_rest
-        self.api_issues = API_Issues()
+        self.api_issues    = API_Issues()
 
     def ui_add_issue(self):
         self.dropdown_project = widgets.Dropdown(options=self.projects, description='Project')
@@ -58,13 +56,13 @@ class Edit_UI():
         self.button_load.style.button_color = 'lightblue'
 
         def on_button_clicked(b):
-            self.issues = None  # to force data reload
+            self.issues = None              # to force data reload
             self.issue_id = self.text_issue_id.value
             self.button_status.style.button_color = 'orange'
             self.button_status.description = 'Loading Data from {0}'.format(self.issue_id)
-            self.create_grid()
-            self.button_status.description = 'Done...'
-            self.button_status.style.button_color = 'lightgreen'
+            if self.create_grid():
+                self.button_status.description = 'Done'
+                self.button_status.style.button_color = 'lightgreen'
 
         self.button_load.on_click(on_button_clicked)
 
@@ -72,8 +70,6 @@ class Edit_UI():
 
     def ui_add_grid(self):
         def on_value_change_local(event, qgrid_widget):
-            # with self.output_area:
-            #    print('on on_value_change_local')
             self.on_value_change(event, qgrid_widget)
 
         self.grid = qgrid.show_grid(pd.DataFrame([]), grid_options={'maxVisibleRows': 100})
@@ -84,6 +80,7 @@ class Edit_UI():
 
     def show_ui(self, show_load_issue=True, show_add_issue=True, show_add_link=True, show_qgrid=True, show_output=True):
         items = []
+
         if show_load_issue: items.append(self.ui_load_issue())
         if show_add_link: items.append(self.ui_link_issue())
         if show_add_issue: items.append(self.ui_add_issue())
@@ -101,23 +98,19 @@ class Edit_UI():
             issue_type = self.dropdown_issue_type.value
             link_type = self.dropdown_link_type.value
             summary = self.text_summary.value
-            status = '...'
+            #status = '...'
             issue_id = self.issue_id
-            print('Creating `{0}` issue in project `{1}` with summary `{2}`, and link `{3}` to `{4}`'.format(issue_type,
-                                                                                                             project,
-                                                                                                             summary,
-                                                                                                             link_type,
-                                                                                                             issue_id))
+            print(f"Creating '{issue_type}' issue in project '{project}' with summary '{summary}', and link '{link_type}' to '{issue_id}'")
         try:
             # Create issue
             self.button_status.style.button_color = '#E59866'
-            self.button_status.description = 'Creating `{0}` issue in project `{1}`'.format(issue_type, project)
+            self.button_status.description = "Creating '{0}' issue in project '{1}'".format(issue_type, project)
 
             new_issue_id = qgrid_to_jira.api_jira.issue_create(project, summary, '', issue_type).key
 
             # Link issue
             self.button_status.style.button_color = 'orange'
-            self.button_status.description = 'Linking new issue `{0}` issue to `{1}`'.format(new_issue_id, issue_id)
+            self.button_status.description = "Linking new issue '{0}' issue to '{1}'".format(new_issue_id, issue_id)
 
             qgrid_to_jira.api_jira.issue_add_link(issue_id, link_type, new_issue_id)
 
@@ -125,9 +118,7 @@ class Edit_UI():
             self.button_status.style.button_color = 'darkorange'
             self.button_status.description = 'Adding new issue to grid'
 
-            self.grid.add_row(
-                [('Key', new_issue_id), ('Summary', summary), ('Latest_Information', ''), ('Description', ''),
-                 ('Status', status)])
+            self.add_row_to_grid(new_issue_id, summary, link_type)
 
             self.button_status.description = 'all done'
             self.button_status.style.button_color = 'lightgreen'
@@ -138,38 +129,40 @@ class Edit_UI():
                 print("{0}".format(error))
 
     def on_link_issue(self):
-        from_key = self.issue_id
+        from_key  = self.issue_id
         link_type = self.add_link_dropdown_issue_type.value
-        to_key = self.add_link_text_issue_id.value
+        to_key    = self.add_link_text_issue_id.value
 
         with self.output_area:
             try:
-                result = self.api_jira.issue_add_link(from_key, link_type, to_key)
+                self.api_jira.issue_add_link(from_key, link_type, to_key)
                 self.button_status.style.button_color = 'lightgreen'
                 self.button_status.description = 'Link added ok'
-                self.issues = None
-                self.create_grid()
-                print(result)
+                summary = self.api_issues.issue(to_key).get('Summary')       # get Summary value from ELK
+                self.add_row_to_grid(to_key, summary, link_type)             # add row to the bottom of the grid
             except Exception as error:
                 print("Error: {0}".format(error))
                 self.button_status.style.button_color = 'pink'
                 self.button_status.description = 'Link Error (double check that the issue id exists)'
 
     def on_value_change(self, event, qgrid_widget):
-        key = event.get('index')
+        key   = event.get('index')
         field = event.get('column')
         value = event.get('new')
-        old = event.get('old')
+        old   = event.get('old')
         with self.output_area:
-            # print(event)
-            print("updating field `{0}` with value `{1}` on issue `{2}".format(field, value, key))
+            print("updating field '{0}' with value '{1}' on issue '{2}'".format(field, value, key))
+
         self.button_status.style.button_color = 'orange'
 
         qgrid_to_jira = QGrid_To_Jira(None);
         if field == 'Issue Link':
             with self.output_area:
-                self.button_status.description = "Replacing Issue field {0} with {1}".format(old, value)
-                result = qgrid_to_jira.jira_update_issue_link(self.issue_id, key, old, value)
+                if type(old) is not str:  # todo: find better way to do this. 'old' value is an from pandas.core.series import Series , and the old value doesn't seem to be in there (self.grid.get_selected_df()[old.name].values[0] also didn't seem work)
+                    print("Error: can't remove link issue when multiple entries exist the the same issue id")
+                else:
+                    self.button_status.description = "Replacing Issue field {0} with {1}".format(old, value)
+                    result = qgrid_to_jira.jira_update_issue_link(self.issue_id, key, old, value)
         else:
             self.button_status.description = "Updating field {0} on {1}".format(field, key)
             result = qgrid_to_jira.jira_update_field(key, field, value)
@@ -180,31 +173,50 @@ class Edit_UI():
             self.button_status.style.button_color = 'pink'
             self.button_status.description = 'Update Error: {0}'.format(result.get('data'))
 
+    def add_row_to_grid(self, issue_id, summary, link_type):
+        columns = list(self.grid.df.columns)
+        new_row = [('Key', issue_id)]
+        for name in columns:
+            value = ''
+            if name == 'Summary'   : value = summary
+            if name == 'Issue Link': value = link_type
+            new_row.append((name, value))
+        self.grid.add_row(new_row)
+
     def create_grid(self):
-        try:
-            # self.graph    = jira.graph_links(self.issue_id, 'all', 1)
-            # self.df_graph = graph_table(self.graph,self.columns).fillna('')
-            self.grid.df = self.get_issue_df()
-
-        except Exception as error:
-            with self.output_area:
-                print('error :{0}'.format(error))
-
+        if self.issue_id:
+            try:
+                # self.graph    = jira.graph_links(self.issue_id, 'all', 1)
+                # self.df_graph = graph_table(self.graph,self.columns).fillna('')
+                df_issues = self.get_issue_df()
+                if len(df_issues) >0 :
+                    self.grid.df = self.get_issue_df()
+                    return True
+                message = f"No links found for '{self.issue_id}'"
+            except Exception as error:
+                with self.output_area:
+                    print('error :{0}'.format(error))
+                message = 'Create Grid Error: {0}'.format(error)
             self.button_status.style.button_color = 'pink'
-            self.button_status.description = 'Create Grid Error: {0}'.format(error)
+            self.button_status.description = message
+        return False
 
     def get_issue_df(self):
         if self.issues is None:
             self.issues = self.get_issues()
         return pd.DataFrame(self.issues, columns=self.columns).set_index('Key').fillna('')
 
+
     def get_issues(self):
         root_issue = self.api_issues.issue(self.issue_id)
+        if root_issue == {}:
+            return []
         issues = [root_issue]
         issue_links = root_issue.get('Issue Links')
         for link_type, linked_issues in issue_links.items():
             for linked_issue in linked_issues:
                 issue = self.api_issues.issue(linked_issue)
+                #issue = self.api_jira_rest.issue(linked_issue)  # much slower than using elk
                 issue['Issue Link'] = link_type
                 issues.append(issue)
         return issues

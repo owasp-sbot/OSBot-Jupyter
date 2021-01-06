@@ -1,8 +1,7 @@
 from osbot_aws.apis.Lambda import Lambda
-from pbx_gs_python_utils.utils.Lambdas_Helpers import slack_message
-from pbx_gs_python_utils.utils.Misc            import Misc
+from osbot_aws.helpers.Lambda_Helpers import slack_message
 from osbot_jupyter.api.Live_Notebook           import Live_Notebook
-
+from osbot_utils.utils import Misc
 
 
 def send_message(message, channel, team_id):
@@ -19,9 +18,11 @@ def send_png_to_slack(png_data, channel, team_id):
         send_message(":red_circle: error taking screenshot :{0} ".format(png_data), channel, team_id)
     else:
         send_message(":point_right: got screenshot with size `{0}` (sending it to slack) ".format(len(png_data)), channel, team_id)
-        Lambda('utils.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
+        Lambda('gw_bot.lambdas.png_to_slack').invoke({'png_data': png_data, 'team_id': team_id, 'channel': channel})
 
 class Jupyter_Web_Commands:
+
+    api_version = 'v0.40 (GW Bot)'
 
     @staticmethod
     def create_file(team_id=None, channel=None, params=None):
@@ -42,12 +43,12 @@ class Jupyter_Web_Commands:
         send_message(':point_right: Creating `{0}` on server `{1}` at location `{2}` with content of size `{3}`'.format(file_type, build_id, file_path, len(file_contents)), channel, team_id)
 
         jupyter_api = notebook.jupyter_api()
-        if file_type is 'notebook':
+        if file_type == 'notebook':
             result = jupyter_api.notebook_create(file_path, file_contents)
         else:
             result = jupyter_api.file_create(file_path, file_contents)
         if result.get('status') == 'ok':
-            if file_type is 'notebook':
+            if file_type == 'notebook':
                 url = "{0}/notebooks/{1}".format(jupyter_api.server, file_path)
             else:
                 url = "{0}/edit/{1}".format(jupyter_api.server, file_path)
@@ -60,13 +61,10 @@ class Jupyter_Web_Commands:
         try:
             event = Misc.array_pop(params)  # original slack event object
 
-            if not params or len(params) < 1:
+            if not params or len(params) < 2:
                 return send_message(':red_circle: You must provide the following params: `Server Id` and `code` (to execute)',channel, team_id)
 
-            if not params or len(params) == 1:
-                short_id   = 'gscs'                     # hard code this for now
-            else:
-                short_id   = str(Misc.array_pop(params, 0))
+            short_id   = str(Misc.array_pop(params, 0))
             code       = ' '.join(params).replace('“','"').replace('”','"').replace('‘',"'").replace('’',"'")
             notebook   = Live_Notebook()
 
@@ -112,8 +110,8 @@ class Jupyter_Web_Commands:
         return send_png_to_slack(png_data, channel,team_id)
 
     @staticmethod
-    def screenshot(team_id=None, channel=None, params=None):
-        event = Misc.array_pop(params)  # original slack event object
+    def screenshot(team_id=None, channel=None, params=None ,headless=True):
+        event = Misc.array_pop(params)  # original slack event object (don't think this is needed anymore)
         if not params or len(params) == 0:
             return send_message(':red_circle: You must provide an Server Id. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
 
@@ -125,61 +123,64 @@ class Jupyter_Web_Commands:
         height   = Misc.to_int(Misc.array_pop(params, 0))
         delay    = Misc.to_int(Misc.array_pop(params, 0))
 
+        if not path  : path = '/'
+        if not width : width = 1200
+        if not height: height = 500
         if delay is None: delay = 1                             # add one second delay if no value is provided
 
-        notebook = Live_Notebook()
+        notebook = Live_Notebook(headless=headless)
 
         if notebook.set_build_from_short_id(short_id) is None:
             return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id)
 
-        send_message(':point_right: taking screenshot of `{0}` with width `{1}`, height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
+        send_message(':point_right: taking screenshot of `{0}` with width `{1}`, (min) height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
 
         png_data = notebook.screenshot(path=path, width=width, height=height, delay=delay, apply_ui_fixes=False) # when calling the sceenshot via the web command,  don't apply the UI fixes
 
         return send_png_to_slack(png_data, channel,team_id)
 
     @staticmethod
-    def preview(team_id=None, channel=None, params=None):
+    def preview(team_id=None, channel=None, params=None , headless=True):
         event = Misc.array_pop(params)  # original slack event object
 
-        if not params or len(params) == 0:
-            return send_message(':red_circle: You must provide an Server Id. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
+        if not params or len(params) < 2:
+            return send_message(':red_circle: You must provide an Server Id and file to process. Please use `jupyter servers` to see the current list of live servers',channel,team_id)
 
-        if len(params) == 1:
-            short_id = 'gscs'                                   # for now hardcode to this one
-        else:
-            short_id = Misc.array_pop(params, 0)
 
+        short_id = Misc.array_pop(params, 0)
         path     = Misc.array_pop(params, 0)
-        width    = Misc.to_int(Misc.array_pop(params, 0))
-        height   = Misc.to_int(Misc.array_pop(params, 0))
-        delay    = Misc.to_int(Misc.array_pop(params, 0))
+        width    = Misc.to_int(Misc.array_pop(params, 0, 1200))
+        height   = Misc.to_int(Misc.array_pop(params, 0, 800 ))
+        delay    = Misc.to_int(Misc.array_pop(params, 0, 0))
 
         if width  is None: width  = 1200
         if height is None: height = 800
         if delay  is None: delay  = 0
 
 
-        notebook = Live_Notebook()
+        notebook = Live_Notebook(headless=headless)
 
         if notebook.set_build_from_short_id(short_id) is None:
             return ':red_circle: Could not find Jupyter server with id `{0}`. Please use `jupyter servers` to see the current list of live servers'.format(short_id)
 
-        path = 'nbconvert/html/{0}?download=false&osbot-no-code'.format(path)
+        if '?show-code' in path:
+            path = f'nbconvert/html/{path}'
+        else:
+            path = f'nbconvert/html/{path}?download=false&osbot-no-code'
 
-        send_message(':point_right: taking screenshot of `{0}` with width `{1}`, height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
+        send_message(':point_right: taking screenshot of `{0}` with width `{1}`, (min) height `{2}` and delay `{3}`'.format(path, width,height,delay), channel,team_id)
 
         png_data = notebook.screenshot(path=path, width=width, height=height, delay=delay, apply_ui_fixes=True)
 
         return send_png_to_slack(png_data, channel,team_id)
 
-    @staticmethod
-    def report(team_id=None, channel=None, params=None):
-        event  = Misc.array_pop(params)  # original slack event object
-        name   = Misc.array_pop(params)
-        report = "reports/{0}.ipynb".format(name)
-        params = ['gscs',report, event]
-        return Jupyter_Web_Commands.preview(team_id, channel, params)
+    # @staticmethod
+    # def report(team_id=None, channel=None, params=None):
+    #     event  = Misc.array_pop(params)  # original slack event object
+    #     name   = Misc.array_pop(params)
+    #     report = "reports/{0}.ipynb".format(name)
+    #     params = ['gscs',report, event]
+    #     return Jupyter_Web_Commands.preview(team_id, channel, params)
 
     @staticmethod
     def update_notebook(team_id=None, channel=None, params=None):
@@ -207,7 +208,7 @@ class Jupyter_Web_Commands:
         target_notebook_fixed = "notebooks/{0}".format(target_notebook)
         code = '!cd ../../..; jupyter nbconvert --to notebook --inplace --execute {0}'.format(target_notebook_fixed)
 
-        # note for longer executions the save is not working ok
+        #note for longer executions the save is not working ok
         (invoke_notebook, created) = notebook.get_python_invoke_file()
         send_message(':point_right: Running code with size `{0}` on server `{1}` (on file `{2}`)'.format(len(code), short_id, invoke_notebook), channel, team_id)
 
@@ -227,4 +228,29 @@ class Jupyter_Web_Commands:
         params = [short_id, target_notebook, event]
         return Jupyter_Web_Commands.preview(team_id,channel,params)
 
+    @staticmethod
+    def version(team_id=None, channel=None, params=None):
+        return Jupyter_Web_Commands.api_version
 
+    # with business logic
+
+    @staticmethod
+    def milestone(team_id=None, channel=None, params=None):
+        Misc.array_pop(params)                                  # original slack event object
+
+        if not params or len(params) < 2:
+            return send_message(':red_circle: You must provide the following params: `Server Id` and `jira ID`',channel, team_id)
+
+        short_id = str(Misc.array_pop(params, 0))
+        source   = str(Misc.array_pop(params, 0)).upper()
+
+        source_notebook = "icap/gwbot-reporting/TEST-milestones-TEST.ipynb"
+        target_notebook = f"icap/gwbot-reporting/{source}.ipynb"
+
+        send_message(f":python: creating milestone view for `{source}`", channel, team_id)  # need to double check
+
+        exec_params    = [short_id, f"!papermill ../../{source_notebook} ../../{target_notebook} -p source {source}", {} ]
+        preview_params = [short_id, f"{target_notebook}"                                                            , {} ]
+
+        Jupyter_Web_Commands.exec   (channel=channel, params=exec_params   )
+        Jupyter_Web_Commands.preview(channel=channel, params=preview_params)

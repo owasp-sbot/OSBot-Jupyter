@@ -1,13 +1,16 @@
 import base64
-from unittest                           import TestCase
 
+from gw_bot.Deploy import Deploy
+from osbot_aws.helpers.Test_Helper import Test_Helper
 from osbot_aws.apis.Lambda import Lambda
-from pbx_gs_python_utils.utils.Dev      import Dev
-from osbot_aws.helpers.Lambda_Package   import Lambda_Package
+from osbot_utils.utils.Dev import Dev
 
-class test_run_command(TestCase):
+
+class test_run_command(Test_Helper):
     def setUp(self):
-        self.aws_lambda = Lambda('osbot_jupyter.lambdas.start_server')
+        super().setUp()
+        self.lambda_name ='osbot_jupyter.lambdas.start_server'
+        self.aws_lambda = Lambda(self.lambda_name)
         self.result     = None
         self.png_data   = None
         #self.aws_lambda.add_module('osbot_browser')
@@ -28,12 +31,23 @@ class test_run_command(TestCase):
     #     payload     = { 'repo_name': 'gs-notebook-risks', 'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV', 'user': 'U7ESE1XS7'}
     #     self.result = self.aws_lambda.invoke(payload)
 
+
+    #def test_invoke_directly(self):
+
     def test_invoke_lambda_bad_repo(self):
         payload     = { 'repo_name': 'gs-notebook-AAAAA', "team_id" : "T7F3AUXGV", "channel": "GDL2EC3EE"}
         self.result = self.aws_lambda.invoke(payload)
 
 
-    def test_invoke_async(self):
-        payload = {'repo_name': 'gs-notebook-risks', 'channel': 'GDL2EC3EE', 'team_id': 'T7F3AUXGV', 'user': 'U7ESE1XS7'}
-        result = Lambda('osbot_jupyter.lambdas.start_server').invoke_async(payload)
+    def test_just_update(self):
+        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.osbot')
+        Deploy().deploy_lambda__jupyter('osbot_jupyter.lambdas.start_server')
+
+    def test_invoke(self):
+        self.test_just_update()
+        payload = { 'repo_name'  : 'gwbot-jupyter-notebooks',
+                    'channel'    : 'DRE51D4EM'              ,
+                    'user'       : 'UR9UENEAW'              ,
+                    'server_size': 'medium'                  }
+        result = Lambda(self.lambda_name).invoke(payload)
         self.result = result

@@ -2,7 +2,8 @@ import json
 from time import sleep
 
 from IPython.display import display, HTML, Javascript
-from pbx_gs_python_utils.utils.Misc import Misc
+
+from osbot_utils.utils import Misc
 
 
 class Jp_Vis_Js:
@@ -67,7 +68,6 @@ class Jp_Vis_Js:
 
     def simple_graph(self):
         self.test_vis()
-        self.a = 23
 
 
     # tests
@@ -76,8 +76,7 @@ class Jp_Vis_Js:
         from time import sleep
         sleep(0.2)
         self.js_invoke('element.text(_{0}.body.data.nodes)'.format(self.div_id))
-        return
-        assert self.a == 23
+
         for i in range(10,20):
             node = json.dumps({ "id": str(i), "label" : str(i) })
             edge = json.dumps({"from" : "1", "to": str(i)})

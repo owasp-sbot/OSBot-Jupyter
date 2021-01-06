@@ -18,7 +18,8 @@ class QGrid_To_Jira:
         return {'status': 'ok', 'data': result}
 
     def jira_remove_links_to_target(self, from_id, link_type, to_id):
-        issue_links = self.api_jira.issue_links(from_id).get(link_type)
+        all_issue_links = self.api_jira.issue_links(from_id)
+        issue_links = all_issue_links.get(link_type)
         if issue_links:
             for issue_link in issue_links:
                 if to_id == issue_link.get('Key'):
@@ -26,21 +27,31 @@ class QGrid_To_Jira:
                     print('deleting link', from_id, link_type, link_id)
                     self.api_jira.issue_delete_link(link_id)
                     return True
-        # return False
-        return True  # to handle cases when a mistaske is made on the new issue link type
+        return False
+        #return True  # to handle cases when a mistaske is made on the new issue link type
 
     def jira_update_issue_link(self, issue_id, to_id, old_link_issue, new_link_issue):
-        if self.jira_remove_links_to_target(issue_id, old_link_issue, to_id) is False:
-            print('removing link failed', issue_id, old_link_issue, to_id)
-            return {'status': 'error', 'data': 'removing link failed'}
+        removed_ok = self.jira_remove_links_to_target(issue_id, old_link_issue, to_id)
+        if new_link_issue is '':
+            if removed_ok:
+                return {'status': 'ok', 'data': 'issue link removed'}
+            else:
+                return {'status': 'error', 'data': 'failed to remove link'}
         try:
             self.api_jira.issue_add_link(issue_id, new_link_issue, to_id)
             print('added link', issue_id, new_link_issue, to_id)
-            return {'status': 'ok', 'data': 'issue link edited'}
+            if removed_ok:
+                return {'status': 'ok', 'data': 'issue link edited'}
+            else:
+                print('Removing link failed', issue_id, old_link_issue, to_id)
+                return {'status': 'error', 'data': 'removing link failed BUT, adding new link worked'}
         except Exception as error:
             print('Failed to add link', issue_id, new_link_issue, to_id)
-            print('{0}'.format(error))
-            return {'status': 'error', 'data': 'adding link failed (after removing link)'}
+            print(error.text)
+            if removed_ok:
+                return {'status': 'error', 'data': 'adding link failed (after removing link)'}
+            else:
+                return {'status': 'error', 'data': 'adding and removing links failed'}
 
     def jira_update_field(self, key, field, value):
         if not value:

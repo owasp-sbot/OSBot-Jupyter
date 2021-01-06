@@ -27,7 +27,7 @@ class test_run_command(TestCase):
 
     def test_nbconvert(self):
         payload     = { }
-        from osbot_aws.apis.Lambda import load_dependency
+        from osbot_aws.Dependencies import load_dependency
         load_dependency('jupyter')
         #self.png_data = self.aws_lambda.invoke(payload)
         self.result =  self.aws_lambda.invoke(payload)

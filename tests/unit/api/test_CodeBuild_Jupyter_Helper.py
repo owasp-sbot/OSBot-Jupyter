@@ -1,12 +1,12 @@
-from unittest import TestCase
-
 from pbx_gs_python_utils.utils.Dev import Dev
 
+from osbot_aws.helpers.Test_Helper import Test_Helper
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 
 
-class test_CodeBuild_Jupyter_Helper(TestCase):
+class test_CodeBuild_Jupyter_Helper(Test_Helper):
     def setUp(self):
+        super().setUp()
         self.api    = CodeBuild_Jupyter_Helper()
         self.result = None
 
@@ -41,10 +41,7 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
         self.api.start_build_for_repo(repo, server_size = 'large' )
 
     def test_start_build_for_repo_and_wait_for_jupyter_load(self):
-        repo = 'gs-notebook-risks'
-        #repo = 'gs-notebook-detect'
-        #repo = 'gs-notebook-gscs'
-        #self.result = self.api.util_rename_secret('gs-detect-notebooks', 'gs-notebook-detect')
+        repo = 'gwbot-jupyter-notebooks'
         self.result = self.api.start_build_for_repo_and_wait_for_jupyter_load(repo)
 
 
@@ -55,3 +52,8 @@ class test_CodeBuild_Jupyter_Helper(TestCase):
     def test_save_active_server_details(self):
         tmp_file    = '/tmp/active_jupyter_server.yml'
         self.result = self.api.save_active_server_details(tmp_file)
+
+
+    def test_gw_repo_start_build_for_repo__server_size(self):
+        repo_name = 'gwbot-jupyter-notebooks'
+        self.result = self.api.start_build_for_repo(repo_name, server_size = 'medium' )

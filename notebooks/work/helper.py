@@ -26,7 +26,7 @@ def issue(key):
 
 def jira_links(start, direction, depth):
     view = None
-    lambda_graph = Lambda('pbx_gs_python_utils.lambdas.gs.elastic_jira')
+    lambda_graph = Lambda('osbot_jira.lambdas.jira')
 
     payload = {"params": ['links', start, direction, depth, view]}
     result = lambda_graph.invoke(payload)
@@ -68,7 +68,7 @@ def show_png(png_data):
 
 def search(query,columns=None):
     params = {'params': ['search'] + query.split(' ')}
-    results = Lambda("gs.elk_to_slack").invoke(params) #{'params': ['search', 'people', 'd*']})
+    results = Lambda("osbot_jira.lambdas.elk_to_slack").invoke(params) #{'params': ['search', 'people', 'd*']})
     return data_frame(results,columns)
 
 # sheets and edit

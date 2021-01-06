@@ -135,6 +135,8 @@ class Live_Notebook:
                        .browser_size (width,height)
                        .wait_seconds (delay)
         )
+        jupyter_web.ui_add_jquery()
+
         if apply_ui_fixes:
             jupyter_web.ui_css_fixes(width)
 

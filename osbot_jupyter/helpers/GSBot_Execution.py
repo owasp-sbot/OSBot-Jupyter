@@ -5,7 +5,7 @@ class GSBot_Execution:
 
     def __init__(self):
         self.osbot_lambda = Lambda('osbot.lambdas.osbot')
-        self.jira_lambda = Lambda('osbot_jira.lambdas.elastic_jira')
+        self.jira_lambda = Lambda('osbot_jira.lambdas.jira')
 
     def invoke(self, command):
         params = command.split(' ')

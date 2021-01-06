@@ -1,6 +1,4 @@
 import docker
-from pbx_gs_python_utils.utils.Dev import Dev
-
 
 class Docker:
     def __init__(self):

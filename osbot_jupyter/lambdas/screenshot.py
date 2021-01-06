@@ -1,8 +1,9 @@
-from osbot_aws.apis.Lambda import load_dependency
+from osbot_aws.Dependencies import load_dependencies
 
 
 def run(event, context):
-    load_dependency('requests')
+    load_dependencies('requests,syncer,pyppeteer,websocket-client')
+
     from osbot_jupyter.api.Live_Notebook import Live_Notebook
 
     short_id = event.get('short_id')

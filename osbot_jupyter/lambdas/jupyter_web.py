@@ -1,16 +1,16 @@
-from pbx_gs_python_utils.utils.slack.Slack_Commands_Helper import Slack_Commands_Helper
+from gw_bot.api.Slack_Commands_Helper import Slack_Commands_Helper
+from osbot_aws.Dependencies import load_dependencies
 
 
-def run(event, context):
+def run(event, context=None):
     try:
-        from osbot_aws.apis.Lambda import load_dependency
-        load_dependency('requests')
+        load_dependencies('requests,syncer,pyppeteer,websocket-client')
 
         channel = event.get('channel')
         team_id = event.get('team_id')
         params  = event.get('params')
 
-        if params and len(params) == 1: params = []     # todo: this case (when the last param is the events data), needs to be handled by Jupyter_Web_Commands
+        if params and len(params) == 1: params = []     # todo: fix this case (when the last param is the events data), needs to be handled by Jupyter_Web_Commands
 
         from osbot_jupyter.osbot.Jupyter_Web_Commands import Jupyter_Web_Commands
 
