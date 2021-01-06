@@ -5,7 +5,7 @@ from osbot_aws.apis.Lambda import Lambda
 from osbot_jira.api.GS_Bot_Jira import GS_Bot_Jira
 from osbot_jira.api.elk.Elk_To_Slack import ELK_to_Slack
 from osbot_jira.api.graph.Lambda_Graph_Commands import Lambda_Graph_Commands
-from osbot_utils.utils.Json import json_load
+from osbot_utils.utils.Json import json_loads
 
 
 class Jp_Graph_Data:
@@ -19,7 +19,7 @@ class Jp_Graph_Data:
 
     def lambda_invoke(self, params):
         result = self.lambda_graph.invoke( {'params': params , 'data': {}})
-        return json_load(result)
+        return json_loads(result)
 
     def issue(self,issue_id):
         return self.api_issues.issue(issue_id)

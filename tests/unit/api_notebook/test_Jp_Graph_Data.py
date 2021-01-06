@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from pbx_gs_python_utils.utils.Dev            import Dev
+from osbot_utils.utils.Dev import Dev
+
 from osbot_jupyter.api_notebook.Jp_Graph_Data import Jp_Graph_Data
-from osbot_utils.decorators.trace.Trace_Call import Trace_Call
 
 
 class test_Jp_Graph_Data(TestCase):
@@ -44,4 +44,5 @@ class test_Jp_Graph_Data(TestCase):
         assert len(graph.edges) == 6
 
     def test_run_with_trace(self):
+        from osbot_utils.decorators.trace.Trace_Call import Trace_Call
         self.result = Trace_Call().invoke_method(test_Jp_Graph_Data.test_graph_expand, self)

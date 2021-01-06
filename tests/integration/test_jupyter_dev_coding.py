@@ -1,10 +1,9 @@
 from unittest import TestCase
 
-from pbx_gs_python_utils.utils.Dev import Dev
-from pbx_gs_python_utils.utils.Json import Json
+from osbot_utils.utils.Dev import Dev
+from osbot_utils.utils.Json import Json
 
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
-from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
 from osbot_jupyter.api.Jupyter_API import Jupyter_API
 from osbot_jupyter.api.Jupyter_Web import Jupyter_Web
 from osbot_jupyter.api.Jupyter_Web_Cell import Jupyter_Web_Cell
@@ -20,7 +19,7 @@ class test_jupyter_dev_coding(TestCase):
         self.notebook_name  = 'work/test-1.ipynb'
        # self.docker_jp      = Docker_Jupyter(self.image_name)
        # self.token          = self.docker_jp.token()
-        data                = Json.load_json('/tmp/active_jupyter_server.yml')
+        data                = Json.load_file('/tmp/active_jupyter_server.yml')
         self.token          = data.get('token')
         self.server         = data.get('server')
         self.jp_api         = Jupyter_API_Actions(server=self.server, token=self.token)
