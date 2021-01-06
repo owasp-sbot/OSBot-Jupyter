@@ -93,7 +93,7 @@ class CodeBuild_Jupyter_Helper:
         config = { 'build_id': build_id,
                    'server'  : server  ,
                    'token'   : token   }
-        Json.save_json(file, config)
+        Json.save_file(file, config)
         return config
 
     def wait_for_jupyter_load(self, build,max_seconds=150): # make it 2.5 minutes since sometimes it takes 90 secs for aws to fetch (was 90 seconds originally)

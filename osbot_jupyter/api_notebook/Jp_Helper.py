@@ -2,7 +2,6 @@ import base64
 
 from IPython.display                 import display_html
 from osbot_aws.apis.Lambda           import Lambda
-from osbot_utils.decorators.trace.Trace_Call import Trace_Call
 
 
 class Jp_Helper:
@@ -62,6 +61,7 @@ class Jp_Helper:
 
     @staticmethod
     def trace_method(method,*params,**kwargs):
+        from osbot_utils.decorators.trace.Trace_Call import Trace_Call
         trace_call = Trace_Call().invoke_method(method, *params,**kwargs)
         if trace_call.get('status') == 'ok':
             Jp_Helper.show_png_file_binary(trace_call.get('img_file'))

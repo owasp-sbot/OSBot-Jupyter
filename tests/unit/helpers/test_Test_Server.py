@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pbx_gs_python_utils.utils.Dev import Dev
+from osbot_utils.utils.Dev import Dev
 
 from osbot_jupyter.api.CodeBuild_Jupyter_Helper import CodeBuild_Jupyter_Helper
 from osbot_jupyter.helpers.Test_Server import Test_Server

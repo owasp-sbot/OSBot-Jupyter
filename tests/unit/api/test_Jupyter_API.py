@@ -1,13 +1,6 @@
-import datetime
-import json
-import uuid
 from unittest import TestCase
 
-from pbx_gs_python_utils.utils.Dev import Dev
-from pbx_gs_python_utils.utils.Misc import Misc
-
-from osbot_jupyter.api.Docker_Jupyter import Docker_Jupyter
-from osbot_jupyter.api.Jupyter_API import Jupyter_API
+from osbot_utils.utils.Dev import Dev
 from osbot_jupyter.helpers.Test_Server import Test_Server
 
 
