@@ -32,7 +32,7 @@ class QGrid_To_Jira:
 
     def jira_update_issue_link(self, issue_id, to_id, old_link_issue, new_link_issue):
         removed_ok = self.jira_remove_links_to_target(issue_id, old_link_issue, to_id)
-        if new_link_issue is '':
+        if new_link_issue == '':
             if removed_ok:
                 return {'status': 'ok', 'data': 'issue link removed'}
             else:

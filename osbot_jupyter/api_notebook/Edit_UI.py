@@ -2,8 +2,10 @@ from time import sleep
 import qgrid
 import pandas as pd
 import ipywidgets as widgets
+
+from osbot_jupyter.api_notebook.Edit_UI_Issues import Edit_UI_Issues
 from osbot_jupyter.api_notebook.QGrid_To_Jira import QGrid_To_Jira
-from osbot_jira.api.API_Issues import API_Issues
+#from osbot_jira.api.API_Issues import API_Issues
 
 class Edit_UI():
 
@@ -15,9 +17,11 @@ class Edit_UI():
         self.issue_types   = ['Task', 'Outcome', 'KeyResult', 'Question']
         self.link_types    = ['is delivered by', 'is parent of', 'uses']
         self.qgrid_to_jira = QGrid_To_Jira(None)
+        self.edit_ui_issues = Edit_UI_Issues()
+
         self.api_jira      = self.qgrid_to_jira.api_jira
         self.api_jira_rest = self.qgrid_to_jira.api_jira_rest
-        self.api_issues    = API_Issues()
+        #self.api_issues    = API_Issues()
 
     def ui_add_issue(self):
         self.dropdown_project = widgets.Dropdown(options=self.projects, description='Project')
@@ -138,7 +142,8 @@ class Edit_UI():
                 self.api_jira.issue_add_link(from_key, link_type, to_key)
                 self.button_status.style.button_color = 'lightgreen'
                 self.button_status.description = 'Link added ok'
-                summary = self.api_issues.issue(to_key).get('Summary')       # get Summary value from ELK
+                summary = self.edit_ui_issues.summary(to_key)
+                #summary = self.api_issues.issue(to_key).get('Summary')       # get Summary value from ELK
                 self.add_row_to_grid(to_key, summary, link_type)             # add row to the bottom of the grid
             except Exception as error:
                 print("Error: {0}".format(error))
@@ -208,15 +213,17 @@ class Edit_UI():
 
 
     def get_issues(self):
-        root_issue = self.api_issues.issue(self.issue_id)
-        if root_issue == {}:
-            return []
-        issues = [root_issue]
-        issue_links = root_issue.get('Issue Links')
-        for link_type, linked_issues in issue_links.items():
-            for linked_issue in linked_issues:
-                issue = self.api_issues.issue(linked_issue)
-                #issue = self.api_jira_rest.issue(linked_issue)  # much slower than using elk
-                issue['Issue Link'] = link_type
-                issues.append(issue)
-        return issues
+        return self.edit_ui_issues.issues(self.issue_id)
+
+        # root_issue = self.api_issues.issue(self.issue_id)
+        # if root_issue == {}:
+        #     return []
+        # issues = [root_issue]
+        # issue_links = root_issue.get('Issue Links')
+        # for link_type, linked_issues in issue_links.items():
+        #     for linked_issue in linked_issues:
+        #         issue = self.api_issues.issue(linked_issue)
+        #         #issue = self.api_jira_rest.issue(linked_issue)  # much slower than using elk
+        #         issue['Issue Link'] = link_type
+        #         issues.append(issue)
+        # return issues
