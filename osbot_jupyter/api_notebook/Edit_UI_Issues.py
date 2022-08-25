@@ -1,7 +1,7 @@
-from osbot_jira.api.jira_server.API_Jira import API_Jira
 from osbot_jira.api.jira_server.API_Jira_Rest import API_Jira_Rest
 
 
+# Issues helper for Edit_UI Jupyter tool that doesn't use Elastic for data
 class Edit_UI_Issues:
 
     def __init__(self):

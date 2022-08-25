@@ -189,13 +189,13 @@ class Edit_UI():
         self.grid.add_row(new_row)
 
     def create_grid(self):
-        if self.issue_id:
+        if self.issue_id or self.issues:
             try:
                 # self.graph    = jira.graph_links(self.issue_id, 'all', 1)
                 # self.df_graph = graph_table(self.graph,self.columns).fillna('')
                 df_issues = self.get_issue_df()
                 if len(df_issues) >0 :
-                    self.grid.df = self.get_issue_df()
+                    self.grid.df = df_issues #self.get_issue_df()
                     return True
                 message = f"No links found for '{self.issue_id}'"
             except Exception as error:
