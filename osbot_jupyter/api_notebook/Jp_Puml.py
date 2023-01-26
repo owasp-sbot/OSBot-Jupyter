@@ -1,3 +1,4 @@
+from osbot_jira.api.graph.Jira_Graph_View import Jira_Graph_View
 from osbot_jupyter.api_notebook.Jp_Helper import Jp_Helper
 from osbot_utils.utils.Files import temp_file, parent_folder, file_exists, file_to_base64
 import subprocess
@@ -44,10 +45,22 @@ class Jp_Puml:
             return file_to_base64(result.get('png_file'))
         return None
 
+    def show_png_for_graph_schema(self, hb_jira_slack):
+        jira_graph      = hb_jira_slack.jira_graph_jql.jira_graph
+        jira_graph_view = Jira_Graph_View(jira_graph=jira_graph)
+        schema_graph    = jira_graph_view.create_schema_graph()
+        schema_graph.set_skin_param('linetype', 'polyline')
+        schema_graph.render_puml(using_jira_nodes=False)
+        puml_code = schema_graph.get_puml()
+        self.show_png_from_puml_code(puml_code)
+
     def show_png_from_graph(self, hb_jira_slack):
         jira_graph_jql = hb_jira_slack.jira_graph_jql
         jira_graph_jql.render_puml_from_jira_graph()
         puml_code = jira_graph_jql.jira_graph.get_puml()
+        self.show_png_from_puml_code(puml_code)
+
+    def show_png_from_puml_code(self, puml_code):
         result    = self.puml_to_png(puml_code)
         png_file  = result.get('png_file')
         Jp_Helper().show_png_file_binary(png_file)
