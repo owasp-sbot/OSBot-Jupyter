@@ -3,6 +3,7 @@ import base64
 from IPython.display                 import display_html
 from osbot_aws.apis.Lambda           import Lambda
 
+TEMP_JIRA_GRAPH= "/tmp/jira_graph.png"
 
 class Jp_Helper:
 
@@ -52,8 +53,9 @@ class Jp_Helper:
         png_data = open(png_file, 'r').read()
         Jp_Helper.show_png(png_data)
 
+
     @staticmethod
-    def show_png_file_binary(png_file):
+    def show_png_file_binary(png_file=TEMP_JIRA_GRAPH):
         #png_data = base64.encodestring(open(png_file, 'rb').read())
         png_data = base64.b64encode(open(png_file, 'rb').read()).decode('utf-8')
         #print(png_data)
