@@ -54,7 +54,7 @@ class Jp_Puml:
         puml_code = schema_graph.get_puml()
         self.show_png_from_puml_code(puml_code)
 
-    def show_png_from_graph(self, hb_jira_slack):
+    def show_png_for_graph(self, hb_jira_slack):
         jira_graph_jql = hb_jira_slack.jira_graph_jql
         jira_graph_jql.render_puml_from_jira_graph()
         puml_code = jira_graph_jql.jira_graph.get_puml()
